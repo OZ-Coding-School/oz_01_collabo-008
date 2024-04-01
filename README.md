@@ -105,21 +105,21 @@
 
 ### FE
 
-| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/111436967?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> |
+| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@deswaq1220</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@jhsonnn</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@pparksse1</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/111436967?v=4" width=100px/><br/><sub><b>@nayeon2im</b></sub></a><br/> |
 | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                       홍길동                                                                       |                                                                        김00                                                                        |                                                                        강00                                                                        |                                                                        송00                                                                         |
+|                                                                       변경원                                                                       |                                                                        손지형                                                                        |                                                                        박세원                                                                        |                                                                        연나연                                                                       |
 
 ### BE
 
-| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/85716720?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> | <a href=https://github.com/orioncsy><img src="https://avatars.githubusercontent.com/u/90237119?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/77969043?v=4" width=100px/><br/><sub><b>@GithubID</b></sub></a><br/> |
+| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/85716720?v=4" width=100px/><br/><sub><b>@SwanyCastle</b></sub></a><br/> | <a href=https://github.com/orioncsy><img src="https://avatars.githubusercontent.com/u/90237119?v=4" width=100px/><br/><sub><b>@kimhamney</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/77969043?v=4" width=100px/><br/><sub><b>@ready-oun</b></sub></a><br/> |
 | :------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                        박00                                                                        |                                                                            이00                                                                            |                                                                        한00                                                                        |
+|                                                                        곽승환                                                                        |                                                                            김혜민                                                                            |                                                                        임희연                                                                        |
 
 ## 📑 프로젝트 규칙
 
 ### Branch Strategy
 
-> - main / dev 브랜치 기본 생성
+> - main / devlop 브랜치 기본 생성
 > - main과 dev로 직접 push 제한
 > - PR 전 최소 1인 이상 승인 필수
 
@@ -175,12 +175,10 @@
 > BE
 >
 > - 패키지명 전체 소문자
-> - 클래스명, 인터페이스명 CamelCase
+> - 클래스명, 인터페이스명 Snake_Case
 > - 클래스 이름 명사 사용
 > - 상수명 SNAKE_CASE
-> - Controller, Service, Dto, Repository, mapper 앞에 접미사로 통일(ex. MemberController)
-> - service 계층 메서드명 create, update, find, delete로 CRUD 통일(ex. createMember)
-> - Test 클래스는 접미사로 Test 사용(ex. memberFindTest)
+> - Test 클래스는 접두사로 test_ 사용(ex. test_user_create())
 
 > FE
 >
