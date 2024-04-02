@@ -16,8 +16,6 @@ import os, environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-print("Base Dir: ", BASE_DIR)
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -49,13 +47,51 @@ DJANGO_SYSTEM_APPS = [
 CUSTOM_USER_APPS = [
     # 생성한 app
     'members.apps.MembersConfig',
+    'expenses.apps.ExpensesConfig',
+    'bugets.apps.BugetsConfig',
 
     # 추가 lib
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
 ]
 
 INSTALLED_APPS = CUSTOM_USER_APPS + DJANGO_SYSTEM_APPS
 
 AUTH_USER_MODEL = 'members.Member'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated', # 인증된 사용자만 접근
+        # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근
+        'rest_framework.permissions.AllowAny', # 누구나 접근
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    # Swagger UI에서 API 문서에 대한 제목 설정
+    'TITLE': 'My Project API',
+    # API 문서에 대한 설명 설정 (선택 사항)
+    'DESCRIPTION': 'API documentation for My Project',
+    # API 문서의 버전 설정
+    'VERSION': '1.0.0',
+    # 사용할 스키마 생성자 설정
+    # 'SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # # 선택 사항: Swagger UI에서 권한 인증 토큰을 사용할지 여부를 설정
+    # 'SECURITY': [{'Token': []}],
+    # # 선택 사항: Swagger UI에서 OAuth2 인증을 사용할 때 토큰 URL 설정
+    # 'OAUTH2_URLS': [
+    #     {
+    #         'name': 'Authorization Code Token',
+    #         'authorize': 'https://example.com/o/authorize/',
+    #         'token': 'https://example.com/o/token/',
+    #     },
+    # ],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
