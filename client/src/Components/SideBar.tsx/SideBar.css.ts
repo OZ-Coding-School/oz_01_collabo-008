@@ -46,6 +46,7 @@ export const progress = style({
   backgroundColor: "#F03167",
   borderRadius: "200px",
   margin: "16px 0 126px",
+  boxShadow: "3px 1px 10px rgba(240,49,103,0.16)",
 });
 
 export const fixedWrap = style({

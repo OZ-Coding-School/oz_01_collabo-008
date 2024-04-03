@@ -1,7 +1,7 @@
+import { AnimatedLineProgressBar } from '@frogress/line';
 import { Box, Card, Flex, Text } from '@radix-ui/themes';
 import '@radix-ui/themes/styles.css';
 import { Budget, fixedText, fixedWrap, list, listItem, listItems, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
-
 const SideBar = () => {
   return (
     <Box width="500px" className={sideBox}>
@@ -24,7 +24,18 @@ const SideBar = () => {
               원을 사용했어요
             </Text>
           </Box>
-          <Box className={progress}>여러분 여기는 프로그래스바입니다</Box>
+          {/* <Box className={progress}>여러분 여기는 프로그래스바입니다</Box> */}
+          <AnimatedLineProgressBar
+            percent={48}
+            transition={{ easing: 'linear' }}
+            rounded={36}
+            progressColor="linear-gradient(to right, #F03167, #F35F89, #FFA5BE)"
+            containerColor="#fff"
+            width={400}
+            height={48}
+            className={progress}
+          // label={(value: number) => <CustomLabelComponent percent={value} />}
+          />
         </Flex>
 
         <Box className={fixedWrap}>

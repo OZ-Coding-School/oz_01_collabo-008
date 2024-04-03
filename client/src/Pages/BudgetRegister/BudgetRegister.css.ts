@@ -31,6 +31,7 @@ export const description = style({
 });
 
 export const addBtn = style({
+  width: "80px",
   outline: "none",
   border: "none",
   backgroundColor: "#F03167",
