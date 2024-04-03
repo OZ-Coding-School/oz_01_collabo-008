@@ -21,4 +21,7 @@ export default defineConfig({
       },
     } as VitePluginSvgrOptions), // 여기서 타입 강제 변환을 적용합니다.
   ],
+  optimizeDeps: {
+    exclude: ["js-big-decimal"],
+  },
 });

@@ -11,26 +11,31 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os, environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-cbcyx9w2$+4g)#j!lzx@$9x5e7%^s9t9pu-m_5ir4terfi!gw1"
+
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_SYSTEM_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,6 +43,55 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
+
+CUSTOM_USER_APPS = [
+    # 생성한 app
+    'members.apps.MembersConfig',
+    'expenses.apps.ExpensesConfig',
+    'bugets.apps.BugetsConfig',
+
+    # 추가 lib
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
+]
+
+INSTALLED_APPS = CUSTOM_USER_APPS + DJANGO_SYSTEM_APPS
+
+AUTH_USER_MODEL = 'members.Member'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated', # 인증된 사용자만 접근
+        # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근
+        'rest_framework.permissions.AllowAny', # 누구나 접근
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    # Swagger UI에서 API 문서에 대한 제목 설정
+    'TITLE': 'My Project API',
+    # API 문서에 대한 설명 설정 (선택 사항)
+    'DESCRIPTION': 'API documentation for My Project',
+    # API 문서의 버전 설정
+    'VERSION': '1.0.0',
+    # 사용할 스키마 생성자 설정
+    # 'SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # # 선택 사항: Swagger UI에서 권한 인증 토큰을 사용할지 여부를 설정
+    # 'SECURITY': [{'Token': []}],
+    # # 선택 사항: Swagger UI에서 OAuth2 인증을 사용할 때 토큰 URL 설정
+    # 'OAUTH2_URLS': [
+    #     {
+    #         'name': 'Authorization Code Token',
+    #         'authorize': 'https://example.com/o/authorize/',
+    #         'token': 'https://example.com/o/token/',
+    #     },
+    # ],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -76,11 +130,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "accountbook",
-        "USER": "root",
-        "PASSWORD": "1234",
-        "HOST": "localhost",
-        "PORT": "3306",
+        "HOST": env("DB_HOST"),
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
     }
 }
 
@@ -125,3 +178,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
