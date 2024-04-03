@@ -1,38 +1,31 @@
 // import viteLogo from '/vite.svg'
-import { Outlet, Route, Routes } from 'react-router-dom'
-import BaseContainer from './Components/BaseContainer/BaseContainer'
-import Header from './Components/Header/Header'
-
-
+import { Outlet, Route, Routes } from "react-router-dom";
+import Header from "./Components/Header/Header";
+import TotalBudgetAndFixedExpenses from "./Components/TotalBudgetAndFixedExpenses/TotalBudgetAndFixedExpenses";
 
 const Layout = () => {
   return (
     <>
       <Header />
-      {/* <SideBar /> */}
-      <BaseContainer />
       <Outlet />
     </>
-  )
-}
+  );
+};
 
 function App() {
-
-
-
-
   return (
     <>
       <Routes>
-        <Route path="/" element={<Layout />}>
-
+        <Route path='/' element={<Layout />}>
           <Route index />
-
+          <Route
+            path='/totalbudgetandfixedexpenses'
+            element={<TotalBudgetAndFixedExpenses />}
+          />
         </Route>
-
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
