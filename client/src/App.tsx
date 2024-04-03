@@ -1,7 +1,8 @@
 // import viteLogo from '/vite.svg'
 import { Outlet, Route, Routes } from 'react-router-dom'
-import BaseContainer from './Components/BaseContainer/BaseContainer'
 import Header from './Components/Header/Header'
+import BudgetRegister from './Pages/BudgetRegister/BudgetRegister'
+import { BUDGET_REGISTER_COMPONENT } from './constants/components-contants'
 
 
 
@@ -9,8 +10,6 @@ const Layout = () => {
   return (
     <>
       <Header />
-      {/* <SideBar /> */}
-      <BaseContainer />
       <Outlet />
     </>
   )
@@ -28,6 +27,7 @@ function App() {
 
           <Route index />
 
+          <Route path={BUDGET_REGISTER_COMPONENT} element={<BudgetRegister />} />
         </Route>
 
       </Routes>
