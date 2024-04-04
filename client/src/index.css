@@ -79,8 +79,10 @@
     url(./woff-subset/Pretendard-Thin.subset.woff) format("woff");
 }
 
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+
 * {
-  font-family: "Pretendard-Regular";
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
   margin: 0;
   padding: 0;
 }
