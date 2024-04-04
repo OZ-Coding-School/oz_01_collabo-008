@@ -1,3 +1,6 @@
+import Login from "./Pages/Login";
+import Signup from "./Pages/Signup";
+
 
 import { Outlet, Route, Routes } from "react-router-dom";
 import Header from "./Components/Header/Header";
@@ -9,10 +12,12 @@ import {
 } from "./constants/components-contants";
 
 
+
 const Layout = () => {
   return (
     <>
       <Header />
+
       <Outlet />
     </>
   );
@@ -30,8 +35,11 @@ function App() {
           />
 
           <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
+          <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         </Route>
       </Routes >
+
     </>
   );
 }
