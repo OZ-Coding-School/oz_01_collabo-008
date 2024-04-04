@@ -3,9 +3,12 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import Header from "./Components/Header/Header";
 import BudgetNExpenses from "./Pages/BudgetNExpenses/BudgetNExpenses";
 import BudgetRegister from "./Pages/BudgetRegister/BudgetRegister";
+import Main from "./Pages/MainPage/Main";
+import Mypage from "./Pages/Mypage/Mypage";
 import {
   BUDGET_N_FIXED_EXPENSES_COMPONENT,
   BUDGET_REGISTER_PAGE,
+  MY_PAGE,
 } from "./constants/components-contants";
 
 
@@ -30,6 +33,7 @@ function App() {
           />
 
           <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
+          <Route path={MY_PAGE} element={<Mypage />} />
         </Route>
       </Routes >
     </>
