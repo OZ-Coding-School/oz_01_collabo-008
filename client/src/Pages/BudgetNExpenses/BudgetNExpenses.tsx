@@ -2,37 +2,53 @@ import { Box, Button, Container, Divider, TextField } from "@mui/material";
 import { Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { useState } from "react";
-import SideBar from "../SideBar.tsx/SideBar";
+import BudgetHistoryTableCell from "../../Components/BudgetNExpensesTables/BudgetHistoryTableCell.tsx";
+import ExpensesRegiTableCell from "../../Components/BudgetNExpensesTables/ExpensesRegiTableCell.tsx";
+import SideBar from "../../Components/SideBar.tsx/SideBar.tsx";
 import {
+  box,
   budgetHistory,
   budgetInputBox,
   bugetHistoryTable,
   container,
   explainText,
-  fixedExpensesRegistrationTable,
+  fixedExpenseBox,
+  fixedExpensesRegiTable,
   headText,
   totalBudgetBox,
-} from "./TotalBudgetAndFixedExpenses.css";
-import BudgetHistoryTableCell from "./muiStyleComponent/BudgetHistoryTableCell.tsx";
-import FixedExpensesRegistrationTableCell from "./muiStyleComponent/FixedExpensesRegistrationTableCell.tsx";
+} from "./BudgetNExpenses.css.ts";
 
-const TotalBudgetAndFixedExpenses = () => {
+const BudgetNExpenses = () => {
   const [budget, setBudget] = useState<string>("");
   const [budgetData, setBudgetData] = useState([]);
+  const [isAddRowClicked, setIsAddRowClicked] = useState(false);
+  const [isExpRegiClicked, setIsExpRegiClicked] = useState(false);
+  //#region 고정 지출 등록
+  const handleClickAddRow = () => {
+    // BudgetHistoryTableCell의 새로운 테이블 행 추가
+    setIsAddRowClicked((prevState) => !prevState);
+  };
+  const handleClickRegi = () => {
+    setIsExpRegiClicked((prevState) => !prevState);
+    // BudgetHistoryTableCell에서 state에 저장되도록
+    //배열로 출력되는지 확인해보기
+  };
+  //#endregion
 
+  //#region 전체 예산 등록
   const handleClickBudgetRegistration = () => {
     const newBudgetData = {
-      // 현재의 날자를 문자열로 변환
+      // 현재의 날짜를 문자열로 변환
       date: new Date().toLocaleDateString(),
       budget: budget,
     };
     setBudgetData([...budgetData, newBudgetData]);
     setBudget("");
-    console.log(budgetData);
   };
+  //#endregion
 
   return (
-    <Box sx={{ display: "flex", marginRight: "30px" }}>
+    <Box className={box}>
       <SideBar />
       <Container className={container}>
         <Box className={totalBudgetBox}>
@@ -43,8 +59,6 @@ const TotalBudgetAndFixedExpenses = () => {
             고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
           </Text>
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
-        </Box>
-        <Box>
           <Box className={budgetInputBox}>
             <TextField
               InputProps={{
@@ -62,13 +76,11 @@ const TotalBudgetAndFixedExpenses = () => {
             ></TextField>
             <TotalBugetBoxButtons
               onClick={handleClickBudgetRegistration}
-              disabled={!budget.trim()}
+              // disabled={!budget.trim()}
             >
-              등록하기
+              {event?.target.value ? "수정하기" : "등록하기"}
             </TotalBugetBoxButtons>
-            <TotalBugetBoxButtons>수정하기</TotalBugetBoxButtons>
           </Box>
-
           <Box className={budgetHistory}>
             <Text as='p' className={explainText}>
               예산 히스토리
@@ -78,18 +90,29 @@ const TotalBudgetAndFixedExpenses = () => {
             </Box>
           </Box>
         </Box>
-
-        <Box>
+        <Box className={fixedExpenseBox}>
           <Text className={headText} as='div'>
             고정 지출 등록
           </Text>
-          <Text as='p' className={explainText}>
-            고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
-          </Text>
-
+          <Box sx={{ display: "flex" }}>
+            <Text as='p' className={explainText}>
+              고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
+            </Text>
+            <Box sx={{ display: "flex", marginLeft: "auto", gap: "10px" }}>
+              <ButtonForFixedExpRegi onClick={handleClickAddRow}>
+                행 추가하기
+              </ButtonForFixedExpRegi>
+              <ButtonForFixedExpRegi onClick={handleClickRegi}>
+                등록하기
+              </ButtonForFixedExpRegi>
+            </Box>
+          </Box>
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
-          <Box className={fixedExpensesRegistrationTable}>
-            <FixedExpensesRegistrationTableCell />
+          <Box className={fixedExpensesRegiTable}>
+            <ExpensesRegiTableCell
+              isAddRowClicked={isAddRowClicked}
+              isExpRegiClicked={isExpRegiClicked}
+            />
           </Box>
         </Box>
       </Container>
@@ -97,9 +120,9 @@ const TotalBudgetAndFixedExpenses = () => {
   );
 };
 
-export default TotalBudgetAndFixedExpenses;
+export default BudgetNExpenses;
 
-export const TotalBugetBoxButtons = ({ children, onClick, disabled }) => {
+export const TotalBugetBoxButtons = ({ children, onClick }) => {
   const handleClick = () => {
     if (!budgetHistory.trim()) {
       return;
@@ -118,7 +141,32 @@ export const TotalBugetBoxButtons = ({ children, onClick, disabled }) => {
         height: "38px",
         fontSize: "10px",
       }}
-      disabled={disabled}
+    >
+      {children}
+    </Button>
+  );
+};
+
+export const ButtonForFixedExpRegi = ({ children, onClick }) => {
+  const handleClick = () => {
+    if (!budgetHistory.trim()) {
+      return;
+    }
+    onClick();
+  };
+  return (
+    <Button
+      onClick={handleClick}
+      variant='contained'
+      sx={{
+        backgroundColor: "#F03167",
+        borderRadius: "8px",
+        width: "90px",
+        height: "38px",
+        fontSize: "10px",
+        marginTop: "-15px",
+        marginLeft: "auto",
+      }}
     >
       {children}
     </Button>
