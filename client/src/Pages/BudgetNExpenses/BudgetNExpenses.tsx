@@ -67,6 +67,8 @@ const BudgetNExpenses = () => {
                   width: "200px",
                   borderRadius: "8px",
                   marginLeft: "10px;",
+                  backgroundColor: "#ffffff",
+                  borderColor: "#F0F0F0",
                 },
               }}
               name='totalBudget'
