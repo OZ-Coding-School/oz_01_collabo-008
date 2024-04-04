@@ -36,7 +36,7 @@ const BudgetHistoryTableCell = ({ budgetData }) => {
   const createData = (date, budget) => ({ date, budget });
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ height: 150 }}>
       <Table sx={{ minWidth: 700 }} aria-label='customized table'>
         <TableHead>
           <TableRow>
