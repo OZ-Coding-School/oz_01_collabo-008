@@ -7,17 +7,20 @@ from .models import Member
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = "__all__"
+        fields = ("id", "email", "password", "name", "image", "created_at", "updated_at")
+        extra_kwargs = {
+            "password": {"write_only": True}
+        }
 
     def create(self, validated_data):
         if validated_data["name"]:
-            member = Member.objects.create_user(
+            member = Member.objects.create_member(
                 email = validated_data["email"],
                 password = validated_data["password"],
                 name = validated_data["name"]
             )
             return member
-        member = Member.objects.create_user(
+        member = Member.objects.create_member(
             email = validated_data["email"],
             password = validated_data["password"]
         )
@@ -30,6 +33,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(member)
 
         token['email'] = member.email
-        token['name'] = member.name
 
         return token
