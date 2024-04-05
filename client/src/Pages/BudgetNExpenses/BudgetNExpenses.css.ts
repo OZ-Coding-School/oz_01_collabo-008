@@ -5,17 +5,18 @@ globalStyle("body", {
 });
 export const box = style({
   display: "flex",
-  padding: "48px 60px",
+  padding: "32px 60px",
 });
 export const container = style({
   display: "flex",
   flexDirection: "column",
   backgroundColor: "rgba(255,255,255,0.8)",
   borderRadius: "1rem",
+  padding: 0,
 });
 
 export const totalBudgetBox = style({
-  padding: "60px 48px",
+  padding: "60px 32px",
 });
 export const headText = style({
   fontSize: "26px",
@@ -41,7 +42,7 @@ export const budgetInputBox = style({
   paddingTop: "16px",
 });
 export const budgetHistory = style({
-  marginBottom: "40px",
+  //marginBottom: "40px",
 });
 export const bugetHistoryTable = style({
   marginLeft: "10px",
@@ -55,7 +56,6 @@ export const fixedExpensesRegiTable = style({
 
 //#region 고정 지출 등록
 export const fixedExpenseBox = style({
-  marginLeft: "48px",
-  marginRight: "48px",
+  padding: "0px 32px",
 });
 //#endregion
