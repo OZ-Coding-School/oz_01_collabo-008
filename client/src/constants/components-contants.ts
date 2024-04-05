@@ -2,4 +2,5 @@
 // export const REGISTER_LECTURE_API = "/lecture/regist"  // 강의등록
 
 export const BUDGET_REGISTER_COMPONENT = "/budget/register"; // 가계부 등록
-export const BUDGET_N_FIXED_EXPENSES_COMPONENT = "/budgetnexpenses";
+export const BUDGET_N_FIXED_EXPENSES_COMPONENT = "/budgetnexpenses"; //예산/고정지출 등록
+export const MONTHLY_REPORT = "/monthlyreport"; //이번 달 리포트

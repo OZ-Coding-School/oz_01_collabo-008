@@ -22,7 +22,12 @@ export const headText = style({
   fontWeight: "bold",
 });
 export const explainText = style({
-  fontSize: "12px",
+  fontSize: "0.8rem",
+  fontWeight: "500",
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+  marginRight: "24px",
   color: "#8E8E8E",
   marginTop: "10px",
   marginBottom: "5px",
