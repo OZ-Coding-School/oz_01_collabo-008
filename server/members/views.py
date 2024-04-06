@@ -1,9 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, NotAuthenticated
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Member
 from .serializers import MemberSerializer, MyTokenObtainPairSerializer
@@ -87,31 +88,52 @@ class LoginView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh")
-        if refresh_token:
+        if not refresh_token:
+            return Response(
+                data={
+                    "detail": "No refresh token provided"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
             refresh_token_obj = RefreshToken(refresh_token)
             refresh_token_obj.blacklist()
-        response =  Response(
-            data= { 
-                "result_code": 200,
-                "result_message": "Success"
-            },
-            status=status.HTTP_200_OK
-        )
-        response.delete_cookie("access")
-        response.delete_cookie("refresh")
-        return response
+            response =  Response(
+                data= { 
+                    "result_code": 200,
+                    "result_message": "Success"
+                },
+                status=status.HTTP_200_OK
+            )
+            response.delete_cookie("access")
+            response.delete_cookie("refresh")
+            return response
+        except Exception as e:
+            return Response(
+                data={
+                    "error_message": str(e)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class MemberDetailView(APIView):
-    def get_member(self, member_id):
+    def get_member(self,request, member_id):
         try:
+            jwt_authenticator = JWTAuthentication()
+            response = jwt_authenticator.authenticate(request=request)
+            if response is None:
+                raise NotAuthenticated
+            user , token = response
             member = Member.objects.filter(pk=member_id).first()
-            return member
+            if member_id == token.payload["id"]:
+                return member
+            raise NotAuthenticated
         except Member.DoesNotExist:
             raise NotFound
 
     def get(self, request, member_id):
-        member = self.get_member(member_id=member_id)
+        member = self.get_member(request=request, member_id=member_id)
         if member:
             serializer = MemberSerializer(member)
             response = {
@@ -129,7 +151,7 @@ class MemberDetailView(APIView):
         )
 
     def put(self, request, member_id):
-        member = self.get_member(member_id=member_id)
+        member = self.get_member(request=request, member_id=member_id)
         if member is None:
             return Response(
                 data={
@@ -151,7 +173,7 @@ class MemberDetailView(APIView):
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, member_id):
-        member = self.get_member(member_id=member_id)
+        member = self.get_member(request=request, member_id=member_id)
         if member is None:
             return Response(
                 data={
