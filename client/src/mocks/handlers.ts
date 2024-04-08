@@ -1,15 +1,15 @@
 import { HttpResponse, http } from "msw";
 
 export const handlers = [
-  // By calling "http.get()" we're instructing MSW
-  // to capture all outgoing "GET /posts" requests
-  // and execute the given response resolver when they
-  // happen.
-  http.get("/users", () => {
-    // Response resolver allows you to react to captured requests,
-    // respond with mock responses or passthrough requests entirely.
-    // For now, let's just print a message to the console.
-
-    return HttpResponse.json({});
+  //회원가입
+  http.post("/api/v1/members/register", async ({ request }) => {
+    const info = await request.json();
+    console.log(info.name);
+    return HttpResponse.json(info, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }),
 ];

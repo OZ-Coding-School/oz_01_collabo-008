@@ -24,6 +24,8 @@ export const container2 = style({
 
 export const signupheader = style({
   marginBottom: "30px",
+  fontSize: "30px",
+  fontWeight: "600",
 });
 
 export const signupform = style({
@@ -40,7 +42,7 @@ export const signupformLabel = style({
 });
 
 export const signupformInput = style({
-  marginBottom: "10px",
+  marginBottom: "8px",
   padding: "8px",
   width: "400px",
   border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -56,8 +58,8 @@ export const info = style({
 export const footer = style({
   display: "flex",
   alignItems: "center",
-  fontSize: "12px",
-  fontWeight: 600,
+  fontSize: "14px",
+  fontWeight: 500,
 });
 
 export const signupbt = style({
@@ -70,8 +72,32 @@ export const signupbt = style({
   border: "none",
   outline: "none",
   color: "white",
+  cursor: "pointer",
 });
 
 export const gologin = style({
   color: "#f03167",
+  cursor: "pointer",
+  marginLeft: "4px",
+});
+
+export const passwordInputWrap = style({
+  position: "relative",
+});
+
+export const pwToggleBtn = style({
+  position: "absolute",
+  top: "50%",
+  right: "8px",
+  transform: "translateY(-60%)",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  outline: "none",
+});
+
+export const error = style({
+  fontSize: "14px",
+  color: "red",
+  marginBottom: "8px",
 });
