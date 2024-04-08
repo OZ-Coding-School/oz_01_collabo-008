@@ -1,6 +1,6 @@
 import { Box, Card } from '@radix-ui/themes';
 import { useState } from 'react';
-import BudgetRegTable from '../../Components/BudgetRegTable/BudgetRegTable';
+import BudgetRegTable from '../../components/BudgetRegTable/BudgetRegTable';
 import { addBtn, btnWrap, container, description, title, titleWrap, wrap } from './BudgetRegister.css';
 
 interface Row {

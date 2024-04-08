@@ -1,20 +1,21 @@
-import Login from "./Pages/Login";
-import Signup from "./Pages/Signup";
 import { Outlet, Route, Routes } from "react-router-dom";
-import Header from "./Components/Header/Header";
-import BudgetNExpenses from "./Pages/BudgetNExpenses/BudgetNExpenses";
-import BudgetRegister from "./Pages/BudgetRegister/BudgetRegister";
-import MonthlyReport from "./Pages/MonthlyReport/MonthlyReport";
+import Header from "./components/Header/Header";
+import BudgetNExpenses from "./pages/BudgetNExpenses/BudgetNExpenses";
+import BudgetRegister from "./pages/BudgetRegister/BudgetRegister";
+import Login from "./pages/Login/Login";
+import MonthlyReport from "./pages/MonthlyReport/MonthlyReport";
 
-import Main from "./Pages/MainPage/Main";
-import Mypage from "./Pages/Mypage/Mypage";
+
+import Main from "./pages/MainPage/Main";
+import Mypage from "./pages/Mypage/Mypage";
 
 import {
   BUDGET_N_FIXED_EXPENSES_COMPONENT,
   BUDGET_REGISTER_PAGE,
-  MY_PAGE,
-   MONTHLY_REPORT,
+  MONTHLY_REPORT,
+  MY_PAGE
 } from "./constants/components-contants";
+import Signup from "./pages/SignUp/Signup";
 
 const Layout = () => {
   return (
@@ -38,7 +39,7 @@ function App() {
           />
 
           <Route
-            path={BUDGET_REGISTER_COMPONENT}
+            path={BUDGET_REGISTER_PAGE}
             element={<BudgetRegister />}
           />
           <Route path={MONTHLY_REPORT} element={<MonthlyReport />} />

@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import testData from "../../Pages/MonthlyReport/testDB";
+import testData from "../../pages/MonthlyReport/testDB";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 

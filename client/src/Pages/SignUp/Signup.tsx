@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Signup.css";
+import "./Signup.css.ts";
 import {
   container,
   container2,

@@ -2,9 +2,9 @@ import { Box, Button, Container, Divider, TextField } from "@mui/material";
 import { Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { useState } from "react";
-import BudgetHistoryTableCell from "../../Components/BudgetNExpensesTables/BudgetHistoryTableCell.tsx";
-import ExpensesRegiTableCell from "../../Components/BudgetNExpensesTables/ExpensesRegiTableCell.tsx";
-import SideBar from "../../Components/SideBar.tsx/SideBar.tsx";
+import BudgetHistoryTableCell from "../../components/BudgetNExpensesTables/BudgetHistoryTableCell.tsx";
+import ExpensesRegiTableCell from "../../components/BudgetNExpensesTables/ExpensesRegiTableCell.tsx";
+import SideBar from "../../components/SideBar.tsx/SideBar.tsx";
 import {
   box,
   budgetHistory,
@@ -78,7 +78,7 @@ const BudgetNExpenses = () => {
             ></TextField>
             <TotalBugetBoxButtons
               onClick={handleClickBudgetRegistration}
-              // disabled={!budget.trim()}
+            // disabled={!budget.trim()}
             >
               {event?.target.value ? "수정하기" : "등록하기"}
             </TotalBugetBoxButtons>

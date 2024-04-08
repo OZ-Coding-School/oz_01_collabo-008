@@ -1,12 +1,12 @@
 import { Box, Divider } from "@mui/material";
 import { Text } from "@radix-ui/themes";
-import BarChart from "../../Components/Charts/BarChart";
+import BarChart from "../../components/Charts/BarChart";
 import DoughnutChartCategory, {
   top5Categories,
-} from "../../Components/Charts/DoughnutChartCategory";
+} from "../../components/Charts/DoughnutChartCategory";
 import DoughnutChartPlace, {
   top5Places,
-} from "../../Components/Charts/DoughnutChartPlace";
+} from "../../components/Charts/DoughnutChartPlace";
 import {
   barChart,
   barChartBox,

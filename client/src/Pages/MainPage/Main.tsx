@@ -1,8 +1,8 @@
 
 import { useState } from "react";
-import ExpenditureList from "../../Components/ExpendituresList/ExpenditureList";
-import CalendarList from "../../Components/Scheduler/Calendar";
-import SideBar from "../../Components/SideBar.tsx/SideBar";
+import ExpenditureList from "../../components/ExpendituresList/ExpenditureList";
+import CalendarList from "../../components/Scheduler/Calendar";
+import SideBar from "../../components/SideBar.tsx/SideBar";
 import { mainContainer, wrap } from "./Main.css";
 
 import { FormControlLabel, Switch } from '@mui/material';
