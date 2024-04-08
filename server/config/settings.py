@@ -56,6 +56,7 @@ CUSTOM_USER_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',
+    'corsheaders',
 ]
 
 INSTALLED_APPS = CUSTOM_USER_APPS + DJANGO_SYSTEM_APPS
@@ -129,6 +130,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 MIDDLEWARE = [
+    # CORS 설정
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -214,4 +217,11 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# CORS 설정
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173', 'http://127.0.0.1:8000']
 
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+APPEND_SLASH = False
