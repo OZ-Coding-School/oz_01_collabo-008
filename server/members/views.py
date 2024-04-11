@@ -68,13 +68,16 @@ class LoginView(APIView):
                 data={
                     "result_code": 200,
                     "result_message": "Success",
-                    "member": serializer.data,
+                    "member": serializer.data
                 },
                 status=status.HTTP_200_OK,
             )
 
-            response.set_cookie("access", access_token, httponly=True)
-            response.set_cookie("refresh", refresh_token, httponly=True)
+            # response.set_cookie("access", access_token, samesite=None, secure=False, httponly=False)
+            # response.set_cookie("refresh", refresh_token, samesite=None, secure=False, httponly=False)
+            response.set_cookie("access", access_token, httponly=False)
+            response.set_cookie("refresh", refresh_token, httponly=False)
+
             return response
         return Response(
             data={
