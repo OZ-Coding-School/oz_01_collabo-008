@@ -1,13 +1,12 @@
 import { Outlet, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 import Header from "./components/Header/Header";
 import BudgetNExpenses from "./pages/BudgetNExpenses/BudgetNExpenses";
 import BudgetRegister from "./pages/BudgetRegister/BudgetRegister";
 import Login from "./pages/Login/Login";
 import MonthlyReport from "./pages/MonthlyReport/MonthlyReport";
-
 
 import Main from "./pages/MainPage/Main";
 import Mypage from "./pages/Mypage/Mypage";
@@ -17,11 +16,11 @@ import {
   BUDGET_N_FIXED_EXPENSES_COMPONENT,
   BUDGET_REGISTER_PAGE,
   MONTHLY_REPORT,
-  MY_PAGE
+  MY_PAGE,
 } from "./constants/components-contants";
 import Signup from "./pages/SignUp/Signup";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 const Layout = () => {
   return (
     <>
@@ -57,12 +56,8 @@ function App() {
               element={<BudgetNExpenses />}
             />
 
-            <Route
-              path={BUDGET_REGISTER_PAGE}
-              element={<BudgetRegister />}
-            />
+            <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
             <Route path={MONTHLY_REPORT} element={<MonthlyReport />} />
-
 
             <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
 
@@ -70,7 +65,6 @@ function App() {
 
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-
           </Route>
         </Routes>
       </QueryClientProvider>

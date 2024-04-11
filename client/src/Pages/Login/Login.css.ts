@@ -23,6 +23,8 @@ export const container2 = style({
 
 export const loginheader = style({
   marginBottom: "40px",
+  fontSize: "30px",
+  fontWeight: "600",
 });
 
 export const loginform = style({
@@ -55,8 +57,8 @@ export const info = style({
 export const footer = style({
   display: "flex",
   alignItems: "center",
-  fontSize: "12px",
-  fontWeight: 600,
+  fontSize: "14px",
+  fontWeight: 500,
 });
 
 export const loginbt = style({
@@ -69,8 +71,32 @@ export const loginbt = style({
   border: "none",
   outline: "none",
   color: "white",
+  cursor: "pointer",
 });
 
 export const gosignup = style({
   color: "#f03167",
+  cursor: "pointer",
+  marginLeft: "4px",
+});
+
+export const passwordInputWrap = style({
+  position: "relative",
+});
+
+export const pwToggleBtn = style({
+  position: "absolute",
+  top: "50%",
+  right: "8px",
+  transform: "translateY(-60%)",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  outline: "none",
+});
+
+export const error = style({
+  fontSize: "14px",
+  color: "red",
+  marginBottom: "8px",
 });
