@@ -4,7 +4,7 @@ export const handlers = [
   //회원가입
   http.post("/api/v1/members/register", async ({ request }) => {
     const info = await request.json();
-    console.log(info.name);
+
     return HttpResponse.json(info, {
       status: 200,
       headers: {
