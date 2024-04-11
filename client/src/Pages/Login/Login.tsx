@@ -18,7 +18,6 @@ import {
 } from "./Login.css.ts";
 
 import { useFormik } from "formik";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
@@ -33,8 +32,8 @@ interface LoginForm {
 const Login = () => {
   const { VITE_SECRET_KEY } = import.meta.env;
 
-  const [cookies, setCookies] = useCookies(["token"]);
-  console.log(cookies);
+  // const [cookies, setCookies] = useCookies(["token"]);
+  // console.log(cookies);
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -46,11 +45,7 @@ const Login = () => {
     email: Yup.string()
       .email("유효하지 않은 이메일 주소입니다.")
       .required("필수 입력 항목입니다."),
-    password: Yup.string()
-      .min(4, "비밀번호는 4자 이상이어야 합니다.")
-      .max(16, "비밀번호는 16자 이하여야 합니다.")
-      .matches(/[~!@#$%*]/, "비밀번호에는 특수문자~!@#$%*을 포함해야 합니다.")
-      .required("필수 입력 항목입니다."),
+    password: Yup.string().required("필수 입력 항목입니다."),
   });
 
   const formik = useFormik<LoginForm>({
@@ -66,14 +61,20 @@ const Login = () => {
         //   VITE_SECRET_KEY
         // ).toString();
         // 로그인 위한 API 호출
-        const response = await instance.post(requests.login, {
-          email: values.email,
-          password: values.password,
-        });
+        const response = await instance.post(
+          requests.login,
+          {
+            email: values.email,
+            password: values.password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
         // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
-        navigate("/");
+        // navigate("/");
         toast.success("로그인 성공");
       } catch (error) {
         // 오류 처리
@@ -140,7 +141,7 @@ const Login = () => {
           <button
             className={loginbt}
             type="submit"
-            onClick={() => setCookies("token", "asdf", {})}
+            // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
           </button>
