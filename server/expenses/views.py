@@ -1,88 +1,248 @@
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.response import Response
-from .models import Expense, FixedExpense
-from .serializers import ExpenseSerializer, FixedExpenseSerializer
+from rest_framework.permissions import IsAuthenticated
+from django.db.models import Sum
 
-class ExpensesView(APIView):
-    def get(self, request, member):
+from members.models import Member
+from .models import (
+    Expense, FixedExpense, Category, Payment
+)
+from .serializers import (
+    ExpenseSerializer,
+    FixedExpenseSerializer,
+    CategorySerializer,
+    CategorySumSerializer,
+    PaymentSerializer
+)
+
+
+class FixedExpenseView(APIView):
+    def get(self, request, member_id):
+        fixed_expenses = FixedExpense.objects.filter(member_id=member_id)
+        serializer = FixedExpenseSerializer(fixed_expenses, many=True)
+        total_category_expenses = FixedExpense.objects.filter(member_id=member_id).values('category').annotate(total_price=Sum('price'))
+        category_serializer = CategorySumSerializer(total_category_expenses, many=True)
+        return Response(
+            data={
+                "status_code": 200,
+                "message": "Success",
+                "fixed_expenses_list": serializer.data,
+                "fixed_expenses_per_list": category_serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+
+    def post(self, request, member_id):
+        member = Member.objects.filter(pk=member_id).first()
+        if member is None:
+            return Response(
+                data={
+                    "status_code": 404,
+                    "message": "NotFound Member Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = FixedExpenseSerializer(
+            data=request.data,
+            many=True,
+            context={"member": member}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                data={
+                    "status_code": 201,
+                    "message": "Success"
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            data={
+                "status_code": 400,
+                "message": serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class FixedExpenseDetailView(APIView):
+    def put(self, request, fixed_expense_id):
+        fixed_expense = FixedExpense.objects.filter(pk=fixed_expense_id).first()
+        if fixed_expense is None:
+            return Response(
+                data={
+                    "status_code": 404,
+                    "message": "NotFound Fixed-Expense Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = FixedExpenseSerializer(fixed_expense, data=request.data, partial=True)
+        if serializer.is_valid():
+            fixed_expense = serializer.save()
+            serializer = FixedExpenseSerializer(fixed_expense)
+            return Response(
+                data={
+                    "status_code": 201,
+                    "message": "Success",
+                    "fixed_expense": serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            data={
+                "status_code": 400,
+                "message": serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUES
+        )
+
+    def delete(self, request, fixed_expense_id):
+        fixed_expense = FixedExpense.objects.filter(pk=fixed_expense_id).first()
+        if fixed_expense is None:
+            return Response(
+                data={
+                    "status_code": 404,
+                    "message": "NotFound Fixed-Expense Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        fixed_expense.delete()
+        return Response(
+            data={
+                "result_code": 200,
+                "result_message": "Success"
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class ExpenseView(APIView):
+    def get(self, request, member_id):
         year = request.GET.get('year', None)
         month = request.GET.get('month', None)
-        expenses_list = Expense.objects.filter(member=member, date__year=year, date__month=month)
-        serializer = ExpenseSerializer(expenses_list, many=True)
-        return Response(serializer.data)
+        if year is None or month is None:
+            return Response(
+                data={
+                    "status_code": 400,
+                    "message": "Year and month parameters are required."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        expenses = Expense.objects.filter(member_id=member_id, date__year=year, date__month=month)
+        serializer = ExpenseSerializer(expenses, many=True)
+        total_expense = Expense.objects.filter(member_id=member_id, date__year=year, date__month=month).aggregate(total=Sum('price'))
 
-    def post(self, request, member):
-        request_data = request.data.copy()
-        request_data['member'] = member
+        return Response(
+            data={
+                "status_code": 200,
+                "message": "Success",
+                "expenses_list": serializer.data,
+                "total_expense": total_expense['total']
+            },
+            status=status.HTTP_200_OK
+        )
 
-        serializer = ExpenseSerializer(data=request_data)
-        if serializer.is_valid():
-            serializer.save(member=member)
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=400)
 
-    def put(self, request, member, expense_id):
-        request_data = request.data.copy()
-        request_data['member'] = member
-
-        try:
-            expense = Expense.objects.get(id=expense_id, member=member)
-        except Expense.DoesNotExist:
-            return Response({'error': 'Expense not found.'}, status=404)
-
-        serializer = ExpenseSerializer(expense, data=request_data)
+    def post(self, request, member_id):
+        member = Member.objects.filter(pk=member_id).first()
+        if member is None:
+            return Response(
+                data={
+                    "status_code": 404,
+                    "message": "NotFound Member Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = ExpenseSerializer(
+            data=request.data,
+            many=True,
+            context={"member": member}
+        )
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+            return Response(
+                data={
+                    "status_code": 201,
+                    "message": "Success",
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            data={
+                "status_code": 400,
+                "message": serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    def delete(self, request, member, expense_id):
-        try:
-            expense = Expense.objects.get(id=expense_id, member=member)
-        except Expense.DoesNotExist:
-            return Response({'error': 'Expense not found.'}, status=404)
 
+class ExpenseDetailView(APIView):
+    def put(self, request, expense_id):
+        expense = Expense.objects.filter(pk=expense_id).first()
+        if expense is None:
+            return Response(
+                data={
+                    "status_code": 404,
+                    "message": "NotFound Expense Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = ExpenseSerializer(expense, data=request.data, partial=True)
+        if serializer.is_valid():
+            expense = serializer.save()
+            serializer = FixedExpenseSerializer(expense)
+            return Response(
+                data={
+                    "result_code": 201,
+                    "result_message": "Success",
+                    "fixed_expense": serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, expense_id):
+        expense = Expense.objects.filter(pk=expense_id).first()
+        if expense is None:
+            return Response(
+                data={
+                    "status_code": 404,
+                    "message": "NotFound Expense Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
         expense.delete()
-        return Response({'message': 'Expense deleted successfully.'}, status=204)
+        return Response(
+            data={
+                "result_code": 200,
+                "result_message": "Success"
+            },
+            status=status.HTTP_200_OK
+        )
 
-class FixedExpensesView(APIView):
-    def get(self, request, member):
-        fixed_expenses_list = FixedExpense.objects.filter(member=member)
-        serializer = FixedExpenseSerializer(fixed_expenses_list, many=True)
-        return Response(serializer.data)
 
-    def post(self, request, member):
-        request_data = request.data.copy()
-        request_data['member'] = member
+class CategoryView(APIView):
+    def get(self, request):
+        category_list = Category.objects.all()
+        serializer = CategorySerializer(category_list, many=True)
+        return Response(
+            data= {
+                "status_code": 200,
+                "message": "Success",
+                "categories": serializer.data,
+            }
+        )
 
-        serializer = FixedExpenseSerializer(data=request_data)
-        if serializer.is_valid():
-            serializer.save(member=member)
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=400)
 
-    def put(self, request, member, fixed_expense_id):
-        request_data = request.data.copy()
-        request_data['member'] = member
-
-        try:
-            fixed_expense = FixedExpense.objects.get(id=fixed_expense_id, member=member)
-        except FixedExpense.DoesNotExist:
-            return Response({'error': 'Fixed Expense not found.'}, status=404)
-
-        serializer = FixedExpenseSerializer(fixed_expense, data=request_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-
-    def delete(self, request, member, fixed_expense_id):
-        try:
-            fixed_expense = FixedExpense.objects.get(id=fixed_expense_id, member=member)
-        except FixedExpense.DoesNotExist:
-            return Response({'error': 'Fixed Expense not found.'}, status=404)
-
-        fixed_expense.delete()
-        return Response({'message': 'Fixed Expense deleted successfully.'}, status=204)
+class PaymentView(APIView):
+    def get(self, request):
+        payment_list = Payment.objects.all()
+        serializer = PaymentSerializer(payment_list, many=True)
+        return Response(
+            data= {
+                "status_code": 200,
+                "message": "Success",
+                "payments": serializer.data,
+            }
+        )

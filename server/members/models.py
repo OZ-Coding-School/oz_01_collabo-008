@@ -42,4 +42,4 @@ class Member(AbstractBaseUser, PermissionsMixin):
     objects = MemberManager()
 
     def __str__(self) -> str:
-        return f"email: {self.email}, name: {self.name}"
+        return f"{self.email} / {self.name}"

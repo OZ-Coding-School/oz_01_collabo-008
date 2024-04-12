@@ -19,8 +19,8 @@ class RegisterMember(APIView):
         if member:
             return Response(
                 data={
-                    "result_code": 409,
-                    "result_message": "CONFLICT: member with this email already exists",
+                    "status_code": 409,
+                    "message": "CONFLICT: member with this email already exists",
                 }, 
                 status=status.HTTP_409_CONFLICT
             )
@@ -28,11 +28,10 @@ class RegisterMember(APIView):
         if serializer.is_valid():
             serializer.save()
             response = {
-                "result_code": 200,
-                "result_message": "Success",
-                "member": serializer.data
+                "result_code": 201,
+                "result_message": "Success"
             }
-            return Response(data=response, status=status.HTTP_200_OK)
+            return Response(data=response, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,8 +47,8 @@ class LoginView(APIView):
         if member is None:
             return Response(
                 data={
-                    "result_code": 401,
-                    "result_message": "UNAUTHORIZED: permission expired or permission denied",
+                    "status_code": 401,
+                    "message": "UNAUTHORIZED: permission expired or permission denied",
                 }, 
                 status=status.HTTP_401_UNAUTHORIZED
             )
@@ -66,20 +65,22 @@ class LoginView(APIView):
             serializer = MemberSerializer(member)
             response = Response(
                 data={
-                    "result_code": 200,
-                    "result_message": "Success",
-                    "member": serializer.data,
+                    "status_code": 200,
+                    "message": "Success",
+                    "access": access_token,
+                    "refresh": refresh_token
                 },
                 status=status.HTTP_200_OK,
             )
 
-            response.set_cookie("access", access_token, httponly=True)
-            response.set_cookie("refresh", refresh_token, httponly=True)
+            response.set_cookie(key="access", value=access_token, httponly=False)
+            response.set_cookie(key="refresh", value=refresh_token, httponly=False)
+
             return response
         return Response(
             data={
-                "result_code": 401,
-                "result_message": "UNAUTHORIZED: permission expired or permission denied",
+                "status_code": 401,
+                "message": "UNAUTHORIZED: permission expired or permission denied",
             }, 
             status=status.HTTP_401_UNAUTHORIZED
         )
@@ -100,8 +101,8 @@ class LogoutView(APIView):
             refresh_token_obj.blacklist()
             response =  Response(
                 data= { 
-                    "result_code": 200,
-                    "result_message": "Success"
+                    "status_code": 200,
+                    "message": "Success"
                 },
                 status=status.HTTP_200_OK
             )
@@ -118,7 +119,7 @@ class LogoutView(APIView):
 
 
 class MemberDetailView(APIView):
-    def get_member(self,request, member_id):
+    def get_member(self, request, member_id):
         try:
             jwt_authenticator = JWTAuthentication()
             response = jwt_authenticator.authenticate(request=request)
@@ -137,15 +138,22 @@ class MemberDetailView(APIView):
         if member:
             serializer = MemberSerializer(member)
             response = {
-                "result_code": 200,
-                "result_message": "Success",
+                "status_code": 200,
+                "message": "Success",
                 "member": serializer.data
             }
             return Response(data=response, status=status.HTTP_200_OK)
+
+            # ACCESS_TOKEN = request.COOKIES.get("access")
+            # REFRESH_TOKEN = request.COOKIES.get("refresh")
+
+            # response.set_cookie("access", ACCESS_TOKEN, httponly=True)
+            # response.set_cookie("refresh", REFRESH_TOKEN, httponly=True)
+
         return Response(
             data={
-                "result_code": 400,
-                "result_message": "BAD_REQEUST",
+                "status_code": 400,
+                "message": "BAD_REQEUST",
             }, 
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -155,8 +163,8 @@ class MemberDetailView(APIView):
         if member is None:
             return Response(
                 data={
-                    "result_code": 400,
-                    "result_message": "BAD_REQEUST",
+                    "status_code": 400,
+                    "message": "BAD_REQEUST",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -165,11 +173,11 @@ class MemberDetailView(APIView):
             member = serializer.save()
             serializer = MemberSerializer(member)
             response = {
-                "result_code": 200,
-                "result_message": "Success",
+                "status_code": 201,
+                "message": "Success",
                 "member": serializer.data
             }
-            return Response(data=response, status=status.HTTP_200_OK)
+            return Response(data=response, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, member_id):
@@ -177,16 +185,16 @@ class MemberDetailView(APIView):
         if member is None:
             return Response(
                 data={
-                    "result_code": 400,
-                    "result_message": "BAD_REQEUST",
+                    "status_code": 400,
+                    "message": "BAD_REQEUST",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         member.delete()
         return Response(
             data={
-                "result_code": 200,
-                "result_message": "Success",
+                "status_code": 200,
+                "message": "Success",
             },
             status=status.HTTP_200_OK
         )
