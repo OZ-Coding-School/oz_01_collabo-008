@@ -35,6 +35,7 @@ const Signup = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -84,9 +85,15 @@ const Signup = () => {
         console.log("사용자 등록 성공:", response.data);
         navigate("/login");
         toast.success("회원가입 성공");
-      } catch (error) {
+      } catch (error: unknown) {
         // 오류 처리
-        console.error("사용자 등록 오류:", error);
+
+        if (error.response && error.response.status === 409) {
+          console.error("이미 존재하는 회원입니다:", error.response.data);
+          toast.error("이미 존재하는 회원입니다.");
+        } else {
+          console.error("사용자 등록 오류:", error);
+        }
       }
     },
   });

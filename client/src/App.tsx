@@ -56,18 +56,28 @@ const MyPage = () => {
 };
 
 const loggedRoutes = [
-  <Route index element={<Main />} />,
-  <Route
-    path={BUDGET_N_FIXED_EXPENSES_COMPONENT}
-    element={<BudgetNExpenses />}
-  />,
+  <Route path="/" element={<Layout />}>
+    <Route index element={<Main />} />
+    <Route
+      path={BUDGET_N_FIXED_EXPENSES_COMPONENT}
+      element={<BudgetNExpenses />}
+    />
+
+    <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
+    <Route path={MONTHLY_REPORT} element={<MonthlyReport />} />
+
+    <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
+
+    <Route path={MY_PAGE} element={<Mypage />} />
+  </Route>,
 ];
 
-// const commonRoutes = [
-// <Route index element = {<랜딩/>}/>,
-// <Route path={랜딩페이지}
-// element={랜딩/>}
-// />]
+const commonRoutes = [
+  <>
+    <Route path="/login" element={<Login />} />
+    <Route path="/signup" element={<Signup />} />
+  </>,
+];
 
 function App() {
   // const { data } = useQuery({
@@ -81,7 +91,7 @@ function App() {
     <>
       <ToastContainer
         position="top-center"
-        autoClose={500}
+        autoClose={700}
         hideProgressBar
         newestOnTop={false}
         closeOnClick
@@ -97,25 +107,8 @@ function App() {
             name: "",
           }}
         >
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Main />} />
-              <Route
-                path={BUDGET_N_FIXED_EXPENSES_COMPONENT}
-                element={<BudgetNExpenses />}
-              />
-
-              <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
-              <Route path={MONTHLY_REPORT} element={<MonthlyReport />} />
-
-              <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
-
-              <Route path={MY_PAGE} element={<Mypage />} />
-
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-            </Route>
-          </Routes>
+          <Routes>{...loggedRoutes}</Routes>
+          <Routes>{...commonRoutes}</Routes>
         </UserContext.Provider>
       </QueryClientProvider>
     </>

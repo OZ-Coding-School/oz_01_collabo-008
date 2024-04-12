@@ -5,6 +5,7 @@ import {
   container,
   container2,
   error,
+  errorText,
   footer,
   gosignup,
   info,
@@ -23,6 +24,7 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import instance from "../../api/axios.ts";
 import requests from "../../api/requests.ts";
+import { useCookies } from "react-cookie";
 
 interface LoginForm {
   email: string;
@@ -32,9 +34,8 @@ interface LoginForm {
 const Login = () => {
   const { VITE_SECRET_KEY } = import.meta.env;
 
-  // const [cookies, setCookies] = useCookies(["token"]);
-  // console.log(cookies);
-
+  const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const togglePasswordVisibility = () => {
@@ -61,24 +62,21 @@ const Login = () => {
         //   VITE_SECRET_KEY
         // ).toString();
         // 로그인 위한 API 호출
-        const response = await instance.post(
-          requests.login,
-          {
-            email: values.email,
-            password: values.password,
-          },
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await instance.post(requests.login, {
+          email: values.email,
+          password: values.password,
+        });
 
         // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
-        // navigate("/");
+        setCookies("refreshToken", response.data.refresh);
+        setCookies("accessToken", response.data.access);
+        navigate("/");
         toast.success("로그인 성공");
       } catch (error) {
         // 오류 처리
         console.error("로그인 오류:", error);
+        setError("아이디 또는 비밀번호가 잘못되었습니다.");
       }
     },
   });
@@ -137,6 +135,8 @@ const Login = () => {
           {errors.password && touched.password && (
             <div className={error}>{errors.password}</div>
           )}
+          {error && <p className={errorText}>{error}</p>}
+
           {/* 입력 버튼 */}
           <button
             className={loginbt}

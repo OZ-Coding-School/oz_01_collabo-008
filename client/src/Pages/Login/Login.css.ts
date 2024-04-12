@@ -100,3 +100,9 @@ export const error = style({
   color: "red",
   marginBottom: "8px",
 });
+
+export const errorText = style({
+  fontSize: "14px",
+  color: "red",
+  marginBottom: "8px",
+});
