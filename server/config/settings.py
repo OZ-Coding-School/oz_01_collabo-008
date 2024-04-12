@@ -49,7 +49,7 @@ CUSTOM_USER_APPS = [
     # 생성한 app
     'members.apps.MembersConfig',
     'expenses.apps.ExpensesConfig',
-    'bugets.apps.BugetsConfig',
+    'budgets.apps.BudgetsConfig',
 
     # 추가 lib
     'rest_framework',

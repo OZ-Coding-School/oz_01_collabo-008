@@ -22,6 +22,7 @@ class MemberManager(BaseUserManager):
     def create_superuser(self, email: str, password: str, **extra_fields):
         superuser = self._create_member(email, password, **extra_fields)
         superuser.is_staff = True
+        superuser.is_superuser = True
         superuser.save(using=self._db)
         return superuser
 
