@@ -23,6 +23,7 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import instance from "../../api/axios.ts";
 import requests from "../../api/requests.ts";
+import { useCookies } from "react-cookie";
 
 interface SignUpForm {
   email: string;
@@ -43,6 +44,8 @@ const Signup = () => {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prevState) => !prevState);
   };
+
+  const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
 
   const validationSchema = Yup.object({
     email: Yup.string()
