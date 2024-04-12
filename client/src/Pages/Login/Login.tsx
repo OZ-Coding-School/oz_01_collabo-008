@@ -25,6 +25,7 @@ import * as Yup from "yup";
 import instance from "../../api/axios.ts";
 import requests from "../../api/requests.ts";
 import { useCookies } from "react-cookie";
+import axios from "axios";
 
 interface LoginForm {
   email: string;
@@ -62,10 +63,13 @@ const Login = () => {
         //   VITE_SECRET_KEY
         // ).toString();
         // 로그인 위한 API 호출
-        const response = await instance.post(requests.login, {
-          email: values.email,
-          password: values.password,
-        });
+        const response = await axios.post(
+          "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.login,
+          {
+            email: values.email,
+            password: values.password,
+          }
+        );
 
         // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
