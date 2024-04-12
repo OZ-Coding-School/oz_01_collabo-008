@@ -23,6 +23,8 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import instance from "../../api/axios.ts";
 import requests from "../../api/requests.ts";
+import { useCookies } from "react-cookie";
+import axios, { AxiosError } from "axios";
 
 interface SignUpForm {
   email: string;
@@ -44,6 +46,8 @@ const Signup = () => {
     setShowConfirmPassword((prevState) => !prevState);
   };
 
+  const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
+
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("유효하지 않은 이메일 주소입니다.")
@@ -55,7 +59,7 @@ const Signup = () => {
       .matches(/[~!@#$%*]/, "비밀번호에는 특수문자~!@#$%*을 포함해야 합니다.")
       .required("필수 입력 항목입니다."),
     confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), null],
+      [Yup.ref("password")],
       "비밀번호가 일치하지 않습니다."
     ),
   });
@@ -75,21 +79,30 @@ const Signup = () => {
         //   VITE_SECRET_KEY
         // ).toString();
         // 사용자 등록을 위한 API 호출
-        const response = await instance.post(requests.signUp, {
-          email: values.email,
-          password: values.password,
-          name: values.name,
-        });
+        const response = await axios.post(
+          "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.signUp,
+          {
+            email: values.email,
+            password: values.password,
+            name: values.name,
+          }
+        );
 
         // 사용자 등록 성공 처리
         console.log("사용자 등록 성공:", response.data);
         navigate("/login");
         toast.success("회원가입 성공");
-      } catch (error: unknown) {
+      } catch (error) {
         // 오류 처리
 
-        if (error.response && error.response.status === 409) {
-          console.error("이미 존재하는 회원입니다:", error.response.data);
+        if (
+          (error as AxiosError).response &&
+          (error as AxiosError).response?.status === 409
+        ) {
+          console.error(
+            "이미 존재하는 회원입니다:",
+            (error as AxiosError).response?.data
+          );
           toast.error("이미 존재하는 회원입니다.");
         } else {
           console.error("사용자 등록 오류:", error);

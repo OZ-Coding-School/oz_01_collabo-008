@@ -107,8 +107,10 @@ function App() {
             name: "",
           }}
         >
-          <Routes>{...loggedRoutes}</Routes>
-          <Routes>{...commonRoutes}</Routes>
+          <Routes>
+            {...loggedRoutes}
+            {...commonRoutes}
+          </Routes>
         </UserContext.Provider>
       </QueryClientProvider>
     </>
