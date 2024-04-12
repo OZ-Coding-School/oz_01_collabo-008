@@ -1,9 +1,18 @@
 from django.urls import path
-from .views import ExpensesView, FixedExpensesView
+from .views import (
+    FixedExpenseView,
+    FixedExpenseDetailView,
+    ExpenseView,
+    ExpenseDetailView,
+    CategoryView,
+    PaymentView
+)
 
 urlpatterns = [
-    path('<int:member>', ExpensesView.as_view(), name='expenses'),
-    path('<int:member>/<int:expense_id>', ExpensesView.as_view(), name='expenses_put'),
-    path('fix/<int:member>', FixedExpensesView.as_view(), name='fixed_expenses'),
-    path('fix/<int:member>/<int:fixed_expense_id>', FixedExpensesView.as_view(), name='fixed_expenses_put'),
+    path('categories', CategoryView.as_view(), name='category'),
+    path('payments', PaymentView.as_view(), name='payment'),
+    path('fix/<int:member_id>', FixedExpenseView.as_view(), name='fixed_expense'),
+    path('fix/detail/<int:fixed_expense_id>', FixedExpenseDetailView.as_view(), name='fixed_expense_detail'),
+    path('<int:member_id>', ExpenseView.as_view(), name='expense'),
+    path('detail/<int:expense_id>', ExpenseDetailView.as_view(), name='expense_detail'),
 ]

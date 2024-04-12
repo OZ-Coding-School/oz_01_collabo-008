@@ -50,6 +50,7 @@ CUSTOM_USER_APPS = [
     'members.apps.MembersConfig',
     'expenses.apps.ExpensesConfig',
     'budgets.apps.BudgetsConfig',
+    'reports.apps.ReportsConfig',
 
     # 추가 lib
     'rest_framework',

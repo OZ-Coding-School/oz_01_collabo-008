@@ -1,32 +1,41 @@
 from rest_framework import serializers
-from .models import Expense, FixedExpense
+from .models import Expense, FixedExpense, Category, Payment
 
-class ExpenseSerializer(serializers.ModelSerializer):
+
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Expense
+        model = Category
         fields = "__all__"
 
-    def create(self, validated_data):
-        member = validated_data.pop('member', None)
-        return Expense.objects.create(**validated_data, member_id=member)
 
-    def update(self, instance, validated_data):
-        for field, value in validated_data.items():
-            setattr(instance, field, value)
-        instance.save()
-        return instance
+class CategorySumSerializer(serializers.Serializer):
+    category = serializers.IntegerField()
+    total_price = serializers.IntegerField()
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = "__all__"
+
 
 class FixedExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = FixedExpense
-        fields = "__all__"
+        fields = ("id", "category", "price", "created_at", "updated_at")
 
     def create(self, validated_data):
-        member = validated_data.pop('member', None)
-        return FixedExpense.objects.create(**validated_data, member_id=member)
+        member = self.context["member"]
+        validated_data["member"] = member
+        return FixedExpense.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        for field, value in validated_data.items():
-            setattr(instance, field, value)
-        instance.save()
-        return instance
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
+        fields = ("id", "category", "payment", "location", "content", "price", "date", "created_at", "updated_at")
+
+    def create(self, validated_data):
+        member = self.context["member"]
+        validated_data["member"] = member
+        return Expense.objects.create(**validated_data)
