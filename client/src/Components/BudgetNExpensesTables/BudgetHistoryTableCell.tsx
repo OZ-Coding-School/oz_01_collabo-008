@@ -20,6 +20,7 @@ const BudgetHistoryTableCell = ({ budgetData }) => {
       height: 40,
       padding: "0 20px",
       color: "#3B3B3B",
+      scrollbarColor: "#6b6b6b #2b2b2b",
     },
   }));
 
@@ -36,7 +37,14 @@ const BudgetHistoryTableCell = ({ budgetData }) => {
   const createData = (date, budget) => ({ date, budget });
 
   return (
-    <TableContainer component={Paper} sx={{ height: 150 }}>
+    <TableContainer
+      component={Paper}
+      sx={{
+        height: 150,
+        boxShadow: "0 2px 4px #FFDAE1",
+        scrollbarWidth: "thin",
+      }}
+    >
       <Table sx={{ minWidth: 700 }} aria-label='customized table'>
         <TableHead>
           <TableRow>

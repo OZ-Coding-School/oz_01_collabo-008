@@ -82,9 +82,16 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, isExpRegiClicked }) => {
   };
 
   return (
-    <TableContainer component={Paper} sx={{ maxHeight: "335px" }}>
+    <TableContainer
+      component={Paper}
+      sx={{
+        maxHeight: "335px",
+        boxShadow: "0 2px 4px #FFDAE1",
+        scrollbarWidth: "thin",
+      }}
+    >
       <Table
-        sx={{ minWidth: 700, overflowX: "auto" }}
+        sx={{ minWidth: "100%", overflowX: "auto" }}
         aria-label='customized table'
       >
         <TableHead>
@@ -105,15 +112,30 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, isExpRegiClicked }) => {
               <StyledTableCell component='th' scope='row'>
                 <Select
                   className={categoryStyle}
-                  value={row.category}
+                  value={row.category || "주거/생활"}
                   onChange={(event) => handleSelectChange(event, index)}
                   sx={{
-                    ".MuiOutlinedInput-notchedOutline": {},
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#F0F0F0",
+                    },
+                    "&.Mui-focused": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#F0F0F0",
+                        borderWidth: "1px",
+                      },
+                    },
+                    "&:hover": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#F0F0F0",
+                      },
+                    },
                     ".MuiSvgIcon-root": {
                       fontSize: "1.25rem",
                     },
-                    color: "#D5D5D5",
+                    color: "#F0F0F0",
                     fontSize: "12px",
+                    borderRadius: "8px",
+                    backgroundColor: "#ffffff",
                   }}
                 >
                   <MenuItem value='주거/생활'>주거/생활</MenuItem>
@@ -123,6 +145,7 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, isExpRegiClicked }) => {
               </StyledTableCell>
               <StyledTableCell align='left'>
                 <TextField
+                  placeholder='지출금액'
                   InputProps={{
                     sx: {
                       width: "130px",
@@ -130,7 +153,22 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, isExpRegiClicked }) => {
                       borderRadius: "8px",
                       fontSize: "12px",
                       color: "#D5D5D5",
-                      borderColor: "#F0F0F0",
+                      backgroundColor: "#ffffff",
+
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#F0F0F0",
+                      },
+                      "&.Mui-focused": {
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#F0F0F0",
+                          borderWidth: "1px",
+                        },
+                      },
+                      "&:hover": {
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#F0F0F0",
+                        },
+                      },
                     },
                   }}
                   value={row.expenseAmount}
@@ -140,7 +178,19 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, isExpRegiClicked }) => {
                 />
               </StyledTableCell>
               <StyledTableCell align='left'>
-                <Button sx={{ color: "#F03167", marginLeft: "500px" }}>
+                <Button
+                  sx={{
+                    color: "#F03167",
+                    marginLeft: "500px",
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                    },
+                    "&:active": {
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                  disableRipple
+                >
                   수정
                 </Button>
               </StyledTableCell>
