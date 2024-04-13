@@ -22,6 +22,8 @@ export const Budget = style({
   color: "#F03167",
   marginTop: "10px",
   fontWeight: "700",
+  display: "flex",
+  alignItems: "end",
 });
 
 export const wonText = style({
