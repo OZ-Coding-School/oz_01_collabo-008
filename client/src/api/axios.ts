@@ -1,7 +1,7 @@
 import axios from "axios";
 
-import requests from "./requests";
 import { Cookies } from "react-cookie";
+import requests from "./requests";
 
 const instance = axios.create({
   baseURL: "https://7fea-59-5-169-61.ngrok-free.app/api/v1",
@@ -21,12 +21,12 @@ const tokenRefresh = async () => {
         //   Authorization: `Bearer ${refreshToken}`,
         //   "Content-Type": "application/json",
         // },
-        body: {
-          refresh: refreshToken,
-        },
+
+        refresh: refreshToken,
       }
     );
     console.log("확잉용", response);
+    cookies.set("accessToken", response.data.access);
   } catch (error) {
     console.error("토큰 갱신 실패", error);
   }

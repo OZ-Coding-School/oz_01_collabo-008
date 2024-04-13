@@ -14,7 +14,7 @@ import {
   loginformLabel,
   loginheader,
   passwordInputWrap,
-  pwToggleBtn,
+  pwToggleBtn
 } from "./Login.css.ts";
 
 import axios from "axios";
@@ -23,6 +23,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
+
 import requests from "../../api/requests.ts";
 
 interface LoginForm {
@@ -65,7 +66,7 @@ const Login = () => {
         // 로그인 위한 API 호출
         const response = await axios.post(
           "http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1" +
-            requests.login,
+          requests.login,
           // "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.login,
           {
             email: values.email,
@@ -75,6 +76,7 @@ const Login = () => {
 
         // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
+        localStorage.setItem("memberId", response.data.member.id)
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
         // memberId를 위한 변수 추가 by. 손지형
@@ -148,8 +150,8 @@ const Login = () => {
           {/* 입력 버튼 */}
           <button
             className={loginbt}
-            type='submit'
-            // onClick={() => setCookies("token", "asdf", {})}
+            type="submit"
+          // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
           </button>

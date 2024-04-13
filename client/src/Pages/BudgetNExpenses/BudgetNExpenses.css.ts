@@ -11,9 +11,10 @@ export const container = style({
   display: "flex",
   flexDirection: "column",
   backgroundColor: "rgba(255,255,255,0.8)",
-  borderRadius: "1rem",
-  padding: "0",
-  width: "900px",
+  width: "100%",
+  border: "1px solid rgba(0,0,0,0.1)",
+  borderRadius: "16px",
+  boxSizing: "border-box",
 });
 export const wrapper = style({
   padding: "60px 24px",
@@ -24,17 +25,17 @@ export const totalBudgetBox = style({
 });
 export const headText = style({
   fontSize: "26px",
-  fontWeight: "bold",
+  fontWeight: "500",
   paddingBottom: "0.3rem",
 });
 export const explainText = style({
   fontSize: "0.9rem",
-  fontWeight: "500",
+  fontWeight: "400",
   display: "flex",
   flexDirection: "column",
   flexGrow: 1,
   color: "#8E8E8E",
-  paddingBottom: "0.15rem",
+  paddingBottom: "8px",
 });
 
 //#region 예산 등록
@@ -48,12 +49,22 @@ export const budgetHistory = style({
   marginBottom: "2.5rem",
 });
 export const bugetHistoryTable = style({
-  marginLeft: "10px",
   marginTop: "10px",
 });
 export const fixedExpensesRegiTable = style({
   paddingTop: "1rem",
-  paddingLeft: "10px",
+});
+
+export const addBtn = style({
+  width: "80px",
+  outline: "none",
+  border: "none",
+  backgroundColor: "#F03167",
+  color: "white",
+  borderRadius: "8px",
+  padding: "10px",
+  marginLeft: "8px",
+  cursor: "pointer",
 });
 //#endregion
 
