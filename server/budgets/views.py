@@ -31,10 +31,8 @@ class BudgetView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = BudgetSerializer(
-            data=request.data,
-            context={"member": member}
-        )
+        request.data["member"] = member_id
+        serializer = BudgetSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(

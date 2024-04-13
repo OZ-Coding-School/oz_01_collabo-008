@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, NotAuthenticated
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Member
@@ -67,6 +68,7 @@ class LoginView(APIView):
                 data={
                     "status_code": 200,
                     "message": "Success",
+                    "member": serializer.data,
                     "access": access_token,
                     "refresh": refresh_token
                 },
@@ -85,6 +87,15 @@ class LoginView(APIView):
             status=status.HTTP_401_UNAUTHORIZED
         )
 
+class RefreshTokenView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        # 새로 발급된 토큰값을 쿠키에 설정합니다.
+        if 'access' in response.data:
+            access_token = response.data['access']
+            response.set_cookie(key='access_token', value=access_token)
+        return response
 
 class LogoutView(APIView):
     def post(self, request):

@@ -78,8 +78,8 @@ REST_FRAMEWORK = {
 
 # 추가적인 JWT 설정 아직 어떤 옵션이 어떤 역할인지 확실하게 모름
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "SIGNING_KEY": "SECRET",
     "ALGORITHM": "HS256",
     "AUTH_HEADER_TYPES": ("Bearer",),
@@ -225,7 +225,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS 설정
 CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173']
-# , 'http://127.0.0.1:8000'
+
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
