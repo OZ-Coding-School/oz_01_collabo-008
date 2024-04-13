@@ -26,7 +26,7 @@ class MemberSerializer(serializers.ModelSerializer):
             password = validated_data["password"]
         )
         return member
-    
+
     def update(self, instance, validated_data):
         if validated_data.get("password") is not None:
             passowrd = validated_data["password"]

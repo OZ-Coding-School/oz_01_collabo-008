@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import BudgetView
+from .views import BudgetView, BudgetDetailView
 
 urlpatterns = [
-    path('api/v1/budgets/<int:member_id>/', BudgetView.as_view(), name='budgets'),
-    path('api/v1/budgets/detail/<int:budget_id>/', BudgetView.as_view(), name='budget_detail'),
+    path('<int:member_id>', BudgetView.as_view(), name='budgets'),
+    path('detail/<int:budget_id>', BudgetDetailView.as_view(), name='budget_detail'),
 ]
