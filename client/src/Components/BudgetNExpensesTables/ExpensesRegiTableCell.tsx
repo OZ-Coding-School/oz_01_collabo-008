@@ -1,204 +1,170 @@
 import {
+  Box,
   Button,
-  MenuItem,
-  Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
-  tableCellClasses,
+  tableCellClasses
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useEffect, useRef, useState } from "react";
-import { categoryStyle } from "./ExpensesRegiTableCell.css.ts";
+import { useEffect, useState } from "react";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+import { useQuery } from "@tanstack/react-query";
+import instance from "../../api/axios.ts";
+import categoriesRequest from "../../api/categoriesRequest.ts";
+import Input from "../Input/Input.tsx";
+import SelectBox from "../SelectBox/Select.tsx";
+import { wrap } from "./ExpensesRegiTableCell.css.ts";
+
+interface ItemType {
+  id: number;
+  content: number;
+}
+
+const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "white",
-    color: "#3B3B3B",
-    height: 40,
-    padding: "0 20px",
+    color: "black",
+    borderBottom: "2px solid #FFF4F5",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    height: 40,
-    padding: "0 20px",
-    color: "#3B3B3B",
   },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: "#FFF4F5",
+const StyledTableRow = styled(TableRow)(() => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: "white", // 짝수 번째 행의 배경색
   },
-  "&:last-child td, &:last-child th": {
+  '&:nth-of-type(even)': {
+    backgroundColor: "#FFF4F5", // 홀수 번째 행의 배경색
+  },
+  // 마지막 테두리 숨기기
+  '&:last-child td, &:last-child th': {
     border: 0,
+  },
+  '& td, & th': {
+    borderBottom: `none`, // 경계선의 색상과 두께 조정
   },
 }));
 
 const createData = () => ({ category: "", expenseAmount: "" });
 
-const ExpensesRegiTableCell = ({ isAddRowClicked, isExpRegiClicked }) => {
+
+
+const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
   const [expenses, setExpenses] = useState([createData()]);
-  const textFieldRefs = useRef([]);
+
 
   //행 추가 관련
   useEffect(() => {
-    setExpenses((prevExpenses) => [...prevExpenses, createData()]);
+    if (isAddRowClicked) {
+      setExpenses((prevExpenses) => {
+        const updatedExpenses = [...prevExpenses];
+        updatedExpenses.push(createData());
+        return updatedExpenses;
+      });
+    }
   }, [isAddRowClicked]);
 
-  // 지출 데이터 저장 관련
-  useEffect(() => {
-    setExpenses((prevExpenses) => {
-      const updatedExpenses = [...prevExpenses];
-      updatedExpenses[prevExpenses.length - 1] = createData(); // 마지막 행 데이터 업데이트
-      console.log("등록된 지출 데이터", updatedExpenses);
-      return updatedExpenses;
-    });
-  }, [isExpRegiClicked]);
 
-  const handleSelectChange = (event, index) => {
-    handleChangeCategory(event, index);
-    //마지막 요소가 아니라면
-    if (index < expenses.length - 1) {
-      //선택한 Select 요소가 변경되면 해당 인덱스의 TextField로 포커스 이동
-      //setTimeout()사용해서 비동기적 처리(렌더링 완료된 후에 TextField로 포커스 이동)
-      setTimeout(() => textFieldRefs.current[index].focus(), 0);
+
+
+
+  // 카테고리 
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(categoriesRequest.category);
+        const data = response.data.categories
+        console.log("카테고리 조회 성공", data)
+        return data
+      } catch (error) {
+        console.error("카테고리 조회 에러", error)
+      }
     }
-  };
-  const handleChangeExpenseAmount = (event, index) => {
-    const newExpenses = [...expenses];
-    newExpenses[index].expenseAmount = event.target.value;
-    setExpenses(newExpenses);
-  };
-  const handleChangeCategory = (event, index) => {
-    const newExpenses = [...expenses];
-    newExpenses[index].category = event.target.value;
-    setExpenses(newExpenses);
-  };
+  })
+
+  const options = data?.map((item: ItemType) => ({
+    value: item.id,
+    label: item.content
+  }));
+
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error:{error.message}</div>
+
+
+
 
   return (
-    <TableContainer
-      component={Paper}
-      sx={{
-        maxHeight: "335px",
-        boxShadow: "0 2px 4px #FFDAE1",
-        scrollbarWidth: "thin",
-      }}
-    >
-      <Table
-        sx={{ minWidth: "100%", overflowX: "auto" }}
-        aria-label='customized table'
-      >
-        <TableHead>
-          <TableRow>
-            <StyledTableCell sx={{ minWidth: "150px" }}>
-              카테고리
-            </StyledTableCell>
-            <StyledTableCell align='left'>지출 금액</StyledTableCell>
-            <StyledTableCell
-              sx={{ width: "100px" }}
-              align='right'
-            ></StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {expenses.map((row, index) => (
-            <StyledTableRow key={index}>
-              <StyledTableCell component='th' scope='row'>
-                <Select
-                  className={categoryStyle}
-                  value={row.category || "주거/생활"}
-                  onChange={(event) => handleSelectChange(event, index)}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#F0F0F0",
-                    },
-                    "&.Mui-focused": {
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#F0F0F0",
-                        borderWidth: "1px",
-                      },
-                    },
-                    "&:hover": {
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#F0F0F0",
-                      },
-                    },
-                    ".MuiSvgIcon-root": {
-                      fontSize: "1.25rem",
-                    },
-                    color: "#F0F0F0",
-                    fontSize: "12px",
-                    borderRadius: "8px",
-                    backgroundColor: "#ffffff",
-                  }}
-                >
-                  <MenuItem value='주거/생활'>주거/생활</MenuItem>
-                  <MenuItem value='식비'>식비</MenuItem>
-                  <MenuItem value='공과금'>공과금</MenuItem>
-                </Select>
-              </StyledTableCell>
-              <StyledTableCell align='left'>
-                <TextField
-                  placeholder='지출금액'
-                  InputProps={{
-                    sx: {
-                      width: "130px",
-                      height: "30px",
-                      borderRadius: "8px",
-                      fontSize: "12px",
-                      color: "#D5D5D5",
-                      backgroundColor: "#ffffff",
+    <Box className={wrap}>
 
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#F0F0F0",
-                      },
-                      "&.Mui-focused": {
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#F0F0F0",
-                          borderWidth: "1px",
-                        },
-                      },
+      <TableContainer>
+        <Table
+          sx={{ minWidth: "100%", overflowX: "auto" }}
+          aria-label='customized table'
+        >
+          <TableHead>
+            <TableRow>
+              <StyledTableCell sx={{ minWidth: "150px" }}>
+                카테고리
+              </StyledTableCell>
+              <StyledTableCell align='left'>지출 금액</StyledTableCell>
+              <StyledTableCell
+                sx={{ width: "100px" }}
+                align='right'
+              ></StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {expenses.map((row, index) => (
+              <StyledTableRow key={index}>
+                <StyledTableCell component='th' scope='row'>
+                  <SelectBox
+                    defaultValue="카드"
+                    options={options}
+                    onChange={(value) => {
+                      handleExpenseChange(index, 'category', value);
+                    }}
+                  />
+                </StyledTableCell>
+                <StyledTableCell align='left'>
+                  <Input
+                    placeholder="지출금액"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      handleExpenseChange(index, 'price', value);
+                    }}
+                  />
+                </StyledTableCell>
+                <StyledTableCell align='left'>
+                  <Button
+                    sx={{
+                      color: "#F03167",
+                      marginLeft: "500px",
                       "&:hover": {
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#F0F0F0",
-                        },
+                        backgroundColor: "transparent",
                       },
-                    },
-                  }}
-                  value={row.expenseAmount}
-                  onChange={(event) => handleChangeExpenseAmount(event, index)}
-                  inputRef={(el) => (textFieldRefs.current[index] = el)}
-                  autoFocus={index === 0} // 첫 번째 TextField에만 autoFocus 설정
-                />
-              </StyledTableCell>
-              <StyledTableCell align='left'>
-                <Button
-                  sx={{
-                    color: "#F03167",
-                    marginLeft: "500px",
-                    "&:hover": {
-                      backgroundColor: "transparent",
-                    },
-                    "&:active": {
-                      backgroundColor: "transparent",
-                    },
-                  }}
-                  disableRipple
-                >
-                  수정
-                </Button>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                      "&:active": {
+                        backgroundColor: "transparent",
+                      },
+                    }}
+                    disableRipple
+                  >
+                    수정
+                  </Button>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 

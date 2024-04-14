@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import instance from '../../api/axios';
 import budgetRegRequest from '../../api/budgetRegRequest';
-import { Budget, fixedText, fixedWrap, list, listItem, listItems, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
+import FixedExpenses from './FixedExpenses/FixedExpenses';
+import { Budget, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
 
 interface ItemType {
   id: number;
@@ -19,8 +20,8 @@ const SideBar = () => {
   const [month] = useState(new Date().getMonth() + 1)
   const memberId = localStorage.getItem("memberId")
 
-
-  const { data, isLoading, error } = useQuery({
+  // 전체예산
+  const { data: budgetList, isLoading: isBudgetLoading, error: budgetError } = useQuery({
     queryKey: ["budget"],
     queryFn: async () => {
       try {
@@ -33,14 +34,16 @@ const SideBar = () => {
     }
   })
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error:{error.message}</div>;
-  if (!data || data.length === 0) return <div className={Budget} >0</div>;
+  if (isBudgetLoading) return <div>Loading...</div>;
+  if (budgetError) return <div>Error:{budgetError.message}</div>;
+  if (!budgetList || budgetList.length === 0) return <div className={Budget} >0</div>;
 
   // 데이터 created_at 기준으로 내림차순 정렬
-  const sortedData: ItemType[] = [...data].sort((a: ItemType, b: ItemType) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const sortedData: ItemType[] = [...budgetList].sort((a: ItemType, b: ItemType) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   // 가장 최신 데이터 선택
   const latestData = sortedData[0];
+
+
 
   return (
     <Box width="500px" className={sideBox}>
@@ -85,19 +88,7 @@ const SideBar = () => {
           />
         </Flex>
 
-        <Box className={fixedWrap}>
-          <Text className={fixedText}>고정지출</Text>
-          <ul className={list}>
-            <li className={listItems}>
-              <Text as='p' className={listItem}>식비</Text>
-              <Text as='p'>200,000</Text>
-            </li>
-            <li className={listItems}>
-              <Text as='p' className={listItem}>공과금</Text>
-              <Text as='p'>400,000</Text>
-            </li>
-          </ul>
-        </Box>
+        <FixedExpenses />
       </Card>
     </Box>
   )

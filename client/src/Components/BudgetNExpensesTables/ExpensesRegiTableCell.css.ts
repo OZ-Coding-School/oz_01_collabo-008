@@ -8,3 +8,11 @@ export const categoryStyle = style({
   borderColor: "#F0F0F0",
   borderRadius: "8px",
 });
+
+export const wrap = style({
+  backgroundColor: "#FFF",
+  borderRadius: "4px",
+  boxSizing: "border-box",
+  boxShadow: "0px 4px 30px #FFEBEF",
+  marginBottom: "8px",
+});

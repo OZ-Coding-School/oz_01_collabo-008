@@ -4,6 +4,7 @@ import "@radix-ui/themes/styles.css";
 import { useState } from "react";
 import instance from "../../api/axios.ts";
 import budgetRegRequest from "../../api/budgetRegRequest.ts";
+import fixedRequest from "../../api/fixedRequest.ts";
 import BudgetHistoryTableCell from "../../components/BudgetNExpensesTables/BudgetHistoryTableCell.tsx";
 import ExpensesRegiTableCell from "../../components/BudgetNExpensesTables/ExpensesRegiTableCell.tsx";
 import SideBar from "../../components/SideBar.tsx/SideBar.tsx";
@@ -25,23 +26,49 @@ import {
 const BudgetNExpenses = () => {
 
   const [budget, setBudget] = useState<string>("");
-  const [isAddRowClicked, setIsAddRowClicked] = useState(false);
-  const [isExpRegiClicked, setIsExpRegiClicked] = useState(false);
+  const [isAddRowClicked, setIsAddRowClicked] = useState([]);
+
+  // const [price, setPrice] = useState("")
+  // const [category, setCategory] = useState("")
+  const [expenses, setExpenses] = useState([]);
+  const memberId = localStorage.getItem("memberId")
   //#region 고정 지출 등록
   const handleClickAddRow = () => {
-    // BudgetHistoryTableCell의 새로운 테이블 행 추가
-    setIsAddRowClicked((prevState) => !prevState);
+    setIsAddRowClicked((prevExpenses) => [
+      ...prevExpenses,
+      { price: "", category: "" } // 새 지출 항목의 초기값 설정
+    ]);
   };
-  const handleClickRegi = () => {
-    setIsExpRegiClicked((prevState) => !prevState);
+
+
+  const handleExpenseChange = (index, field, value) => {
+    setExpenses((prevExpenses) => {
+      const updatedExpenses = [...prevExpenses];
+      const updatedExpense = { ...updatedExpenses[index], [field]: value };
+      updatedExpenses[index] = updatedExpense;
+      return updatedExpenses;
+    });
+  };
+
+
+
+  const handleClickRegi = async () => {
+    // setIsExpRegiClicked((prevState) => !prevState);
     // BudgetHistoryTableCell에서 state에 저장되도록
-    //배열로 출력되는지 확인해보기
+    // 배열로 출력되는지 확인해보기
+
+    try {
+      const response = await instance.post(fixedRequest.fixedReg + `/${memberId}`, expenses)
+      console.log("고정 지출 등록 성공", response)
+    } catch (error) {
+      console.log("고정지출 등록 에러", error)
+    }
+
   };
   //#endregion
 
 
   //#region 전체 예산 등록
-  const memberId = localStorage.getItem("memberId")
   const handleClickBudgetRegistration = async () => {
     try {
       await instance.post(budgetRegRequest.budget + `/${memberId}`, {
@@ -141,7 +168,7 @@ const BudgetNExpenses = () => {
                 <ButtonForFixedExpRegi onClick={handleClickAddRow}>
                   행 추가하기
                 </ButtonForFixedExpRegi>
-                <ButtonForFixedExpRegi onClick={handleClickRegi}>
+                <ButtonForFixedExpRegi onClick={handleClickRegi} >
                   등록하기
                 </ButtonForFixedExpRegi>
               </Box>
@@ -150,7 +177,10 @@ const BudgetNExpenses = () => {
             <Box className={fixedExpensesRegiTable}>
               <ExpensesRegiTableCell
                 isAddRowClicked={isAddRowClicked}
-                isExpRegiClicked={isExpRegiClicked}
+                handleExpenseChange={handleExpenseChange}
+              // setPrice={setPrice}
+              // setCategory={setCategory}
+
               />
             </Box>
           </Box>
