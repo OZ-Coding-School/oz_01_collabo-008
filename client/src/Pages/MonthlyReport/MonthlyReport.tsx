@@ -60,6 +60,9 @@ function MonthlyReport() {
   //top5Places state
   const [top5PlacesData, setTop5PlacesData] = useState<MonthlyReportData[]>([]);
 
+  const [totalBudget, setTotalBudget] = useState<number>(2000000);
+  const [savedBudget, setSavedBudget] = useState<number>(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -86,6 +89,16 @@ function MonthlyReport() {
           });
         }
 
+        // totalExpense 계산
+        let totalExpense = 0;
+        for (const category of response.data.total_expenses_by_category) {
+          totalExpense += category.total_price;
+        }
+
+        // savedBudget 계산
+        const savedBudget = totalBudget - totalExpense;
+        setSavedBudget(savedBudget);
+
         console.log(response);
 
         if (response.data) {
@@ -98,7 +111,7 @@ function MonthlyReport() {
       }
     };
     fetchData();
-  }, [memberId, cookies.accessToken, year, month, setCookies]);
+  }, [memberId, cookies.accessToken, year, month, setCookies, totalBudget]);
 
   return (
     <Box className={box}>
@@ -110,12 +123,44 @@ function MonthlyReport() {
           </Text>
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
         </Box>
-        <Box className={resultTextBox}>
+        <Box className={resultTextBox} sx={{ display: "flex" }}>
           <Box>
-            <Text>이번 달 총 예산 700,000 원 중</Text>
+            <Box>
+              이번 달 총 예산{" "}
+              <Box
+                component='span'
+                sx={{
+                  color: "#F03167",
+                  fontSize: "2.1rem",
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                  marginLeft: "0.5rem",
+                  marginRight: "0.5rem",
+                }}
+              >
+                {Number(totalBudget).toLocaleString()}
+              </Box>
+              원 중
+            </Box>
           </Box>
           <Box>
-            <Text>+ 100,000 원이 세이브 되었습니다.</Text>
+            <Box>
+              +{" "}
+              <Box
+                component='span'
+                sx={{
+                  color: "#F03167",
+                  fontSize: "2.1rem",
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                  marginLeft: "0.5rem",
+                  marginRight: "0.5rem",
+                }}
+              >
+                {Number(savedBudget).toLocaleString()}
+              </Box>
+              원이 세이브 되었습니다.
+            </Box>
           </Box>
         </Box>
         <Box className={doughnutCharts}>
