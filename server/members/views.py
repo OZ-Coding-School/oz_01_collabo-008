@@ -87,6 +87,7 @@ class LoginView(APIView):
             status=status.HTTP_401_UNAUTHORIZED
         )
 
+
 class RefreshTokenView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -96,6 +97,7 @@ class RefreshTokenView(TokenRefreshView):
             access_token = response.data['access']
             response.set_cookie(key='access_token', value=access_token)
         return response
+
 
 class LogoutView(APIView):
     def post(self, request):
