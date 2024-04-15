@@ -7,9 +7,20 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import testData from "../../pages/MonthlyReport/testDB";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+
+interface FetchedData {
+  total_expenses_by_category: {
+    id: number;
+    content: string;
+    total_price: number;
+  }[];
+  total_expenses_by_location: {
+    location: string | null;
+    total_price: number;
+  }[];
+}
 
 const options = {
   scales: {
@@ -30,68 +41,6 @@ const options = {
     },
   },
   maintainAspectRatio: false, //캔버스 자체에 크기 고정되어 있는 부분 해제
-};
-
-// labels testDB에서 가져오기
-const getCategories = () => {
-  const categories = new Set(); // Set은 중복 허용이 안됨
-  testData.expenses.forEach((expense) => {
-    categories.add(expense.category);
-  });
-  return Array.from(categories); // Set을 배열로 변환하기
-};
-
-const dbCategories = getCategories();
-
-// testDB의 카테고리 별로 지출금액 합산하는 함수
-const getTotalExpensesPerCategories = (data) => {
-  const totalExpensesPerCategories = {};
-
-  testData.expenses.forEach((expense) => {
-    if (totalExpensesPerCategories[expense.category]) {
-      totalExpensesPerCategories[expense.category] += expense.amount;
-    } else {
-      totalExpensesPerCategories[expense.category] = expense.amount;
-    }
-  });
-  return totalExpensesPerCategories;
-};
-
-// 카테고리 별 지출 금액을 합산해서 객체 만들기
-const totalExpensesPerCategoriesResult =
-  getTotalExpensesPerCategories(testData);
-
-// console.log(
-//   "totalExpensesPerCategoriesResult",
-//   totalExpensesPerCategoriesResult
-// );
-
-const data = {
-  labels: dbCategories,
-  datasets: [
-    {
-      label: "지출 금액",
-      data: dbCategories.map(
-        (category) => totalExpensesPerCategoriesResult[category]
-      ),
-      backgroundColor: [
-        "rgba(248,161,159,0.7)",
-        "rgba(227,187,99,0.8)",
-        "rgba(247,203,201,0.8)",
-        "rgba(239,217,158,0.8)",
-        "rgba(187,14,0,0.8)",
-        "rgba(254,172,196,0.8)",
-        "rgba(255,218,223,0.8)",
-        "rgba(239,49,103,0.8)",
-        "rgba(254,172,196,0.8)",
-        "rgba(253,198,214,1)",
-        "rgba(255,119,158,1)",
-      ],
-      //borderColor: [],
-      borderWidth: 0,
-      barThickness: 50,
-    },
-  ],
 };
 
 // // 평균치 보다 큰거 "rgba(240,49,103, 0.8)",
@@ -120,6 +69,41 @@ const data = {
 
 // data.datasets[0].backgroundColor = backgroundColors;
 
-const BarChart = () => <Bar data={data} options={options} key='unique_key' />; // key 속성 추가
+const BarChart = ({ fetchedData }: { fetchedData: FetchedData }) => {
+  if (!fetchedData || !fetchedData.total_expenses_by_category) {
+    return null; // fetchedData가 없거나 total_expenses_by_category가 없는 경우, null을 반환하여 컴포넌트를 렌더링하지 않음
+  }
+
+  const data = {
+    labels: fetchedData.total_expenses_by_category.map(
+      (category) => category.content
+    ),
+    datasets: [
+      {
+        label: "지출 금액",
+        data: fetchedData.total_expenses_by_category.map(
+          (category) => category.total_price
+        ),
+        backgroundColor: [
+          "rgba(248,161,159,0.7)",
+          "rgba(227,187,99,0.8)",
+          "rgba(247,203,201,0.8)",
+          "rgba(239,217,158,0.8)",
+          "rgba(187,14,0,0.8)",
+          "rgba(254,172,196,0.8)",
+          "rgba(255,218,223,0.8)",
+          "rgba(239,49,103,0.8)",
+          "rgba(254,172,196,0.8)",
+          "rgba(253,198,214,1)",
+          "rgba(255,119,158,1)",
+        ],
+        //borderColor: [],
+        borderWidth: 0,
+        barThickness: 50,
+      },
+    ],
+  };
+  return <Bar data={data} options={options} key='unique_key' />;
+}; // key 속성 추가
 
 export default BarChart;
