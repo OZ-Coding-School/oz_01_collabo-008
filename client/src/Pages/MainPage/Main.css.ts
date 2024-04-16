@@ -15,3 +15,21 @@ export const mainContainer = style({
   borderRadius: "16px",
   boxSizing: "border-box",
 });
+
+export const expenseBtnWrap = style({
+  width: "100%",
+  display: "flex",
+  justifyContent: "end",
+  alignItems: "end",
+  marginTop: "20px",
+});
+export const expenseBtn = style({
+  width: "80px",
+  outline: "none",
+  border: "none",
+  backgroundColor: "#F03167",
+  color: "white",
+  borderRadius: "8px",
+  padding: "8px",
+  cursor: "pointer",
+});

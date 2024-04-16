@@ -27,10 +27,22 @@ interface ItemType {
 }
 
 interface FixedExpense {
+  fixed_expenses_list: Array<{
+    id: number,
+    category: number,
+    price: number
+  }>
+
+  id: number;
   fixed_expenses_per_list: Array<{
     category: number;
     total_price: number;
   }>;
+}
+
+interface Props {
+  isAddRowClicked: boolean;
+  handleExpenseChange: (index: number, field: string, value: string) => void;
 }
 
 const categoryMap: { [key: number]: string } = {
@@ -47,13 +59,18 @@ const categoryMap: { [key: number]: string } = {
 }
 
 
-const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
-  const [expenses, setExpenses] = useState([]);
+
+
+
+const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }: Props) => {
+  const [expenses, setExpenses] = useState<{ index: number; category: string; price: string; }[]>([]);
+
   const memberId: string | null = localStorage.getItem("memberId");
   const [modifyId, setModifyId] = useState<number | null>(null)
   const [modifyValue, setModifyValue] = useState("")
   const [modifyCategory, setModifyCategory] = useState("")
-  const [fixedExpensesState, setFixedExpensesState] = useState([]);
+  const [fixedExpensesState, setFixedExpensesState] = useState<FixedExpense[]>([]);
+
   //행 추가 관련
   useEffect(() => {
     if (isAddRowClicked) {
@@ -194,6 +211,7 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
                 </StyledTableCell>
                 <StyledTableCell align='left'>{modifyId === fixedExpense.id ? (
                   <Input
+                    type="number"
                     value={modifyValue}
                     onChange={handleEditChange}
                   />
@@ -230,6 +248,7 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
                 <StyledTableCell align='left'>
                   <Input
                     placeholder="지출금액"
+                    type="number"
                     onChange={(e) => {
                       const value = e.target.value;
                       handleExpenseChange(index, 'price', value);

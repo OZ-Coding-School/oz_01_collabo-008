@@ -60,6 +60,7 @@ const BudgetNExpenses = () => {
     try {
       const response = await instance.post(fixedRequest.fixedReg + `/${memberId}`, expenses)
       console.log("고정 지출 등록 성공", response)
+      window.location.reload()
     } catch (error) {
       console.log("고정지출 등록 에러", error)
     }

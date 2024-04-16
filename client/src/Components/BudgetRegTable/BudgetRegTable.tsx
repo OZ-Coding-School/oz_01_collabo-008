@@ -2,24 +2,180 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import { Box } from "@radix-ui/themes";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import instance from "../../api/axios";
+import categoriesRequest from "../../api/categoriesRequest";
 import Input from "../Input/Input";
 import SelectBox from "../SelectBox/Select";
 import { datepicker, wrap } from "./BudgetRegTable.css";
 
-const categories = [
-  { value: "apple", label: "Apple" },
-  { value: "orange", label: "Orange" }
-];
-
-const tools = [
-  { value: "카드", label: "카드" },
-  { value: "현금", label: "현금" }
-]
+interface ItemType {
+  id: number;
+  content: number;
+}
 
 
+interface Payment extends ItemType {
+  type: string
+}
+interface RowType {
+  date: Date;
+  category: string;
+  payment: string;
+  location: string;
+  price: number;
+  content: string;
+}
+
+interface Props {
+  rows: RowType[];
+  onTableRowChange: (index: number, field: keyof RowType, value: string | number) => void;
+  handlePaymentChange: (value: string) => void;
+  handleCategoryChange: (value: string) => void;
+  selectedCategory: string;
+  selectedPayment: string;
+  setStartDate: (date: Date) => void;
+  startDate: Date;
+}
+
+
+const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate }: Props) => {
+
+
+
+
+  // 카테고리 
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(categoriesRequest.category);
+        const data = response.data.categories
+        console.log("카테고리 조회 성공", data)
+        return data
+      } catch (error) {
+        throw new Error("카테고리 조회 에러")
+      }
+    }
+  })
+
+  const options = data?.map((item: ItemType) => ({
+    value: item.id,
+    label: item.content
+  }));
+
+
+  //지불방법
+  const { data: paymentData, isLoading: isPaymentLoading, error: paymentError } = useQuery({
+    queryKey: ["payments"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(categoriesRequest.payment);
+        const data = response.data.payments
+        console.log("지불방법", data)
+        return data
+      } catch (error) {
+        throw new Error("카테고리 조회 에러")
+      }
+    }
+  })
+
+  const payment = paymentData?.map((item: Payment) => ({
+    value: item.id,
+    label: item.type
+  }))
+
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error:{error.message}</div>
+
+  if (isPaymentLoading) return <div>Loading...</div>
+  if (paymentError) return <div>Error:{paymentError.message}</div>
+
+
+
+
+
+  return (
+
+    <>
+
+      <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
+        <TableContainer >
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>사용날짜</StyledTableCell>
+                <StyledTableCell align="left">카테고리</StyledTableCell>
+                <StyledTableCell align="left">카드/현금</StyledTableCell>
+                <StyledTableCell align="left">사용처</StyledTableCell>
+                <StyledTableCell align="left">사용금액</StyledTableCell>
+                <StyledTableCell align="left">사용내역</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+
+              {rows.map((row: RowType, index) => (
+
+                <StyledTableRow key={index} >
+                  <StyledTableCell component="th" scope="row">
+                    <DatePicker
+                      className={datepicker}
+                      showIcon
+                      selected={startDate}
+                      onChange={(date) => {
+                        if (date) {
+                          const dateString = date.toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', '');
+                          onTableRowChange(index, 'date', dateString);
+                        }
+                      }}
+                    />
+                  </StyledTableCell>
+
+                  <StyledTableCell align="left">
+
+
+                    <SelectBox defaultValue={selectedCategory} options={options} onChange={(value) => handleCategoryChange(value)} />
+
+
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+
+                    <SelectBox defaultValue={selectedPayment} options={payment} onChange={(value) => handlePaymentChange(value)} />
+
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Input placeholder="사용처" onChange={(e) => {
+                      const { value } = e.target;
+                      onTableRowChange(index, 'location', value);
+                    }} />
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Input placeholder="사용금액" type="number" onChange={(e) => {
+                      const { value } = e.target;
+                      onTableRowChange(index, 'price', value);
+                    }} />
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Input placeholder="사용내역" onChange={(e) => {
+                      const { value } = e.target;
+                      onTableRowChange(index, 'content', value);
+                    }} />
+                  </StyledTableCell>
+
+                </StyledTableRow>
+              ))}
+
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
+
+  )
+}
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
@@ -47,72 +203,5 @@ const StyledTableRow = styled(TableRow)(() => ({
     borderBottom: `none`, // 경계선의 색상과 두께 조정
   },
 }));
-
-
-
-
-
-const BudgetRegTable = ({ rows }) => {
-  const [startDate, setStartDate] = useState(new Date());
-  // const handleSelectChange = (value: string) => {
-  //   console.log(value);
-  // };
-  return (
-
-    <>
-
-      <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
-        <TableContainer >
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>사용날짜</StyledTableCell>
-                <StyledTableCell align="left">카테고리</StyledTableCell>
-                <StyledTableCell align="left">카드/현금</StyledTableCell>
-                <StyledTableCell align="left">사용처</StyledTableCell>
-                <StyledTableCell align="left">사용금액</StyledTableCell>
-                <StyledTableCell align="left">사용내역</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-
-              {rows.map((row, index) => (
-
-                <StyledTableRow key={index} >
-                  <StyledTableCell component="th" scope="row">
-                    <DatePicker
-                      className={datepicker}
-                      showIcon
-                      selected={startDate}
-                      onChange={(date) => setStartDate(date)}
-                    />
-                  </StyledTableCell>
-
-                  <StyledTableCell align="left">
-
-
-                    <SelectBox defaultValue="apple" options={categories} onChange={(value) => console.log(value)} />
-
-                  </StyledTableCell>
-                  <StyledTableCell align="left">
-
-                    <SelectBox defaultValue="카드" options={tools} onChange={(value) => console.log(value)} />
-
-                  </StyledTableCell>
-                  <StyledTableCell align="left"><Input placeholder="사용처" /></StyledTableCell>
-                  <StyledTableCell align="left"><Input placeholder="사용금액" /></StyledTableCell>
-                  <StyledTableCell align="left"><Input placeholder="사용내역" /></StyledTableCell>
-
-                </StyledTableRow>
-              ))}
-
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-    </>
-
-  )
-}
 
 export default BudgetRegTable

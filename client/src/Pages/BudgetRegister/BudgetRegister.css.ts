@@ -38,6 +38,7 @@ export const addBtn = style({
   color: "white",
   borderRadius: "8px",
   padding: "8px",
+  cursor: "pointer",
 });
 
 export const btnWrap = style({
