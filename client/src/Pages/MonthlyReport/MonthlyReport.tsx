@@ -98,7 +98,7 @@ function MonthlyReport() {
         }
 
         //total Budget 가져오기
-        const budgetResponse: BudgetData = await axios.get(
+        const budgetResponse = await axios.get(
           `http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1/budgets/${memberId}?year=${year}&month=${month}`,
           config
         );
