@@ -1,4 +1,5 @@
 import '@radix-ui/themes/styles.css';
+import { ChangeEvent } from 'react';
 import { select } from './SelecteBox.css';
 
 type SelectBoxProps = {
@@ -8,11 +9,16 @@ type SelectBoxProps = {
 };
 
 const SelectBox = ({ defaultValue, options, onChange }: SelectBoxProps) => {
+  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (onChange) {
+      onChange(event.target.value);
+    }
+  };
   return (
-    <select defaultValue={defaultValue} onValueChange={onChange} className={select}>
+    <select defaultValue={defaultValue} onChange={handleChange} className={select}>
 
 
-      {options.map((option) => (
+      {options?.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
         </option>
