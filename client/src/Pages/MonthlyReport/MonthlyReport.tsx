@@ -39,6 +39,13 @@ interface MonthlyReportData {
   }[];
 }
 
+interface BudgetData {
+  budget_list: {
+    id: number;
+    value: number;
+    created_at: string;
+  };
+}
 function MonthlyReport() {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear().toString();
@@ -46,10 +53,9 @@ function MonthlyReport() {
 
   const [year, setYear] = useState(currentYear);
   const [month, setMonth] = useState(currentMonth);
-  const [memberId, setMemberId] = useState("1");
-  // const [accessToken, setAccessToken] = useState("");
+  const [memberId, setMemberId] = useState(localStorage.getItem("memberId"));
+
   const [cookies, setCookies] = useCookies(["accessToken", "refreshToken"]);
-  //const [cookies, setCookies] = useCookies(["accessToken"]);
   const [data, setData] = useState(null);
 
   //top5Categories state
@@ -60,10 +66,12 @@ function MonthlyReport() {
   //top5Places state
   const [top5PlacesData, setTop5PlacesData] = useState<MonthlyReportData[]>([]);
 
-  const [totalBudget, setTotalBudget] = useState<number>(2000000);
+  const [totalBudget, setTotalBudget] = useState<number>(0);
   const [savedBudget, setSavedBudget] = useState<number>(0);
 
   useEffect(() => {
+    if (!memberId) return;
+
     const fetchData = async () => {
       try {
         const config = {
@@ -74,7 +82,7 @@ function MonthlyReport() {
         };
 
         const response = await axios.get(
-          `http://ec2-3-35-3-27.ap-northeast-2.compute.amazonaws.com/api/v1/reports/${memberId}?year=${year}&month=${month}`,
+          `http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1/reports/${memberId}?year=${year}&month=${month}`,
           config
         );
 
@@ -89,6 +97,24 @@ function MonthlyReport() {
           });
         }
 
+        //total Budget 가져오기
+        const budgetResponse: BudgetData = await axios.get(
+          `http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1/budgets/${memberId}?year=${year}&month=${month}`,
+          config
+        );
+
+        console.log("budgetData : ", budgetResponse.data);
+
+        if (budgetResponse.data.budget_list.length > 0) {
+          const budgetItem = budgetResponse.data.budget_list[0];
+          setTotalBudget(budgetItem.value);
+        } else {
+          console.log(
+            "Budget Data does not exist. please set your budget first!"
+          );
+          setTotalBudget(0);
+        }
+
         // totalExpense 계산
         let totalExpense = 0;
         for (const category of response.data.total_expenses_by_category) {
@@ -98,8 +124,6 @@ function MonthlyReport() {
         // savedBudget 계산
         const savedBudget = totalBudget - totalExpense;
         setSavedBudget(savedBudget);
-
-        console.log(response);
 
         if (response.data) {
           console.log("Data : ", response.data);

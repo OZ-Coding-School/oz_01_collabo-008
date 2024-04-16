@@ -40,6 +40,8 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
+  // memberId를 위한 변수 추가 by. 손지형
+  const memberId: string | null = localStorage.getItem("memberId");
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -62,7 +64,7 @@ const Login = () => {
         // ).toString();
         // 로그인 위한 API 호출
         const response = await axios.post(
-          "http://ec2-3-35-3-27.ap-northeast-2.compute.amazonaws.com/api/v1" +
+          "http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1" +
             requests.login,
           // "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.login,
           {
@@ -75,6 +77,8 @@ const Login = () => {
         console.log("로그인 성공:", response.data);
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
+        // memberId를 위한 변수 추가 by. 손지형
+        localStorage.setItem("memberId", response.data.member.id);
         navigate("/");
         toast.success("로그인 성공");
       } catch (error) {

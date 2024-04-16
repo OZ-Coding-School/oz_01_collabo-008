@@ -79,7 +79,10 @@ const Signup = () => {
         // ).toString();
         // 사용자 등록을 위한 API 호출
         const response = await axios.post(
-          "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.signUp,
+          // "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.signUp,
+          "http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1" +
+            requests.signUp,
+
           {
             email: values.email,
             password: values.password,

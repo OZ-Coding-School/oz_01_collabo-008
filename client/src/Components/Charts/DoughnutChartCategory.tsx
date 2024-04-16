@@ -19,6 +19,7 @@ interface FetchedData {
 interface Top5CategoriesData {
   content: string;
 }
+
 const DoughnutChartCategory = ({
   fetchedData,
   top5CategoriesData,
