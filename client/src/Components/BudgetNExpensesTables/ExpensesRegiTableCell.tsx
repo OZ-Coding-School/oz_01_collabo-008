@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -13,8 +12,11 @@ import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import instance from "../../api/axios.ts";
 import categoriesRequest from "../../api/categoriesRequest.ts";
+import fixedRequest from "../../api/fixedRequest.ts";
+import { modifyBtn } from "../ExpendituresList/ExpenditureList.css.ts";
 import Input from "../Input/Input.tsx";
 import SelectBox from "../SelectBox/Select.tsx";
 import { wrap } from "./ExpensesRegiTableCell.css.ts";
@@ -23,6 +25,228 @@ interface ItemType {
   id: number;
   content: number;
 }
+
+interface FixedExpense {
+  fixed_expenses_per_list: Array<{
+    category: number;
+    total_price: number;
+  }>;
+}
+
+const categoryMap: { [key: number]: string } = {
+  1: '식비',
+  2: '주거/통신',
+  3: '생활용품',
+  4: '의복/미용',
+  5: '건강/문화',
+  6: '교육/육아',
+  7: '교통/차량',
+  8: '경조사/회비',
+  9: '세금/이자',
+  10: '기타'
+}
+
+
+const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
+  const [expenses, setExpenses] = useState([]);
+  const memberId: string | null = localStorage.getItem("memberId");
+  const [modifyId, setModifyId] = useState<number | null>(null)
+  const [modifyValue, setModifyValue] = useState("")
+  const [modifyCategory, setModifyCategory] = useState("")
+  const [fixedExpensesState, setFixedExpensesState] = useState([]);
+  //행 추가 관련
+  useEffect(() => {
+    if (isAddRowClicked) {
+      setExpenses((prevExpenses) => {
+        const newIndex = prevExpenses.length;
+        const updatedExpenses = [
+          ...prevExpenses,
+          { index: newIndex, category: "", price: "" }
+        ];
+        return updatedExpenses;
+      });
+    }
+  }, [isAddRowClicked]);
+
+
+
+  // 카테고리 
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(categoriesRequest.category);
+        const data = response.data.categories
+        console.log("카테고리 조회 성공", data)
+        return data
+      } catch (error) {
+        throw new Error("카테고리 조회 에러")
+      }
+    }
+  })
+
+  const options = data?.map((item: ItemType) => ({
+    value: item.id,
+    label: item.content
+  }));
+
+  //고정지출
+  const { data: fixedExpenseData, isLoading: isFixedExpense, error: fixedExpenseError } = useQuery<FixedExpense, Error>({
+    queryKey: ["fixedExpense"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(fixedRequest.fixedReg + `/${memberId}`)
+        const data = response.data
+
+        console.log("고정지출", data)
+        return data
+      } catch (error) {
+        throw new Error("고정지출 에러");
+      }
+    },
+
+  })
+  //  카테고리
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error:{error.message}</div>
+  // 고정지출
+  if (isFixedExpense) return <div>Loading...</div>;
+  if (fixedExpenseError) return <div>Error:{fixedExpenseError.message}</div>;
+  if (!fixedExpenseData || fixedExpenseData.fixed_expenses_per_list.length === 0) return <div >등록된 고정지출이 없슈</div>;
+
+  const fixedExpenses = fixedExpenseData.fixed_expenses_list;
+
+
+  // 고정수정
+  // 수정 버튼 클릭 시
+  const handleClickModify = (id: number, category: number, price: number) => {
+    setModifyId(id); // 수정할 데이터의 id 설정
+    setModifyCategory(category.toString()); // 수정할 데이터의 카테고리 설정
+    setModifyValue(price.toString()); // 수정할 데이터의 값 설정
+  }
+  // 인풋 창 값 변경 시
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setModifyValue(e.target.value)
+  }
+
+  const handleModify = async (fixedExpenseId: number) => {
+    try {
+      await instance.put(fixedRequest.fixedModify + `/${fixedExpenseId}`, {
+        category: modifyCategory,
+        price: modifyValue
+      })
+      setModifyId(null);
+      toast.success("고정지출이 수정되었습니다.")
+    } catch (error) {
+      console.error("고정지출 에러", error)
+    }
+  }
+
+  //고정 삭제
+  const deleteFixedExpenses = async (fixedExpenseId: number) => {
+    try {
+      await instance.delete(fixedRequest.fixedModify + `/${fixedExpenseId}`);
+      // 삭제된 항목을 UI에서 제거
+      setFixedExpensesState((prevExpenses) =>
+        prevExpenses.filter((expense) => expense.id !== fixedExpenseId)
+      );
+      toast.success("고정지출이 삭제되었습니다.");
+    } catch (error) {
+      console.error("고정지출 삭제 에러", error);
+      toast.error("고정지출 삭제에 실패했습니다.");
+    }
+  }
+
+
+
+  return (
+    <Box className={wrap}>
+
+      <TableContainer >
+        <Table
+          sx={{ minWidth: 700, overflowX: "auto" }}
+          aria-label='customized table'
+        >
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>
+                카테고리
+              </StyledTableCell>
+              <StyledTableCell align='left'>지출 금액</StyledTableCell>
+              <StyledTableCell align='left'></StyledTableCell>
+              <StyledTableCell align='left'></StyledTableCell>
+
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {fixedExpenses.map((fixedExpense, index) => (
+              <StyledTableRow key={index}>
+                <StyledTableCell >
+                  {modifyId === fixedExpense.id ? (
+                    <SelectBox
+                      defaultValue={fixedExpense.category.toString()}
+                      options={options}
+                      onChange={(value) => setModifyCategory(value)}
+                    />
+                  ) : (
+                    categoryMap[fixedExpense.category] || '기타'
+                  )}
+                </StyledTableCell>
+                <StyledTableCell align='left'>{modifyId === fixedExpense.id ? (
+                  <Input
+                    value={modifyValue}
+                    onChange={handleEditChange}
+                  />
+                ) : (
+                  fixedExpense.price.toLocaleString()
+                )}</StyledTableCell>
+                <StyledTableCell align='left'>
+                  {modifyId === fixedExpense.id ? (
+                    <button className={modifyBtn} onClick={() => handleModify(fixedExpense.id)}>등록</button>
+                  ) : (
+                    <button className={modifyBtn} onClick={() => handleClickModify(fixedExpense.id, fixedExpense.category, fixedExpense.price)}>수정</button>
+                  )}
+                </StyledTableCell>
+                <StyledTableCell align='left'>
+                  <button className={modifyBtn} onClick={() => deleteFixedExpenses(fixedExpense.id)}>
+                    삭제
+                  </button>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+            {expenses.map((row, index) => (
+              <StyledTableRow key={index}>
+                <StyledTableCell >
+                  <SelectBox
+                    defaultValue="카드"
+                    options={options}
+                    onChange={(value) => {
+                      handleExpenseChange(index, 'category', value);
+                    }}
+
+                  />
+                </StyledTableCell>
+
+                <StyledTableCell align='left'>
+                  <Input
+                    placeholder="지출금액"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      handleExpenseChange(index, 'price', value);
+                    }}
+                  />
+                </StyledTableCell>
+                <StyledTableCell align='left'></StyledTableCell>
+                <StyledTableCell align='left'></StyledTableCell>
+              </StyledTableRow>
+            ))}
+
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+};
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
@@ -50,122 +274,5 @@ const StyledTableRow = styled(TableRow)(() => ({
     borderBottom: `none`, // 경계선의 색상과 두께 조정
   },
 }));
-
-const createData = () => ({ category: "", expenseAmount: "" });
-
-
-
-const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
-  const [expenses, setExpenses] = useState([createData()]);
-
-
-  //행 추가 관련
-  useEffect(() => {
-    if (isAddRowClicked) {
-      setExpenses((prevExpenses) => {
-        const updatedExpenses = [...prevExpenses];
-        updatedExpenses.push(createData());
-        return updatedExpenses;
-      });
-    }
-  }, [isAddRowClicked]);
-
-
-
-
-
-  // 카테고리 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      try {
-        const response = await instance.get(categoriesRequest.category);
-        const data = response.data.categories
-        console.log("카테고리 조회 성공", data)
-        return data
-      } catch (error) {
-        console.error("카테고리 조회 에러", error)
-      }
-    }
-  })
-
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content
-  }));
-
-
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error:{error.message}</div>
-
-
-
-
-  return (
-    <Box className={wrap}>
-
-      <TableContainer>
-        <Table
-          sx={{ minWidth: "100%", overflowX: "auto" }}
-          aria-label='customized table'
-        >
-          <TableHead>
-            <TableRow>
-              <StyledTableCell sx={{ minWidth: "150px" }}>
-                카테고리
-              </StyledTableCell>
-              <StyledTableCell align='left'>지출 금액</StyledTableCell>
-              <StyledTableCell
-                sx={{ width: "100px" }}
-                align='right'
-              ></StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {expenses.map((row, index) => (
-              <StyledTableRow key={index}>
-                <StyledTableCell component='th' scope='row'>
-                  <SelectBox
-                    defaultValue="카드"
-                    options={options}
-                    onChange={(value) => {
-                      handleExpenseChange(index, 'category', value);
-                    }}
-                  />
-                </StyledTableCell>
-                <StyledTableCell align='left'>
-                  <Input
-                    placeholder="지출금액"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      handleExpenseChange(index, 'price', value);
-                    }}
-                  />
-                </StyledTableCell>
-                <StyledTableCell align='left'>
-                  <Button
-                    sx={{
-                      color: "#F03167",
-                      marginLeft: "500px",
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
-                      "&:active": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                    disableRipple
-                  >
-                    수정
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-};
 
 export default ExpensesRegiTableCell;
