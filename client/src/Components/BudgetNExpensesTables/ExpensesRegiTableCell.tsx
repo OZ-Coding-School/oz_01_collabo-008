@@ -101,6 +101,10 @@ const ExpensesRegiTableCell = ({ isAddRowClicked, handleExpenseChange }) => {
 
 
 
+
+
+
+
   return (
     <Box className={wrap}>
 

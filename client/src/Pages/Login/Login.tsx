@@ -33,7 +33,7 @@ interface LoginForm {
 
 const Login = () => {
   const { VITE_SECRET_KEY } = import.meta.env;
-
+  const { VITE_BASE_REQUEST_URL } = import.meta.env;
   const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
   const [errorText, setErrorText] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,9 +65,7 @@ const Login = () => {
         // ).toString();
         // 로그인 위한 API 호출
         const response = await axios.post(
-          "http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1" +
-          requests.login,
-          // "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.login,
+          VITE_BASE_REQUEST_URL + requests.login,
           {
             email: values.email,
             password: values.password,
