@@ -1,15 +1,14 @@
 import { Box } from "@mui/material";
 import "@radix-ui/themes/styles.css";
-import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
 
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useCookies } from "react-cookie";
-import { wrap } from "./Calendar.css";
 import instance from "../../api/axios";
 import expenseRequest from "../../api/expenseRequest";
+import { wrap } from "./Calendar.css";
 
 const CalendarList = () => {
   interface Expenses {
@@ -77,7 +76,7 @@ const CalendarList = () => {
           view: string;
         }) => handleActiveStartDateChange(data)}
         value={date}
-        calendarType="gregory"
+        calendarType='gregory'
         formatDay={(_locale, date) => moment(date).format("D")}
         tileContent={({ date, view }) =>
           view === "month" && (
