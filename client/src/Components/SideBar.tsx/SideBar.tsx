@@ -6,8 +6,9 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import instance from '../../api/axios';
 import budgetRegRequest from '../../api/budgetRegRequest';
+import expenseRequest from '../../api/expenseRequest';
 import FixedExpenses from './FixedExpenses/FixedExpenses';
-import { Budget, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
+import { Budget, percentStyle, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
 
 interface ItemType {
   id: number;
@@ -34,6 +35,28 @@ const SideBar = () => {
     }
   })
 
+
+
+
+
+
+  const { data: totalExpenseData, isLoading, error } = useQuery({
+    queryKey: ["totalExpenses"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(expenseRequest.expense + `/${memberId}?year=${year}&month=${month}`)
+
+        console.log("지출 목록", totalExpenseData)
+        return response.data
+      } catch (error) {
+        throw new Error("지출 목록 조회 에러")
+      }
+    }
+  })
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error:{error.message}</div>
+
   if (isBudgetLoading) return <div>Loading...</div>;
   if (budgetError) return <div>Error:{budgetError.message}</div>;
   if (!budgetList || budgetList.length === 0) return <div className={Budget} >0</div>;
@@ -42,9 +65,9 @@ const SideBar = () => {
   const sortedData: ItemType[] = [...budgetList].sort((a: ItemType, b: ItemType) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   // 가장 최신 데이터 선택
   const latestData = sortedData[0];
+  const usedPercentage = (totalExpenseData.total_expense / latestData.value) * 100;
 
-
-
+  console.log("너 얼마썻어", totalExpenseData)
   return (
     <Box width="500px" className={sideBox}>
       <Card size="5">
@@ -70,13 +93,13 @@ const SideBar = () => {
         <Flex gap="4" direction="column">
           <Box className={spendingTextwrap}>
             <Text as='p'>전체 예산의
-              <Text as='span' className={spendingText}>175,000</Text>
+              <Text as='span' className={spendingText}>{totalExpenseData.total_expense.toLocaleString()}</Text>
               원을 사용했어요
             </Text>
           </Box>
           {/* <Box className={progress}>여러분 여기는 프로그래스바입니다</Box> */}
           <AnimatedLineProgressBar
-            percent={48}
+            percent={Math.min(usedPercentage, 100)}
             transition={{ easing: 'linear' }}
             rounded={36}
             progressColor="linear-gradient(to right, #F03167, #F35F89, #FFA5BE)"
@@ -84,7 +107,8 @@ const SideBar = () => {
             width={400}
             height={48}
             className={progress}
-          // label={(value: number) => <CustomLabelComponent percent={value} />}
+            label={(value: number) => <CustomLabelComponent percent={value} />}
+
           />
         </Flex>
 
@@ -93,5 +117,18 @@ const SideBar = () => {
     </Box>
   )
 }
+
+interface CustomLabelComponentProps {
+  percent: number;
+}
+
+const CustomLabelComponent = ({ percent }: CustomLabelComponentProps) => {
+  return (
+    <div className={percentStyle}>
+      {Math.round(percent)}%
+    </div>
+  );
+};
+
 
 export default SideBar

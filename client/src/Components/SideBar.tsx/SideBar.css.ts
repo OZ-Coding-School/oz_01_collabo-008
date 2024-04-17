@@ -50,6 +50,11 @@ export const progress = style({
   borderRadius: "200px",
   margin: "16px 0 126px",
   boxShadow: "3px 1px 10px rgba(240,49,103,0.16)",
+  display: "flex",
+  justifyContent: "start",
+  alignItems: "center",
+  boxSizing: "border-box",
+  padding: "8px",
 });
 
 export const fixedWrap = style({
@@ -89,4 +94,12 @@ export const listItems = style({
 export const listItem = style({
   fontWeight: 600,
   color: "#F03167",
+});
+
+export const percentStyle = style({
+  textAlign: "left",
+  fontWeight: 500,
+  position: "absolute",
+  zIndex: "1",
+  color: "white",
 });
