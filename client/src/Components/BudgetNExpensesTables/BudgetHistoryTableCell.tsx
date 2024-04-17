@@ -1,11 +1,19 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { tableCellClasses } from '@mui/material/TableCell';
-import { styled } from '@mui/material/styles';
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
 import { Box } from "@radix-ui/themes";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { useState } from "react";
-import 'react-datepicker/dist/react-datepicker.css';
+import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import budgetRegRequest from "../../api/budgetRegRequest";
@@ -19,66 +27,66 @@ interface ItemType {
   value: number;
 }
 
-
-
 const BudgetHistoryTableCell = () => {
-  const [year] = useState(new Date().getFullYear())
-  const [month] = useState(new Date().getMonth() + 1)
-  const memberId = localStorage.getItem("memberId")
+  const queryClient = useQueryClient();
+  const [year] = useState(new Date().getFullYear());
+  const [month] = useState(new Date().getMonth() + 1);
+  const memberId = localStorage.getItem("memberId");
 
-  const [modifyId, setModifyId] = useState<number | null>(null)
-  const [modifyValue, setModifyValue] = useState("")
-
-
+  const [modifyId, setModifyId] = useState<number | null>(null);
+  const [modifyValue, setModifyValue] = useState("");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["budgetList"],
     queryFn: async () => {
       try {
-        const response = await instance.get(budgetRegRequest.budgetList + `/${memberId}?year=${year}&month=${month}`);
+        const response = await instance.get(
+          budgetRegRequest.budgetList +
+            `/${memberId}?year=${year}&month=${month}`
+        );
 
         // 최신 데이터 맨 위로 정렬
-        const data = response.data.budget_list.sort((a: { created_at: moment.MomentInput; }, b: { created_at: moment.MomentInput; }) => moment(b.created_at).valueOf() - moment(a.created_at).valueOf());
+        const data = response.data.budget_list.sort(
+          (
+            a: { created_at: moment.MomentInput },
+            b: { created_at: moment.MomentInput }
+          ) => moment(b.created_at).valueOf() - moment(a.created_at).valueOf()
+        );
         return data;
       } catch (error) {
         throw new Error("전체 예산 조회 에러");
-
       }
     },
-  })
+  });
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error:{error.message}</div>
-
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error:{error.message}</div>;
 
   // 예산 수정
   const handleClickModify = (id: number, value: number) => {
-    setModifyId(id)
-    setModifyValue(value.toString())
-  }
+    setModifyId(id);
+    setModifyValue(value.toString());
+  };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setModifyValue(e.target.value)
-  }
+    setModifyValue(e.target.value);
+  };
 
   const handleModify = async (budgetId: number) => {
     try {
       await instance.put(budgetRegRequest.modifyBudget + `/${budgetId}`, {
-        value: modifyValue
-      })
+        value: modifyValue,
+      });
       setModifyId(null);
-      toast.success("예산이 수정되었습니다.")
+      toast.success("예산이 수정되었습니다.");
+      queryClient.invalidateQueries("budgetList");
     } catch (error) {
-      console.error("예산수정에러", error)
+      console.error("예산수정에러", error);
     }
-  }
-
-
+  };
 
   return (
-
     <>
-
       <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -90,8 +98,6 @@ const BudgetHistoryTableCell = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-
-
               {data.map((item: ItemType) => (
                 <StyledTableRow key={item.id}>
                   <StyledTableCell align="left">
@@ -99,21 +105,31 @@ const BudgetHistoryTableCell = () => {
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     {modifyId === item.id ? (
-                      <Input type="text" value={modifyValue} onChange={handleEditChange} />
+                      <Input
+                        type="number"
+                        value={modifyValue}
+                        onChange={handleEditChange}
+                      />
                     ) : (
                       item.value.toLocaleString()
-
                     )}
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     {modifyId === item.id ? (
-                      <button className={modifyBtn} onClick={() => handleModify(item.id)}>등록</button>
+                      <button
+                        className={modifyBtn}
+                        onClick={() => handleModify(item.id)}
+                      >
+                        등록
+                      </button>
                     ) : (
-                      <button className={modifyBtn} onClick={() => handleClickModify(item.id, item.value)}>
+                      <button
+                        className={modifyBtn}
+                        onClick={() => handleClickModify(item.id, item.value)}
+                      >
                         수정
                       </button>
                     )}
-
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -125,13 +141,11 @@ const BudgetHistoryTableCell = () => {
   );
 };
 
-
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "white",
     color: "black",
     borderBottom: "2px solid #FFF4F5",
-
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -139,17 +153,17 @@ const StyledTableCell = styled(TableCell)(() => ({
 }));
 
 const StyledTableRow = styled(TableRow)(() => ({
-  '&:nth-of-type(odd)': {
+  "&:nth-of-type(odd)": {
     backgroundColor: "white", // 짝수 번째 행의 배경색
   },
-  '&:nth-of-type(even)': {
+  "&:nth-of-type(even)": {
     backgroundColor: "#FFF4F5", // 홀수 번째 행의 배경색
   },
   // 마지막 테두리 숨기기
-  '&:last-child td, &:last-child th': {
+  "&:last-child td, &:last-child th": {
     border: 0,
   },
-  '& td, & th': {
+  "& td, & th": {
     borderBottom: `none`, // 경계선의 색상과 두께 조정
   },
 }));

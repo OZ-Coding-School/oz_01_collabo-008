@@ -1,35 +1,53 @@
-import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
-import { Avatar, Badge } from "@mui/material";
-import { Link } from "react-router-dom";
-import { belliIcon, header, listItem, logo, nav, user } from "./Header.css";
+import { To, useNavigate } from "react-router-dom";
+import {
+  header,
+  listItem,
+  logo,
+  nav,
+  profileImg,
+  selectedListItem,
+  user,
+} from "./Header.css";
+import {
+  BUDGET_N_FIXED_EXPENSES_COMPONENT,
+  BUDGET_REGISTER_PAGE,
+  MONTHLY_REPORT,
+  MY_PAGE,
+} from "../../constants/components-contants";
+import { useState } from "react";
 const Header = () => {
+  const navigation = useNavigate();
+  const [currentPath, setCurrentPath] = useState("/");
+
+  const navItems = [
+    { name: "지출등록", path: BUDGET_REGISTER_PAGE },
+    { name: "전체예산/고정지출", path: BUDGET_N_FIXED_EXPENSES_COMPONENT },
+    { name: "보고서", path: MONTHLY_REPORT },
+  ];
+
+  const handleClick = (path: string) => {
+    setCurrentPath(path);
+    navigation(path);
+  };
   return (
     <header className={header}>
-      <div className={logo}>RR</div>
+      <div className={logo} onClick={() => handleClick("/")}>
+        RR
+      </div>
       <ul className={nav}>
-        <li className={listItem}>지출리스트</li>
-        <li className={listItem}>전체예산/고정지출</li>
-        <li className={listItem}>
-          <Link to='/monthlyreport'>보고서</Link>
-        </li>
+        {navItems.map((item, index) => (
+          <li
+            key={index}
+            className={currentPath === item.path ? selectedListItem : listItem}
+            onClick={() => handleClick(item.path)}
+          >
+            {item.name}
+          </li>
+        ))}
       </ul>
 
-      <div className={user}>
-        <Avatar sx={{ bgcolor: "#FEACC3" }}>N</Avatar>
-        <Badge
-          sx={{
-            ".MuiBadge-dot": {
-              backgroundColor: "#E64A2C", // 뱃지 색상 변경
-            },
-          }}
-          variant='dot'
-          overlap='circular'
-        >
-          <NotificationsRoundedIcon
-            sx={{ fontSize: 40, color: "#D5D5D5" }}
-            className={belliIcon}
-          />
-        </Badge>
+      <div className={user} onClick={() => handleClick(MY_PAGE)}>
+        <img src="/images/jandi.png" alt="profileImg" className={profileImg} />
       </div>
     </header>
   );

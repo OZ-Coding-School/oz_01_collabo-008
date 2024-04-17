@@ -19,6 +19,7 @@ export const logo = style({
   justifyContent: "center",
   alignItems: "center",
   fontWeight: "bold",
+  cursor: "pointer",
 });
 
 export const nav = style({
@@ -28,8 +29,9 @@ export const nav = style({
 });
 
 export const user = style({
-  display: "flex",
-  justifyContent: "space-between",
+  width: "50px",
+  height: "50px",
+  borderRadius: "25px",
 });
 
 export const belliIcon = style({
@@ -40,8 +42,20 @@ export const listItem = style({
   // 기본 스타일
   padding: "10px 15px",
   cursor: "pointer",
-  ":hover": {
-    borderBottom: "2px solid #F03167", // 호버 시 하단 테두리 스타일
-  },
   boxSizing: "border-box",
+});
+
+export const selectedListItem = style({
+  color: "#F03167",
+  fontWeight: 600,
+  padding: "10px 15px",
+  cursor: "pointer",
+  boxSizing: "border-box",
+});
+
+export const profileImg = style({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  borderRadius: "25px",
 });

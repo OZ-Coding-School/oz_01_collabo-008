@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +61,7 @@ const paymentMap: { [key: number]: string } = {
   3: "계좌이체",
 };
 const ExpenditureList = () => {
+  const queryClient = useQueryClient();
   const [year] = useState(new Date().getFullYear());
   const [month] = useState(new Date().getMonth() + 1);
   const memberId: string | null = localStorage.getItem("memberId");
@@ -164,6 +165,7 @@ const ExpenditureList = () => {
       });
       setModifyId(null);
       toast.success("지출이 수정되었습니다.");
+      queryClient.invalidateQueries("expensesList");
     } catch (error) {
       console.error("예산수정에러", error);
     }
@@ -173,6 +175,7 @@ const ExpenditureList = () => {
     try {
       await instance.delete(expenseRequest.expenseModify + `/${expenseId}`);
       toast.success("지출이 삭제되었습니다");
+      queryClient.invalidateQueries("expensesList");
     } catch (error) {
       console.error("지출 삭제 에러", error);
     }
