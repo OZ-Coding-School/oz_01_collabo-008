@@ -13,10 +13,7 @@ import MonthlyReport from "./pages/MonthlyReport/MonthlyReport";
 import Main from "./pages/MainPage/Main";
 import Mypage from "./pages/Mypage/Mypage";
 
-import {
-  QueryClient,
-  QueryClientProvider
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BUDGET_N_FIXED_EXPENSES_COMPONENT,
   BUDGET_REGISTER_PAGE,
@@ -102,6 +99,7 @@ function App() {
             <Route path={BUDGET_REGISTER_PAGE} element={<BudgetRegister />} />
 
             <Route path={MY_PAGE} element={<Mypage />} />
+            <Route path={MONTHLY_REPORT} element={<MonthlyReport />} />
 
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

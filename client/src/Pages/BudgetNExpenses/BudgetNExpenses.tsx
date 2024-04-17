@@ -22,6 +22,8 @@ import {
   totalBudgetBox,
   wrapper,
 } from "./BudgetNExpenses.css.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 interface ExpenseItem {
   price: string;
@@ -29,6 +31,7 @@ interface ExpenseItem {
 }
 
 const BudgetNExpenses = () => {
+  const queryClient = useQueryClient();
   const [budget, setBudget] = useState<string>("");
   const [isAddRowClicked, setIsAddRowClicked] = useState<
     { price: string; category: string }[]
@@ -64,7 +67,7 @@ const BudgetNExpenses = () => {
         expenses
       );
       console.log("고정 지출 등록 성공", response);
-      window.location.reload();
+      queryClient.invalidateQueries("fixedExpense");
     } catch (error) {
       console.log("고정지출 등록 에러", error);
     }
@@ -78,6 +81,8 @@ const BudgetNExpenses = () => {
         value: budget,
       });
       console.log("전체예산 등록성공");
+      toast.success("예산이 등록되었습니다");
+      queryClient.invalidateQueries("budgetList");
     } catch (error) {
       console.error("전체 예산등록 에러");
     }
@@ -132,6 +137,7 @@ const BudgetNExpenses = () => {
                     value={budget}
                     onChange={(event) => setBudget(event.target.value)}
                     autoFocus
+                    type="number"
                   ></TextField>
                   <button
                     className={addBtn}

@@ -11,7 +11,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import instance from "../../api/axios.ts";
 import categoriesRequest from "../../api/categoriesRequest.ts";
@@ -70,6 +70,8 @@ const ExpensesRegiTableCell = ({
   const [expenses, setExpenses] = useState<
     { index: number; category: string; price: string }[]
   >([]);
+
+  const queryClient = useQueryClient();
 
   const memberId: string | null = localStorage.getItem("memberId");
   const [modifyId, setModifyId] = useState<number | null>(null);
@@ -168,6 +170,7 @@ const ExpensesRegiTableCell = ({
       });
       setModifyId(null);
       toast.success("고정지출이 수정되었습니다.");
+      queryClient.invalidateQueries("fixedExpense");
     } catch (error) {
       console.error("고정지출 에러", error);
     }
@@ -182,6 +185,8 @@ const ExpensesRegiTableCell = ({
         prevExpenses.filter((expense) => expense.id !== fixedExpenseId)
       );
       toast.success("고정지출이 삭제되었습니다.");
+
+      queryClient.invalidateQueries("fixedExpense");
     } catch (error) {
       console.error("고정지출 삭제 에러", error);
       toast.error("고정지출 삭제에 실패했습니다.");
