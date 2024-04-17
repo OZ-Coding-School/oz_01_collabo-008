@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    image: swanycastle/django:latest
+    volumes:
+      - .:/app
+    ports:
+      - 80:80
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./db_data:/var/lib/mysql
+
+volumes:
+  db_data:
