@@ -11,107 +11,137 @@ import { expenseBtn, expenseBtnWrap } from "../../pages/MainPage/Main.css";
 import { datepicker } from "../BudgetRegTable/BudgetRegTable.css";
 import Input from "../Input/Input";
 import SelectBox from "../SelectBox/Select";
-import { evenRow, h1, head, modifyBtn, oddRow, table, td, title, wrap } from "./ExpenditureList.css";
+import {
+  evenRow,
+  h1,
+  head,
+  modifyBtn,
+  oddRow,
+  table,
+  td,
+  title,
+  wrap,
+} from "./ExpenditureList.css";
 
 interface ItemType {
   id: number;
   content: number;
 }
 
-
 interface Payment extends ItemType {
-  type: string
+  type: string;
 }
+
+interface ExpenseItemType {
+  id: number;
+  date: Date;
+  category: string;
+  payment: string;
+  location: string;
+  price: string;
+  content: string;
+}
+
 const categoryMap: { [key: number]: string } = {
-  1: '식비',
-  2: '주거/통신',
-  3: '생활용품',
-  4: '의복/미용',
-  5: '건강/문화',
-  6: '교육/육아',
-  7: '교통/차량',
-  8: '경조사/회비',
-  9: '세금/이자',
-  10: '기타'
-}
+  1: "식비",
+  2: "주거/통신",
+  3: "생활용품",
+  4: "의복/미용",
+  5: "건강/문화",
+  6: "교육/육아",
+  7: "교통/차량",
+  8: "경조사/회비",
+  9: "세금/이자",
+  10: "기타",
+};
 
 const paymentMap: { [key: number]: string } = {
-  1: '현금',
-  2: '카드',
-  3: "계좌이체"
-}
+  1: "현금",
+  2: "카드",
+  3: "계좌이체",
+};
 const ExpenditureList = () => {
-  const [year] = useState(new Date().getFullYear())
-  const [month] = useState(new Date().getMonth() + 1)
+  const [year] = useState(new Date().getFullYear());
+  const [month] = useState(new Date().getMonth() + 1);
   const memberId: string | null = localStorage.getItem("memberId");
   const [modifyId, setModifyId] = useState(null);
-  const [modifiedDate, setModifiedDate] = useState(new Date());
+  const [modifiedDate, setModifiedDate] = useState<Date | null>(new Date());
   const [modifiedCategory, setModifiedCategory] = useState("");
   const [modifiedPayment, setModifiedPayment] = useState("");
   const [modifiedLocation, setModifiedLocation] = useState("");
   const [modifiedPrice, setModifiedPrice] = useState("");
   const [modifiedContent, setModifiedContent] = useState("");
-  const navigation = useNavigate()
+  const navigation = useNavigate();
 
-
-  const { data: expenseListData, isLoading: isExpenseListLoading, error: expenseListError } = useQuery({
+  const {
+    data: expenseListData,
+    isLoading: isExpenseListLoading,
+    error: expenseListError,
+  } = useQuery({
     queryKey: ["expensesList"],
     queryFn: async () => {
       try {
-        const response = await instance.get(expenseRequest.expense + `/${memberId}?year=${year}&month=${month}`)
-        const expenseListData = response.data.expenses_list
-        console.log("지출 목록", expenseListData)
-        return expenseListData
+        const response = await instance.get(
+          expenseRequest.expense + `/${memberId}?year=${year}&month=${month}`
+        );
+        const expenseListData = response.data.expenses_list;
+        console.log("지출 목록", expenseListData);
+        return expenseListData;
       } catch (error) {
-        throw new Error("지출 목록 조회 에러")
+        throw new Error("지출 목록 조회 에러");
       }
-    }
-  })
+    },
+  });
 
-  // 카테고리 
+  // 카테고리
   const { data, isLoading, error } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       try {
         const response = await instance.get(categoriesRequest.category);
-        const data = response.data.categories
-        console.log("카테고리 조회 성공", data)
-        return data
+        const data = response.data.categories;
+        console.log("카테고리 조회 성공", data);
+        return data;
       } catch (error) {
-        throw new Error("카테고리 조회 에러")
+        throw new Error("카테고리 조회 에러");
       }
-    }
-  })
+    },
+  });
 
   const options = data?.map((item: ItemType) => ({
     value: item.id,
-    label: item.content
+    label: item.content,
   }));
 
-
   //지불방법
-  const { data: paymentData, isLoading: isPaymentLoading, error: paymentError } = useQuery({
+  const {
+    data: paymentData,
+    isLoading: isPaymentLoading,
+    error: paymentError,
+  } = useQuery({
     queryKey: ["payments"],
     queryFn: async () => {
       try {
         const response = await instance.get(categoriesRequest.payment);
-        const data = response.data.payments
-        console.log("지불방법", data)
-        return data
+        const data = response.data.payments;
+        console.log("지불방법", data);
+        return data;
       } catch (error) {
-        throw new Error("카테고리 조회 에러")
+        throw new Error("카테고리 조회 에러");
       }
-    }
-  })
+    },
+  });
 
   const payment = paymentData?.map((item: Payment) => ({
     value: item.id,
-    label: item.type
-  }))
+    label: item.type,
+  }));
 
   useEffect(() => {
     if (modifyId !== null) {
-      const row = expenseListData.find(item => item.id === modifyId);
+      const row = (expenseListData as ExpenseItemType[]).find(
+        (item) => item.id === modifyId
+      );
       if (row) {
         setModifiedDate(new Date(row.date));
         setModifiedCategory(row.category);
@@ -130,49 +160,36 @@ const ExpenditureList = () => {
         payment: modifiedPayment,
         location: modifiedLocation,
         price: modifiedPrice,
-        content: modifiedContent
+        content: modifiedContent,
       });
       setModifyId(null);
-      toast.success("지출이 수정되었습니다.")
+      toast.success("지출이 수정되었습니다.");
     } catch (error) {
       console.error("예산수정에러", error);
-
     }
   };
 
   const deleteList = async (expenseId: number) => {
     try {
-      await instance.delete(expenseRequest.expenseModify + `/${expenseId}`)
-      toast.success("지출이 삭제되었습니다")
+      await instance.delete(expenseRequest.expenseModify + `/${expenseId}`);
+      toast.success("지출이 삭제되었습니다");
     } catch (error) {
-      console.error("지출 삭제 에러", error)
+      console.error("지출 삭제 에러", error);
     }
-  }
+  };
 
   const handleClick = () => {
-    navigation(BUDGET_REGISTER_PAGE)
+    navigation(BUDGET_REGISTER_PAGE);
+  };
 
-  }
+  if (isExpenseListLoading) return <div>Loading...</div>;
+  if (expenseListError) return <div>Error:{expenseListError.message}</div>;
 
+  if (isPaymentLoading) return <div>Loading...</div>;
+  if (paymentError) return <div>Error:{paymentError.message}</div>;
 
-  if (isExpenseListLoading) return <div>Loading...</div>
-  if (expenseListError) return <div>Error:{expenseListError.message}</div>
-
-  if (isPaymentLoading) return <div>Loading...</div>
-  if (paymentError) return <div>Error:{paymentError.message}</div>
-
-
-
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error:{error.message}</div>
-
-
-
-
-
-
-
-
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error:{error.message}</div>;
 
   return (
     <div className={wrap}>
@@ -210,14 +227,22 @@ const ExpenditureList = () => {
                 </td>
                 <td className={td}>
                   {modifyId === row.id ? (
-                    <SelectBox defaultValue={modifiedCategory} options={options} onChange={(value) => console.log(value)} />
+                    <SelectBox
+                      defaultValue={modifiedCategory}
+                      options={options}
+                      onChange={(value) => console.log(value)}
+                    />
                   ) : (
                     categoryMap[row.category]
                   )}
                 </td>
                 <td className={td}>
                   {modifyId === row.id ? (
-                    <SelectBox defaultValue={modifiedPayment} options={payment} onChange={(value) => console.log(value)} />
+                    <SelectBox
+                      defaultValue={modifiedPayment}
+                      options={payment}
+                      onChange={(value) => console.log(value)}
+                    />
                   ) : (
                     paymentMap[row.payment]
                   )}
@@ -257,12 +282,17 @@ const ExpenditureList = () => {
                 </td>
                 <td className={td}>
                   {modifyId === row.id ? (
-                    <button className={modifyBtn} onClick={() => handleModify(row.id)}>
+                    <button
+                      className={modifyBtn}
+                      onClick={() => handleModify(row.id)}
+                    >
                       저장
                     </button>
-
                   ) : (
-                    <button className={modifyBtn} onClick={() => setModifyId(row.id)}>
+                    <button
+                      className={modifyBtn}
+                      onClick={() => setModifyId(row.id)}
+                    >
                       수정
                     </button>
                   )}
@@ -272,21 +302,25 @@ const ExpenditureList = () => {
                   {modifyId === row.id ? (
                     <div></div>
                   ) : (
-                    <button className={modifyBtn} onClick={() => deleteList(row.id)}>
+                    <button
+                      className={modifyBtn}
+                      onClick={() => deleteList(row.id)}
+                    >
                       삭제
                     </button>
-                  )
-                  }
+                  )}
                 </td>
               </tr>
             ))}
         </tbody>
       </table>
       <div className={expenseBtnWrap}>
-        <button className={expenseBtn} onClick={handleClick}>지출 등록</button>
+        <button className={expenseBtn} onClick={handleClick}>
+          지출 등록
+        </button>
       </div>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
-export default ExpenditureList
+export default ExpenditureList;

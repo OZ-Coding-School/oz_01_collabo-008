@@ -1,7 +1,7 @@
 import { Box, Button, Container, Divider, TextField } from "@mui/material";
 import { Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import instance from "../../api/axios.ts";
 import budgetRegRequest from "../../api/budgetRegRequest.ts";
 import fixedRequest from "../../api/fixedRequest.ts";
@@ -23,25 +23,28 @@ import {
   wrapper,
 } from "./BudgetNExpenses.css.ts";
 
+interface ExpenseItem {
+  price: string;
+  category: string;
+}
+
 const BudgetNExpenses = () => {
-
   const [budget, setBudget] = useState<string>("");
-  const [isAddRowClicked, setIsAddRowClicked] = useState([]);
+  const [isAddRowClicked, setIsAddRowClicked] = useState<
+    { price: string; category: string }[]
+  >([]);
 
-  // const [price, setPrice] = useState("")
-  // const [category, setCategory] = useState("")
-  const [expenses, setExpenses] = useState([]);
-  const memberId = localStorage.getItem("memberId")
+  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+  const memberId = localStorage.getItem("memberId");
   //#region 고정 지출 등록
   const handleClickAddRow = () => {
     setIsAddRowClicked((prevExpenses) => [
       ...prevExpenses,
-      { price: "", category: "" } // 새 지출 항목의 초기값 설정
+      { price: "", category: "" }, // 새 지출 항목의 초기값 설정
     ]);
   };
 
-
-  const handleExpenseChange = (index, field, value) => {
+  const handleExpenseChange = (index: number, field: string, value: string) => {
     setExpenses((prevExpenses) => {
       const updatedExpenses = [...prevExpenses];
       const updatedExpense = { ...updatedExpenses[index], [field]: value };
@@ -50,51 +53,49 @@ const BudgetNExpenses = () => {
     });
   };
 
-
-
   const handleClickRegi = async () => {
     // setIsExpRegiClicked((prevState) => !prevState);
     // BudgetHistoryTableCell에서 state에 저장되도록
     // 배열로 출력되는지 확인해보기
 
     try {
-      const response = await instance.post(fixedRequest.fixedReg + `/${memberId}`, expenses)
-      console.log("고정 지출 등록 성공", response)
-      window.location.reload()
+      const response = await instance.post(
+        fixedRequest.fixedReg + `/${memberId}`,
+        expenses
+      );
+      console.log("고정 지출 등록 성공", response);
+      window.location.reload();
     } catch (error) {
-      console.log("고정지출 등록 에러", error)
+      console.log("고정지출 등록 에러", error);
     }
-
   };
   //#endregion
-
 
   //#region 전체 예산 등록
   const handleClickBudgetRegistration = async () => {
     try {
       await instance.post(budgetRegRequest.budget + `/${memberId}`, {
-        value: budget
-      })
-      console.log('전체예산 등록성공')
+        value: budget,
+      });
+      console.log("전체예산 등록성공");
     } catch (error) {
-      console.error("전체 예산등록 에러")
+      console.error("전체 예산등록 에러");
     }
   };
   //#endregion
 
-
   return (
     <Box className={box}>
       <SideBar />
-      <Container className={container} maxWidth="xl" >
+      <Container className={container} maxWidth="xl">
         <Box className={wrapper}>
           <Box className={totalBudgetBox}>
-            <Text className={headText} as='div'>
+            <Text className={headText} as="div">
               예산 등록
             </Text>
             <Box>
               <Box>
-                <Text as='p' className={explainText}>
+                <Text as="p" className={explainText}>
                   고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
                 </Text>
                 <Divider
@@ -127,21 +128,22 @@ const BudgetNExpenses = () => {
                         },
                       },
                     }}
-                    name='totalBudget'
+                    name="totalBudget"
                     value={budget}
                     onChange={(event) => setBudget(event.target.value)}
                     autoFocus
                   ></TextField>
-                  <button className={addBtn}
+                  <button
+                    className={addBtn}
                     onClick={handleClickBudgetRegistration}
-                  // disabled={!budget.trim()}
+                    // disabled={!budget.trim()}
                   >
                     등록하기
                   </button>
                 </Box>
               </Box>
               <Box className={budgetHistory}>
-                <Text as='p' className={explainText}>
+                <Text as="p" className={explainText}>
                   예산 히스토리
                 </Text>
                 <Box className={bugetHistoryTable}>
@@ -151,11 +153,11 @@ const BudgetNExpenses = () => {
             </Box>
           </Box>
           <Box className={fixedExpenseBox}>
-            <Text className={headText} as='div'>
+            <Text className={headText} as="div">
               고정 지출 등록
             </Text>
             <Box sx={{ display: "flex" }}>
-              <Text as='p' className={explainText}>
+              <Text as="p" className={explainText}>
                 고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
               </Text>
               <Box
@@ -169,7 +171,7 @@ const BudgetNExpenses = () => {
                 <ButtonForFixedExpRegi onClick={handleClickAddRow}>
                   행 추가하기
                 </ButtonForFixedExpRegi>
-                <ButtonForFixedExpRegi onClick={handleClickRegi} >
+                <ButtonForFixedExpRegi onClick={handleClickRegi}>
                   등록하기
                 </ButtonForFixedExpRegi>
               </Box>
@@ -179,9 +181,8 @@ const BudgetNExpenses = () => {
               <ExpensesRegiTableCell
                 isAddRowClicked={isAddRowClicked}
                 handleExpenseChange={handleExpenseChange}
-              // setPrice={setPrice}
-              // setCategory={setCategory}
-
+                // setPrice={setPrice}
+                // setCategory={setCategory}
               />
             </Box>
           </Box>
@@ -193,8 +194,13 @@ const BudgetNExpenses = () => {
 
 export default BudgetNExpenses;
 
-
-export const ButtonForFixedExpRegi = ({ children, onClick }) => {
+export const ButtonForFixedExpRegi = ({
+  children,
+  onClick,
+}: {
+  children: ReactNode;
+  onClick: () => void;
+}) => {
   const handleClick = () => {
     if (!budgetHistory.trim()) {
       return;
@@ -204,7 +210,7 @@ export const ButtonForFixedExpRegi = ({ children, onClick }) => {
   return (
     <Button
       onClick={handleClick}
-      variant='contained'
+      variant="contained"
       sx={{
         backgroundColor: "#F03167",
         borderRadius: "8px",
