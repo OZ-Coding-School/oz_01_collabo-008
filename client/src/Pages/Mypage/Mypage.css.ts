@@ -18,6 +18,8 @@ export const mainContainer = style({
 
 export const titleWrap = style({
   width: "100%",
+  display: "flex",
+  justifyContent: "space-between",
   fontSize: "30px",
   fontWeight: "500",
   borderBottom: "2px solid #FBEAEB",
@@ -97,18 +99,28 @@ export const imgBtn = style({
 export const btnWrap = style({
   width: "100%",
   display: "flex",
+  justifyContent: "space-between",
+});
+
+export const deleteBtnWrap = style({
+  width: "100%",
+  display: "flex",
   justifyContent: "end",
+});
+export const deleteBtn = style({
+  padding: "10px",
+  outline: "none",
+  color: "#F03167",
+  backgroundColor: "rgba(255,255,255,0.8)",
+  border: "none",
+  cursor: "pointer",
 });
 
 export const modifyBtn = style({
-  padding: "16px",
-  backgroundColor: "#F03167",
   outline: "none",
   border: "none",
   borderRadius: "6px",
-  color: "white",
+  color: "#F03167",
   cursor: "pointer",
-  ":hover": {
-    backgroundColor: "#FF779F",
-  },
+  backgroundColor: "rgba(255,255,255,0.8)",
 });
