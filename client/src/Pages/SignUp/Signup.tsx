@@ -17,14 +17,13 @@ import {
   signupheader,
 } from "./Signup.css.ts";
 
+import axios, { AxiosError } from "axios";
 import { useFormik } from "formik";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import instance from "../../api/axios.ts";
 import requests from "../../api/requests.ts";
-import { useCookies } from "react-cookie";
-import axios, { AxiosError } from "axios";
 
 interface SignUpForm {
   email: string;
@@ -34,7 +33,7 @@ interface SignUpForm {
 }
 const Signup = () => {
   const { VITE_SECRET_KEY } = import.meta.env;
-
+  const { VITE_BASE_REQUEST_URL } = import.meta.env;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -80,7 +79,7 @@ const Signup = () => {
         // ).toString();
         // 사용자 등록을 위한 API 호출
         const response = await axios.post(
-          "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.signUp,
+          VITE_BASE_REQUEST_URL + requests.signUp,
           {
             email: values.email,
             password: values.password,
@@ -125,14 +124,14 @@ const Signup = () => {
         <p className={signupheader}>Sign Up</p>
         {/* 이메일 입력창 */}
         <form className={signupform} onSubmit={handleSubmit}>
-          <label className={signupformLabel} htmlFor="email">
+          <label className={signupformLabel} htmlFor='email'>
             E-mail
           </label>
 
           <input
             className={signupformInput}
-            type="text"
-            id="email"
+            type='text'
+            id='email'
             onChange={handleChange}
             value={values.email}
             onBlur={handleBlur}
@@ -142,13 +141,13 @@ const Signup = () => {
           )}
 
           {/* 이름 입력창 */}
-          <label className={signupformLabel} htmlFor="name">
+          <label className={signupformLabel} htmlFor='name'>
             Name
           </label>
           <input
             className={signupformInput}
-            type="text"
-            id="name"
+            type='text'
+            id='name'
             onChange={handleChange}
             value={values.name}
             onBlur={handleBlur}
@@ -157,21 +156,21 @@ const Signup = () => {
             <div className={error}>{errors.name}</div>
           )}
           {/* 패스워드 입력창 */}
-          <label className={signupformLabel} htmlFor="pw">
+          <label className={signupformLabel} htmlFor='pw'>
             Password
           </label>
           <div className={passwordInputWrap}>
             <input
               className={signupformInput}
               type={showPassword ? "text" : "password"}
-              id="pw"
-              name="password"
+              id='pw'
+              name='password'
               onChange={handleChange}
               value={values.password}
               onBlur={handleBlur}
             />
             <button
-              type="button"
+              type='button'
               className={pwToggleBtn}
               onClick={togglePasswordVisibility}
             >
@@ -183,21 +182,21 @@ const Signup = () => {
           )}
           {/* 패스워드 확인 입력창 */}
 
-          <label className={signupformLabel} htmlFor="cpw">
+          <label className={signupformLabel} htmlFor='cpw'>
             ConfirmPassword
           </label>
           <div className={passwordInputWrap}>
             <input
               className={signupformInput}
               type={showConfirmPassword ? "text" : "password"}
-              id="cpw"
-              name="confirmPassword"
+              id='cpw'
+              name='confirmPassword'
               onChange={handleChange}
               value={values.confirmPassword}
               onBlur={handleBlur}
             />
             <button
-              type="button"
+              type='button'
               className={pwToggleBtn}
               onClick={toggleConfirmPasswordVisibility}
             >
@@ -208,7 +207,7 @@ const Signup = () => {
             <div className={error}>{errors.confirmPassword}</div>
           )}
           {/* 입력 버튼 */}
-          <button className={signupbt} type="submit">
+          <button className={signupbt} type='submit'>
             Sign up
           </button>
         </form>

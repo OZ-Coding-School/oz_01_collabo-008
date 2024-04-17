@@ -62,6 +62,8 @@ class ReportsView(APIView):
 
         return Response(
             data={
+                "status_code": 200,
+                "message": "Success",
                 "total_expenses_by_category": category_total_expenses_list,
                 "total_expenses_by_location": location_expense
             },

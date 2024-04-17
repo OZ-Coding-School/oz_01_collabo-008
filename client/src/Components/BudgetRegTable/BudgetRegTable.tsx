@@ -1,4 +1,4 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import { Box } from "@radix-ui/themes";
@@ -62,7 +62,7 @@ const BudgetRegTable = ({ rows }) => {
     <>
 
       <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
-        <TableContainer component={Paper}>
+        <TableContainer >
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>

@@ -14,19 +14,22 @@ export const totalTextWrap = style({
   display: "flex",
   flexDirection: "column",
   fontSize: "26px",
-  fontWeight: "bold",
+  fontWeight: "600",
 });
 
 export const Budget = style({
   fontSize: "45px",
   color: "#F03167",
   marginTop: "10px",
+  fontWeight: "700",
+  display: "flex",
+  alignItems: "end",
 });
 
 export const wonText = style({
   fontSize: "16px",
   color: "#646464",
-  fontWeight: "800",
+  fontWeight: "600",
   marginLeft: "8px",
 });
 
@@ -61,7 +64,7 @@ export const fixedWrap = style({
 
 export const fixedText = style({
   fontSize: "28px",
-  fontWeight: "bold",
+  fontWeight: "600",
 });
 
 export const list = style({

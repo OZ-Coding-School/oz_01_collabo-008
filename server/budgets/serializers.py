@@ -4,9 +4,4 @@ from .models import Budget
 class BudgetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Budget
-        fields = '__all__'
-
-    def create(self, validated_data):
-        member = self.context["member"]
-        validated_data["member"] = member
-        return Budget.objects.create(**validated_data)
+        fields = ("id", "value", "member", "created_at", "updated_at")

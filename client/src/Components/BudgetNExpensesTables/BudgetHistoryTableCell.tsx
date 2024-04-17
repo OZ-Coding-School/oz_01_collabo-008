@@ -1,73 +1,156 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/material/styles";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { tableCellClasses } from '@mui/material/TableCell';
+import { styled } from '@mui/material/styles';
+import { Box } from "@radix-ui/themes";
+import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
+import { useState } from "react";
+import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from "react-toastify";
+import instance from "../../api/axios";
+import budgetRegRequest from "../../api/budgetRegRequest";
+import { modifyBtn } from "../ExpendituresList/ExpenditureList.css";
+import Input from "../Input/Input";
+import { wrap } from "./BudgetHistoryTableCell.css";
 
-const BudgetHistoryTableCell = ({ budgetData }) => {
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: "white",
-      color: "#3B3B3B",
-      height: 40,
-      padding: "0 20px",
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-      height: 40,
-      padding: "0 20px",
-      color: "#3B3B3B",
-      scrollbarColor: "#6b6b6b #2b2b2b",
-    },
-  }));
+interface ItemType {
+  id: number;
+  created_at: string;
+  value: number;
+}
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(odd)": {
-      backgroundColor: "#FFF4F5",
-    },
-    // hide last border
-    "&:last-child td, &:last-child th": {
-      border: 0,
-    },
-  }));
 
-  const createData = (date, budget) => ({ date, budget });
+
+const BudgetHistoryTableCell = () => {
+  const [year] = useState(new Date().getFullYear())
+  const [month] = useState(new Date().getMonth() + 1)
+  const memberId = localStorage.getItem("memberId")
+
+  const [modifyId, setModifyId] = useState<number | null>(null)
+  const [modifyValue, setModifyValue] = useState("")
+
+
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["budgetList"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(budgetRegRequest.budgetList + `/${memberId}?year=${year}&month=${month}`);
+
+        // 최신 데이터 맨 위로 정렬
+        const data = response.data.budget_list.sort((a: { created_at: moment.MomentInput; }, b: { created_at: moment.MomentInput; }) => moment(b.created_at).valueOf() - moment(a.created_at).valueOf());
+        return data;
+      } catch (error) {
+        throw new Error("전체 예산 조회 에러");
+
+      }
+    },
+  })
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error:{error.message}</div>
+
+
+  // 예산 수정
+  const handleClickModify = (id: number, value: number) => {
+    setModifyId(id)
+    setModifyValue(value.toString())
+  }
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setModifyValue(e.target.value)
+  }
+
+  const handleModify = async (budgetId: number) => {
+    try {
+      await instance.put(budgetRegRequest.modifyBudget + `/${budgetId}`, {
+        value: modifyValue
+      })
+      setModifyId(null);
+      toast.success("예산이 수정되었습니다.")
+    } catch (error) {
+      console.error("예산수정에러", error)
+    }
+  }
+
+
 
   return (
-    <TableContainer
-      component={Paper}
-      sx={{
-        height: 150,
-        boxShadow: "0 2px 4px #FFDAE1",
-        scrollbarWidth: "thin",
-      }}
-    >
-      <Table sx={{ minWidth: 700 }} aria-label='customized table'>
-        <TableHead>
-          <TableRow>
-            <StyledTableCell sx={{ width: "150px" }}>날짜</StyledTableCell>
-            <StyledTableCell align='left'>예산</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {budgetData.map((item, index) => {
-            const { date, budget } = item;
-            return (
-              <StyledTableRow key={index}>
-                <StyledTableCell component='th' scope='row' width='150px'>
-                  {date}
-                </StyledTableCell>
-                <StyledTableCell align='left'>{budget}</StyledTableCell>
-              </StyledTableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+
+    <>
+
+      <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell align="left">날짜</StyledTableCell>
+                <StyledTableCell align="left">등록 예산</StyledTableCell>
+                <StyledTableCell align="left"></StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+
+
+              {data.map((item: ItemType) => (
+                <StyledTableRow key={item.id}>
+                  <StyledTableCell align="left">
+                    {moment(item.created_at).format("YYYY.MM.DD")}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    {modifyId === item.id ? (
+                      <Input type="text" value={modifyValue} onChange={handleEditChange} />
+                    ) : (
+                      item.value.toLocaleString()
+
+                    )}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    {modifyId === item.id ? (
+                      <button className={modifyBtn} onClick={() => handleModify(item.id)}>등록</button>
+                    ) : (
+                      <button className={modifyBtn} onClick={() => handleClickModify(item.id, item.value)}>
+                        수정
+                      </button>
+                    )}
+
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
   );
 };
 
+
+const StyledTableCell = styled(TableCell)(() => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "white",
+    color: "black",
+    borderBottom: "2px solid #FFF4F5",
+
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(() => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: "white", // 짝수 번째 행의 배경색
+  },
+  '&:nth-of-type(even)': {
+    backgroundColor: "#FFF4F5", // 홀수 번째 행의 배경색
+  },
+  // 마지막 테두리 숨기기
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+  '& td, & th': {
+    borderBottom: `none`, // 경계선의 색상과 두께 조정
+  },
+}));
 export default BudgetHistoryTableCell;

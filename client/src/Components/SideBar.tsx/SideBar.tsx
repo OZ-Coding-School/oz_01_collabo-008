@@ -1,18 +1,68 @@
 import { AnimatedLineProgressBar } from '@frogress/line';
 import { Box, Card, Flex, Text } from '@radix-ui/themes';
 import '@radix-ui/themes/styles.css';
-import { Budget, fixedText, fixedWrap, list, listItem, listItems, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import instance from '../../api/axios';
+import budgetRegRequest from '../../api/budgetRegRequest';
+import FixedExpenses from './FixedExpenses/FixedExpenses';
+import { Budget, progress, sideBox, spendingText, spendingTextwrap, totalTextWrap, wonText } from './SideBar.css';
+
+interface ItemType {
+  id: number;
+  created_at: string;
+  value: number;
+}
+
 const SideBar = () => {
+  const [year] = useState(new Date().getFullYear())
+  const [month] = useState(new Date().getMonth() + 1)
+  const memberId = localStorage.getItem("memberId")
+
+  // 전체예산
+  const { data: budgetList, isLoading: isBudgetLoading, error: budgetError } = useQuery({
+    queryKey: ["budget"],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(budgetRegRequest.budgetList + `/${memberId}?year=${year}&month=${month}`)
+        const data = response.data.budget_list
+        return data
+      } catch (error) {
+        throw new Error("전체예산 에러");
+      }
+    }
+  })
+
+  if (isBudgetLoading) return <div>Loading...</div>;
+  if (budgetError) return <div>Error:{budgetError.message}</div>;
+  if (!budgetList || budgetList.length === 0) return <div className={Budget} >0</div>;
+
+  // 데이터 created_at 기준으로 내림차순 정렬
+  const sortedData: ItemType[] = [...budgetList].sort((a: ItemType, b: ItemType) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  // 가장 최신 데이터 선택
+  const latestData = sortedData[0];
+
+
+
   return (
     <Box width="500px" className={sideBox}>
       <Card size="5">
+
         <Flex gap="4" align="center">
           <Box className={totalTextWrap}>
             <Text as="div" weight="bold">
               이번 달 총 예산
             </Text>
-            <Text as="div" className={Budget}>
-              700,000
+            <Text as="div" className={Budget} key={latestData.id}>
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+
+                {latestData.value.toLocaleString()}
+              </motion.p>
               <Text as='span' className={wonText}>원</Text>
             </Text>
           </Box>
@@ -38,19 +88,7 @@ const SideBar = () => {
           />
         </Flex>
 
-        <Box className={fixedWrap}>
-          <Text className={fixedText}>고정지출</Text>
-          <ul className={list}>
-            <li className={listItems}>
-              <Text as='p' className={listItem}>식비</Text>
-              <Text as='p'>200,000</Text>
-            </li>
-            <li className={listItems}>
-              <Text as='p' className={listItem}>공과금</Text>
-              <Text as='p'>400,000</Text>
-            </li>
-          </ul>
-        </Box>
+        <FixedExpenses />
       </Card>
     </Box>
   )
