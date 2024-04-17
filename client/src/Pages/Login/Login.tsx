@@ -5,7 +5,6 @@ import {
   container,
   container2,
   error,
-  errorText,
   footer,
   gosignup,
   info,
@@ -18,14 +17,13 @@ import {
   pwToggleBtn,
 } from "./Login.css.ts";
 
+import axios from "axios";
 import { useFormik } from "formik";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import instance from "../../api/axios.ts";
 import requests from "../../api/requests.ts";
-import { useCookies } from "react-cookie";
-import axios from "axios";
 
 interface LoginForm {
   email: string;
@@ -42,6 +40,8 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
+  // memberId를 위한 변수 추가 by. 손지형
+  const memberId: string | null = localStorage.getItem("memberId");
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -64,7 +64,9 @@ const Login = () => {
         // ).toString();
         // 로그인 위한 API 호출
         const response = await axios.post(
-          "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.login,
+          "http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1" +
+            requests.login,
+          // "https://7fea-59-5-169-61.ngrok-free.app/api/v1" + requests.login,
           {
             email: values.email,
             password: values.password,
@@ -75,6 +77,8 @@ const Login = () => {
         console.log("로그인 성공:", response.data);
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
+        // memberId를 위한 변수 추가 by. 손지형
+        localStorage.setItem("memberId", response.data.member.id);
         navigate("/");
         toast.success("로그인 성공");
       } catch (error) {
@@ -99,14 +103,14 @@ const Login = () => {
         <p className={loginheader}>Login</p>
         {/* 이메일 입력창 */}
         <form className={loginform} onSubmit={handleSubmit}>
-          <label className={loginformLabel} htmlFor="email">
+          <label className={loginformLabel} htmlFor='email'>
             E-mail
           </label>
 
           <input
             className={loginformInput}
-            type="text"
-            id="email"
+            type='text'
+            id='email'
             onChange={handleChange}
             value={values.email}
             onBlur={handleBlur}
@@ -115,21 +119,21 @@ const Login = () => {
             <div className={error}>{errors.email}</div>
           )}
           {/* 패스워드 입력창 */}
-          <label className={loginformLabel} htmlFor="pw">
+          <label className={loginformLabel} htmlFor='pw'>
             Password
           </label>
           <div className={passwordInputWrap}>
             <input
               className={loginformInput}
               type={showPassword ? "text" : "password"}
-              id="pw"
-              name="password"
+              id='pw'
+              name='password'
               onChange={handleChange}
               value={values.password}
               onBlur={handleBlur}
             />
             <button
-              type="button"
+              type='button'
               className={pwToggleBtn}
               onClick={togglePasswordVisibility}
             >
@@ -144,7 +148,7 @@ const Login = () => {
           {/* 입력 버튼 */}
           <button
             className={loginbt}
-            type="submit"
+            type='submit'
             // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
