@@ -8,6 +8,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useCookies } from "react-cookie";
 import { wrap } from "./Calendar.css";
+import instance from "../../api/axios";
+import expenseRequest from "../../api/expenseRequest";
 
 const CalendarList = () => {
   interface Expenses {
@@ -28,13 +30,8 @@ const CalendarList = () => {
       const year = date.getFullYear();
       const month = date.getMonth() + 1; //월은 1 더해야함
       try {
-        const response = await axios.get(
-          `http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1/expenses/${memberId}?year=${year}&month=${month}`,
-          {
-            headers: {
-              Authorization: `Bearer ${cookies.accessToken}`,
-            },
-          }
+        const response = await instance.get(
+          expenseRequest.expense + `/${memberId}?year=${year}&month=${month}`
         );
         setExpenses(response.data.expenses_list);
       } catch (error) {
@@ -80,7 +77,7 @@ const CalendarList = () => {
           view: string;
         }) => handleActiveStartDateChange(data)}
         value={date}
-        calendarType='gregory'
+        calendarType="gregory"
         formatDay={(_locale, date) => moment(date).format("D")}
         tileContent={({ date, view }) =>
           view === "month" && (

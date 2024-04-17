@@ -26,6 +26,9 @@ import {
   resultTextBox,
   titleWrapper,
 } from "./MonthlyReport.css";
+import instance from "../../api/axios";
+import monthlyRequest from "../../api/monthlyRequest";
+import budgetRegRequest from "../../api/budgetRegRequest";
 
 interface MonthlyReportData {
   total_expenses_by_category: {
@@ -74,33 +77,16 @@ function MonthlyReport() {
 
     const fetchData = async () => {
       try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${cookies.accessToken}`,
-            // "ngrok-skip-browser-warning": "69420",
-          },
-        };
-
-        const response = await axios.get(
-          `http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1/reports/${memberId}?year=${year}&month=${month}`,
-          config
+        const response = await instance.get(
+          monthlyRequest.monthly + `/${memberId}?year=${year}&month=${month}`
         );
 
         setData(response.data);
-        // 새로운 토큰을 쿠키에 저장
-        if (response.data.refreshToken && response.data.accessToken) {
-          setCookies("refreshToken", response.data.refreshToken, {
-            path: "/monthlyreport",
-          });
-          setCookies("accessToken", response.data.accessToken, {
-            path: "/monthlyreport",
-          });
-        }
 
         //total Budget 가져오기
-        const budgetResponse = await axios.get(
-          `http://ec2-13-124-35-222.ap-northeast-2.compute.amazonaws.com/api/v1/budgets/${memberId}?year=${year}&month=${month}`,
-          config
+        const budgetResponse = await instance.get(
+          budgetRegRequest.budgetList +
+            `/${memberId}?year=${year}&month=${month}`
         );
 
         console.log("budgetData : ", budgetResponse.data);
@@ -142,7 +128,7 @@ function MonthlyReport() {
       <Box className={container}>
         <Box className={titleWrapper}>
           <Text className={headText}>이번 달 레포트</Text>
-          <Text as='p' className={explainText}>
+          <Text as="p" className={explainText}>
             이번 달 지출한 금액을 레포트로 확인해보세요
           </Text>
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
@@ -152,7 +138,7 @@ function MonthlyReport() {
             <Box>
               이번 달 총 예산{" "}
               <Box
-                component='span'
+                component="span"
                 sx={{
                   color: "#F03167",
                   fontSize: "2.1rem",
@@ -171,7 +157,7 @@ function MonthlyReport() {
             <Box>
               +{" "}
               <Box
-                component='span'
+                component="span"
                 sx={{
                   color: "#F03167",
                   fontSize: "2.1rem",
