@@ -5,10 +5,12 @@ from django.utils import timezone
 
 from .models import Budget
 from members.models import Member
+from members.views import get_member_id
 from .serializers import BudgetSerializer
 
-class BudgetView(APIView):
-    def get(self, request, member_id):
+class BudgetListView(APIView):
+    def get(self, request):
+        member_id = get_member_id(request=request)
         budgets = Budget.objects.filter(member_id=member_id)
 
         serializer = BudgetSerializer(budgets, many=True)
@@ -21,7 +23,8 @@ class BudgetView(APIView):
             status=status.HTTP_200_OK
         )
 
-    def post(self, request, member_id):
+    def post(self, request):
+        member_id = get_member_id(request=request)
         member = Member.objects.filter(pk=member_id).first()
         if member is None:
             return Response(

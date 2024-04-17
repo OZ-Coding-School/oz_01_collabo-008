@@ -5,10 +5,12 @@ from django.db.models import Sum, Q, Value
 from django.db.models.functions import Coalesce
 
 from expenses.models import Category, Expense
+from members.views import get_member_id
 
 
-class ReportsView(APIView):
-    def get(self, request, member_id):
+class ReportListView(APIView):
+    def get(self, request):
+        member_id = get_member_id(request=request)
         year = request.GET.get("year", None)
         month = request.GET.get("month", None)
 

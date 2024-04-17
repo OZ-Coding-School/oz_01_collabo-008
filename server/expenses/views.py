@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
 
 from members.models import Member
+from members.views import get_member_id
 from .models import (
     Expense, FixedExpense, Category, Payment
 )
@@ -18,7 +19,8 @@ from .serializers import (
 
 
 class FixedExpenseView(APIView):
-    def get(self, request, member_id):
+    def get(self, request):
+        member_id = get_member_id(request=request)
         fixed_expenses = FixedExpense.objects.filter(member_id=member_id)
         serializer = FixedExpenseSerializer(fixed_expenses, many=True)
         total_category_expenses = FixedExpense.objects.filter(member_id=member_id).values('category').annotate(total_price=Sum('price'))
@@ -33,7 +35,8 @@ class FixedExpenseView(APIView):
             status=status.HTTP_200_OK
         )
 
-    def post(self, request, member_id):
+    def post(self, request):
+        member_id = get_member_id(request=request)
         member = Member.objects.filter(pk=member_id).first()
         if member is None:
             return Response(
@@ -43,6 +46,7 @@ class FixedExpenseView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
+        print(request.data)
         serializer = FixedExpenseSerializer(
             data=request.data,
             many=True,
@@ -117,8 +121,9 @@ class FixedExpenseDetailView(APIView):
         )
 
 
-class ExpenseView(APIView):
-    def get(self, request, member_id):
+class ExpenseListView(APIView):
+    def get(self, request):
+        member_id = get_member_id(request=request)
         year = request.GET.get('year', None)
         month = request.GET.get('month', None)
         if year is None or month is None:
@@ -143,8 +148,8 @@ class ExpenseView(APIView):
             status=status.HTTP_200_OK
         )
 
-
-    def post(self, request, member_id):
+    def post(self, request):
+        member_id = get_member_id(request=request)
         member = Member.objects.filter(pk=member_id).first()
         if member is None:
             return Response(

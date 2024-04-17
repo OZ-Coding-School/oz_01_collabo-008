@@ -3,12 +3,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, NotAuthenticated
 from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from .models import Member
 from .serializers import MemberSerializer, MyTokenObtainPairSerializer
+from config.settings import env
+
+import boto3
 
 
 class RegisterMember(APIView):
@@ -75,9 +79,6 @@ class LoginView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-            response.set_cookie(key="access", value=access_token, httponly=False)
-            response.set_cookie(key="refresh", value=refresh_token, httponly=False)
-
             return response
         return Response(
             data={
@@ -92,7 +93,6 @@ class RefreshTokenView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
-        # 새로 발급된 토큰값을 쿠키에 설정합니다.
         if 'access' in response.data:
             access_token = response.data['access']
             response.set_cookie(key='access_token', value=access_token)
@@ -101,8 +101,8 @@ class RefreshTokenView(TokenRefreshView):
 
 class LogoutView(APIView):
     def post(self, request):
-        refresh_token = request.COOKIES.get("refresh")
-        if not refresh_token:
+        refresh_token = request.data["refreshToken"]
+        if refresh_token is None:
             return Response(
                 data={
                     "detail": "No refresh token provided"
@@ -119,8 +119,6 @@ class LogoutView(APIView):
                 },
                 status=status.HTTP_200_OK
             )
-            response.delete_cookie("access")
-            response.delete_cookie("refresh")
             return response
         except Exception as e:
             return Response(
@@ -146,7 +144,8 @@ class MemberDetailView(APIView):
         except Member.DoesNotExist:
             raise NotFound
 
-    def get(self, request, member_id):
+    def get(self, request):
+        member_id = get_member_id(request=request)
         member = self.get_member(request=request, member_id=member_id)
         if member:
             serializer = MemberSerializer(member)
@@ -156,13 +155,6 @@ class MemberDetailView(APIView):
                 "member": serializer.data
             }
             return Response(data=response, status=status.HTTP_200_OK)
-
-            # ACCESS_TOKEN = request.COOKIES.get("access")
-            # REFRESH_TOKEN = request.COOKIES.get("refresh")
-
-            # response.set_cookie("access", ACCESS_TOKEN, httponly=True)
-            # response.set_cookie("refresh", REFRESH_TOKEN, httponly=True)
-
         return Response(
             data={
                 "status_code": 400,
@@ -171,7 +163,8 @@ class MemberDetailView(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    def put(self, request, member_id):
+    def put(self, request):
+        member_id = get_member_id(request=request)
         member = self.get_member(request=request, member_id=member_id)
         if member is None:
             return Response(
@@ -193,7 +186,8 @@ class MemberDetailView(APIView):
             return Response(data=response, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, member_id):
+    def delete(self, request):
+        member_id = get_member_id(request=request)
         member = self.get_member(request=request, member_id=member_id)
         if member is None:
             return Response(
@@ -211,3 +205,85 @@ class MemberDetailView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+class UploadProfileImageView(APIView):
+    def upload_image_to_naver_cloud(self, image_file):
+        try:
+            ncloud = boto3.client(
+                's3',
+                endpoint_url=env('NCLOUD_ENDPOINT_URL'),
+                aws_access_key_id=env("NCLOUD_ACCESS_KEY"),
+                aws_secret_access_key=env("NCLOUD_SECRET_KEY"),
+                region_name=env("NCLOUD_REGION_NAME")
+            )
+            bucket_name = env("NCLOUD_BUCKET_NAME")
+            ncloud.upload_fileobj(image_file, bucket_name, image_file.name)
+            image_url = f"{env('NCLOUD_ENDPOINT_URL')}/{bucket_name}/{image_file.name}"
+            return image_url
+        except Exception as e:
+            return f"error: {str(e)}"
+
+    def post(self, request):
+        image_file = request.FILES.get('image')
+
+        if not image_file:
+            return Response(
+                data={
+                    "status_code": 400,
+                    "message": "No image provided"
+                }, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        member_id = get_member_id(request)
+        member = Member.objects.filter(pk=member_id).first()
+        if member is None:
+            return Response(
+                data={
+                    "status_code": 400,
+                    "message": "BAD_REQEUST",
+                }, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        image_url = self.upload_image_to_naver_cloud(image_file)
+        if "error" not in image_url:
+            member.image = image_url
+            member.save()
+        
+            return Response(
+                data={
+                    "status_code": 200,
+                    "message": "Success"
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(
+                data={
+                    "status_code": 500,
+                    "message": image_url
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+@staticmethod
+def get_member_id(request):
+    auth_header = request.headers.get('Authorization')
+
+    if not auth_header:
+        raise AuthenticationFailed('Authorization header not provided')
+
+    try:
+        token_type, token = auth_header.split()
+        if token_type != 'Bearer':
+            raise AuthenticationFailed('Invalid token type')
+        
+        access_token = AccessToken(token)
+        member_id = access_token.payload.get('id')
+        
+        return member_id
+    except ValueError:
+        raise AuthenticationFailed('Invalid token format')
+    except Exception as e:
+        raise AuthenticationFailed('Invalid token')
