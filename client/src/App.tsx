@@ -72,7 +72,7 @@ function App() {
       />
 
       <ToastContainer
-        position="top-center"
+        position='top-center'
         autoClose={500}
         hideProgressBar
         newestOnTop={false}
@@ -81,12 +81,12 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
+        theme='colored'
       />
 
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path='/' element={<Layout />}>
             <Route index element={<Main />} />
             <Route
               path={BUDGET_N_FIXED_EXPENSES_COMPONENT}
@@ -101,8 +101,8 @@ function App() {
             <Route path={MY_PAGE} element={<Mypage />} />
             <Route path={MONTHLY_REPORT} element={<MonthlyReport />} />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<Signup />} />
           </Route>
         </Routes>
       </QueryClientProvider>

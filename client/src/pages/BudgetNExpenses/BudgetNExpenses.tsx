@@ -1,7 +1,9 @@
 import { Box, Button, Container, Divider, TextField } from "@mui/material";
 import { Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
+import { useQueryClient } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
+import { toast } from "react-toastify";
 import instance from "../../api/axios.ts";
 import budgetRegRequest from "../../api/budgetRegRequest.ts";
 import fixedRequest from "../../api/fixedRequest.ts";
@@ -22,8 +24,6 @@ import {
   totalBudgetBox,
   wrapper,
 } from "./BudgetNExpenses.css.ts";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 
 interface ExpenseItem {
   price: string;
@@ -89,15 +89,15 @@ const BudgetNExpenses = () => {
   return (
     <Box className={box}>
       <SideBar />
-      <Container className={container} maxWidth="xl">
+      <Container className={container} maxWidth='xl'>
         <Box className={wrapper}>
           <Box className={totalBudgetBox}>
-            <Text className={headText} as="div">
+            <Text className={headText} as='div'>
               예산 등록
             </Text>
             <Box>
               <Box>
-                <Text as="p" className={explainText}>
+                <Text as='p' className={explainText}>
                   고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
                 </Text>
                 <Divider
@@ -130,11 +130,11 @@ const BudgetNExpenses = () => {
                         },
                       },
                     }}
-                    name="totalBudget"
+                    name='totalBudget'
                     value={budget}
                     onChange={(event) => setBudget(event.target.value)}
                     autoFocus
-                    type="number"
+                    type='number'
                   ></TextField>
                   <button
                     className={addBtn}
@@ -146,7 +146,7 @@ const BudgetNExpenses = () => {
                 </Box>
               </Box>
               <Box className={budgetHistory}>
-                <Text as="p" className={explainText}>
+                <Text as='p' className={explainText}>
                   예산 히스토리
                 </Text>
                 <Box className={bugetHistoryTable}>
@@ -156,11 +156,11 @@ const BudgetNExpenses = () => {
             </Box>
           </Box>
           <Box className={fixedExpenseBox}>
-            <Text className={headText} as="div">
+            <Text className={headText} as='div'>
               고정 지출 등록
             </Text>
             <Box sx={{ display: "flex" }}>
-              <Text as="p" className={explainText}>
+              <Text as='p' className={explainText}>
                 고정 지출을 포함한 이번 달 전체 예산을 등록해보세요
               </Text>
               <Box
@@ -213,7 +213,7 @@ export const ButtonForFixedExpRegi = ({
   return (
     <Button
       onClick={handleClick}
-      variant="contained"
+      variant='contained'
       sx={{
         backgroundColor: "#F03167",
         borderRadius: "8px",

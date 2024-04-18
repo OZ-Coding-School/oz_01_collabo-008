@@ -1,8 +1,8 @@
 import { Box, Divider } from "@mui/material";
 import { Text } from "@radix-ui/themes";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import instance from "../../api/axios";
 import budgetRegRequest from "../../api/budgetRegRequest";
 import monthlyRequest from "../../api/monthlyRequest";
@@ -43,12 +43,16 @@ interface MonthlyReportData {
   }[];
 }
 
-interface BudgetData {
-  budget_list: {
-    id: number;
-    value: number;
-    created_at: string;
-  };
+interface Top5CategoriesData {
+  id?: number;
+  content: string;
+  total_price: number;
+}
+
+interface Top5Places {
+  id?: number;
+  location: string | null;
+  total_price: number;
 }
 
 const MonthlyReport = () => {
@@ -56,75 +60,89 @@ const MonthlyReport = () => {
   const currentYear = currentDate.getFullYear().toString();
   const currentMonth = (currentDate.getMonth() + 1).toString();
 
-  const [year, setYear] = useState(currentYear);
-  const [month, setMonth] = useState(currentMonth);
-  const [memberId, setMemberId] = useState(localStorage.getItem("memberId"));
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [cookies, setCookies] = useCookies(["accessToken", "refreshToken"]);
+  const [year] = useState(currentYear);
+  const [month] = useState(currentMonth);
+
   const [data, setData] = useState<MonthlyReportData | null>(null);
 
-  //top5Categories state
   const [top5CategoriesData, setTop5CategoriesData] = useState<
-    MonthlyReportData["total_expenses_by_category"]
+    Top5CategoriesData[]
   >([]);
 
-  //top5Places state
-  const [top5PlacesData, setTop5PlacesData] = useState<
-    MonthlyReportData["total_expenses_by_location"]
-  >([]);
+  const [top5PlacesData, setTop5PlacesData] = useState<Top5Places[]>([]);
 
   const [totalBudget, setTotalBudget] = useState<number>(0);
   const [savedBudget, setSavedBudget] = useState<number>(0);
 
-  useEffect(() => {
-    // if (!memberId) return;
-
-    const fetchData = async () => {
+  const {
+    data: expensesData,
+    isLoading: isExpensesDataLoading,
+    error: expensesDataError,
+  } = useQuery({
+    queryKey: ["expensesData"],
+    queryFn: async () => {
       try {
         const response = await instance.get(
           monthlyRequest.monthly + `?year=${year}&month=${month}`
         );
-
-        setData(response.data);
-
-        //total Budget 가져오기
-        const budgetResponse = await instance.get(
-          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
-        );
-
-        console.log("budgetData : ", budgetResponse.data);
-
-        if (budgetResponse.data.budget_list.length > 0) {
-          const budgetItem = budgetResponse.data.budget_list[0];
-          setTotalBudget(budgetItem.value);
-        } else {
-          console.log(
-            "Budget Data does not exist. please set your budget first!"
-          );
-          setTotalBudget(0);
-        }
-
-        // totalExpense 계산
-        let totalExpense = 0;
-        for (const category of response.data.total_expenses_by_category) {
-          totalExpense += category.total_price;
-        }
-
-        // savedBudget 계산
-        const savedBudget = totalBudget - totalExpense;
-        setSavedBudget(savedBudget);
-
-        if (response.data) {
-          console.log("Data : ", response.data);
-        } else {
-          console.log("Empty response data");
-        }
+        //console.log("Expenses Data:", response.data);
+        return response.data;
       } catch (error) {
-        console.error("Error fetching monthly report:", error);
+        throw new Error("Data fetching Error");
       }
-    };
-    fetchData();
-  }, [memberId, cookies.accessToken, year, month, setCookies, totalBudget]);
+    },
+  });
+
+  const {
+    data: budgetData,
+    isLoading: isBudgetDataLoading,
+    error: budgetDataError,
+  } = useQuery({
+    queryKey: ["budgetData", { year, month }],
+    queryFn: async () => {
+      const response = await instance.get(
+        budgetRegRequest.budgetList + `?year=${year}&month=${month}`
+      );
+      return response.data;
+    },
+  });
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    if (!expensesData) {
+      console.error("Expenses Data does not exist");
+      return;
+    }
+
+    setData(expensesData);
+
+    if (budgetData && budgetData.budget_list.length > 0) {
+      const budgetItem = budgetData.budget_list[0];
+      setTotalBudget(budgetItem.value);
+    } else {
+      console.log("Budget Data does not exist. please set your budget first!");
+      setTotalBudget(0);
+    }
+
+    let totalExpense = 0;
+    for (const category of expensesData.total_expenses_by_category) {
+      totalExpense += category.total_price;
+    }
+
+    const savedBudget = totalBudget - totalExpense;
+    setSavedBudget(savedBudget);
+
+    setIsLoading(false);
+  }, [expensesData, budgetData, totalBudget]);
+
+  if (isExpensesDataLoading) return <div>Expense Data is Loading...</div>;
+  if (expensesDataError) return <div>Error: {expensesDataError.message}</div>;
+
+  if (isBudgetDataLoading) return <div>Budget Data is Loading...</div>;
+  if (budgetDataError) return <div>Error: {budgetDataError.message}</div>;
 
   return (
     <Box className={box}>
@@ -230,7 +248,7 @@ const MonthlyReport = () => {
             <Box className={doughnutChartBox}>
               <Box className={doughnutChart}>
                 <DoughnutChartCategory
-                  fetchedData={data}
+                  fetchedData={expensesData}
                   top5CategoriesData={setTop5CategoriesData}
                 />
               </Box>
@@ -259,7 +277,7 @@ const MonthlyReport = () => {
             <Box className={doughnutChartBox}>
               <Box className={doughnutChart}>
                 <DoughnutChartPlace
-                  fetchedData={data}
+                  fetchedData={expensesData}
                   top5PlacesData={setTop5PlacesData}
                 />
               </Box>
@@ -268,7 +286,7 @@ const MonthlyReport = () => {
         </Box>
         <Box className={barChartBox}>
           <Box className={barChart}>
-            <BarChart fetchedData={data} />
+            <BarChart fetchedData={expensesData} />
           </Box>
         </Box>
       </Box>
