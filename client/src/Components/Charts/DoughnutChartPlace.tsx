@@ -73,10 +73,31 @@ const DoughnutChartPlace = ({
           "rgba(251,234,235,1)",
         ],
         borderWidth: 10,
+        hoverOffset: 10, // 호버 시 이동 거리
+        hoverShadowBlur: 5, // 호버 시 그림자 흐림 정도
+        hoverShadowColor: "rgba(0, 0, 0, 0.1)", // 호버 시 그림자 색상
       },
     ],
   };
 
-  return <Doughnut data={data} />;
+  const options = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function (context) {
+            const dataLabel = top5Places[context.dataIndex].location;
+            const value = context.formattedValue;
+            return `${dataLabel} ${value}`;
+          },
+        },
+      },
+    },
+  };
+
+  return <Doughnut data={data} options={options} />;
 };
 export default DoughnutChartPlace;
