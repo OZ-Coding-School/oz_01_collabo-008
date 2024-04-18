@@ -55,6 +55,13 @@ export const img = style({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  overflow: "hidden",
+});
+
+export const userImg = style({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
 });
 
 export const profile = style({
@@ -91,6 +98,8 @@ export const imgBtn = style({
   borderRadius: "6px",
   color: "white",
   cursor: "pointer",
+  display: "flex",
+  justifyContent: "center",
   ":hover": {
     backgroundColor: "#FF779F",
   },

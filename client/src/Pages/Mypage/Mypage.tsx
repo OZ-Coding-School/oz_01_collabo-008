@@ -18,46 +18,31 @@ import {
   profile,
   profileContent,
   titleWrap,
+  userImg,
   userInfo,
   userNameWrap,
   wrap,
 } from "./Mypage.css";
 
 const Mypage = () => {
-  const memberId = localStorage.getItem("memberId");
   const [userData, setUserData] = useState([]);
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [userImage, setUserImage] = useState(null);
   const cookies = new Cookies();
-  // const handleEdit = () => {
-  //   setIsEditing(!isEditing);
-  // };
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       try {
         const formData = new FormData();
-        formData.append(
-          "post",
-          new Blob([JSON.stringify(selectedFile)], { type: "application/json" })
-        );
         formData.append("image", file);
 
-        const access = cookies.get("accessToken");
+        // const access = cookies.get("accessToken");
 
-        const response = await instance.post(requests.imageUpload, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "ACCESS-TOKEN": access,
-          },
-        });
+        const response = await instance.post(requests.imageUpload, formData);
 
         if (response.data.status_code === 200) {
           toast.success("사진이 성공적으로 업로드되었습니다.");
@@ -65,6 +50,7 @@ const Mypage = () => {
         } else {
           toast.error("사진 업로드 실패");
         }
+        console.log("사진 업로드", response.data);
       } catch (error) {
         console.error("사진 업로드 에러", error);
         toast.error("사진 업로드 중 오류가 발생했습니다.");
@@ -86,6 +72,7 @@ const Mypage = () => {
         setUserData(response.data.member);
         setName(response.data.member.name); // 이름을 상태에 설정
         setPassword(response.data.member.password);
+        setUserImage(response.data.member.image);
       } catch (error) {
         console.error("회원정보 조회 에러", error);
       }
@@ -150,18 +137,25 @@ const Mypage = () => {
         <div className={userInfo}>
           <div className={imgWrap}>
             <div className={img}>
-              <p>등록된 사진이 없어요.</p>
+              {userImage ? ( // userImage가 존재하는 경우 이미지를 표시
+                <img src={userImage} alt="프로필 사진" className={userImg} />
+              ) : (
+                // userImage가 없는 경우 등록된 이미지가 없다는 텍스트를 표시
+                <div className={img}>
+                  <p>등록된 사진이 없어요.</p>
+                </div>
+              )}
             </div>
             <input
               type="file"
               accept="image/*"
-              onChange={handleFileUpload}
+              onChange={handleFileUpload} // 이 부분이 파일을 선택할 때 실행될 함수를 지정합니다.
               style={{ display: "none" }}
               id="imageUpload"
             />
-            <button onChange={handleFileChange} className={imgBtn}>
+            <label htmlFor="imageUpload" className={imgBtn}>
               사진 등록/업로드
-            </button>
+            </label>
           </div>
           <div className={profile}>
             <div className={profileContent}>
