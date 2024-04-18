@@ -21,8 +21,28 @@ interface FetchedData {
     total_price: number;
   }[];
 }
+interface Options {
+  scales: {
+    x: {
+      type: "category";
+      display: boolean;
+      grid: {
+        display: boolean;
+      };
+    };
+    y: {
+      display: boolean;
+    };
+  };
+  plugins: {
+    legend: {
+      display: boolean;
+    };
+  };
+  maintainAspectRatio: boolean;
+}
 
-const options = {
+const options: Options = {
   scales: {
     x: {
       type: "category",
@@ -42,32 +62,6 @@ const options = {
   },
   maintainAspectRatio: false, //캔버스 자체에 크기 고정되어 있는 부분 해제
 };
-
-// // 평균치 보다 큰거 "rgba(240,49,103, 0.8)",
-// // 평균치 보다 작은것들 "rgba(255,218,225, 0.8)",
-// // 평균치 그나마 10프로?(이건 조정 필요) 정도 인접한것들 "rgba(255,165,190,0.8)"
-
-// //평균치 구하기
-// //데이터 합
-// const dataSum = data.datasets[0].data.reduce(
-//   (accumulator, currentValue) => accumulator + currentValue,
-//   0
-// );
-// //평균 구하기
-// const dataAvg = dataSum / data.datasets[0].data.length;
-
-// //배경색 설정해주기
-// const backgroundColors = data.datasets[0].data.map((value) => {
-//   if (value > dataAvg) {
-//     return "rgba(240,49,103, 0.8)";
-//   } else if (value > dataAvg * 0.9) {
-//     return "rgba(255,165,190,0.8)";
-//   } else {
-//     return "rgba(255,218,225, 0.8)";
-//   }
-// });
-
-// data.datasets[0].backgroundColor = backgroundColors;
 
 const BarChart = ({ fetchedData }: { fetchedData: FetchedData }) => {
   if (!fetchedData || !fetchedData.total_expenses_by_category) {
@@ -97,7 +91,6 @@ const BarChart = ({ fetchedData }: { fetchedData: FetchedData }) => {
           "rgba(253,198,214,1)",
           "rgba(255,119,158,1)",
         ],
-        //borderColor: [],
         borderWidth: 0,
         barThickness: 50,
       },
