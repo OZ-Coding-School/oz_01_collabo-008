@@ -1,6 +1,5 @@
 const budgetRegRequest = {
-  budget: "/budgets", // + {member_id} 예산생성
-  budgetList: "/budgets", //get 예산 조호ㅢ
+  budgetList: "/budgets/list", // 예산 조회,생성
   modifyBudget: "/budgets/detail", // + {budget_id} 예산 수정
 };
 

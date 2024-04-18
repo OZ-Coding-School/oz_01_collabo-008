@@ -20,17 +20,17 @@ const CalendarList = () => {
   const [date, setDate] = useState(new Date());
   const [expenses, setExpenses] = useState<Expenses[]>([]);
   const [chosenExpenses, setChosenExpenses] = useState<Expenses[]>([]);
-  const [memberId, setMemberId] = useState(localStorage.getItem("memberId"));
+  // const [memberId] = useState(localStorage.getItem("memberId"));
   const [cookies] = useCookies(["accessToken", "refreshToken"]);
 
   useEffect(() => {
-    if (!memberId) return;
+    // if (!memberId) return;
     const fetchData = async () => {
       const year = date.getFullYear();
       const month = date.getMonth() + 1; //월은 1 더해야함
       try {
         const response = await instance.get(
-          expenseRequest.expense + `/${memberId}?year=${year}&month=${month}`
+          expenseRequest.expense + `?year=${year}&month=${month}`
         );
         setExpenses(response.data.expenses_list);
       } catch (error) {
@@ -39,7 +39,7 @@ const CalendarList = () => {
     };
 
     fetchData();
-  }, [memberId, cookies.accessToken, date]);
+  }, [cookies.accessToken, date]); //memberId,
 
   useEffect(() => {
     const chosen = expenses.filter((expense) =>
@@ -76,7 +76,7 @@ const CalendarList = () => {
           view: string;
         }) => handleActiveStartDateChange(data)}
         value={date}
-        calendarType='gregory'
+        calendarType="gregory"
         formatDay={(_locale, date) => moment(date).format("D")}
         tileContent={({ date, view }) =>
           view === "month" && (

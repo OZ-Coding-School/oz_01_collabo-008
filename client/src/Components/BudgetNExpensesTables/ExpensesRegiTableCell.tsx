@@ -124,9 +124,7 @@ const ExpensesRegiTableCell = ({
     queryKey: ["fixedExpense"],
     queryFn: async () => {
       try {
-        const response = await instance.get(
-          fixedRequest.fixedReg + `/${memberId}`
-        );
+        const response = await instance.get(fixedRequest.fixedReg);
         const data = response.data;
 
         console.log("고정지출", data);

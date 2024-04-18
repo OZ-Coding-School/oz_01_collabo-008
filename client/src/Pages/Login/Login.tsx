@@ -14,7 +14,7 @@ import {
   loginformLabel,
   loginheader,
   passwordInputWrap,
-  pwToggleBtn
+  pwToggleBtn,
 } from "./Login.css.ts";
 
 import axios from "axios";
@@ -74,11 +74,8 @@ const Login = () => {
 
         // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
-        localStorage.setItem("memberId", response.data.member.id)
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
-        // memberId를 위한 변수 추가 by. 손지형
-        localStorage.setItem("memberId", response.data.member.id);
         navigate("/");
         toast.success("로그인 성공");
       } catch (error) {
@@ -103,14 +100,14 @@ const Login = () => {
         <p className={loginheader}>Login</p>
         {/* 이메일 입력창 */}
         <form className={loginform} onSubmit={handleSubmit}>
-          <label className={loginformLabel} htmlFor='email'>
+          <label className={loginformLabel} htmlFor="email">
             E-mail
           </label>
 
           <input
             className={loginformInput}
-            type='text'
-            id='email'
+            type="text"
+            id="email"
             onChange={handleChange}
             value={values.email}
             onBlur={handleBlur}
@@ -119,21 +116,21 @@ const Login = () => {
             <div className={error}>{errors.email}</div>
           )}
           {/* 패스워드 입력창 */}
-          <label className={loginformLabel} htmlFor='pw'>
+          <label className={loginformLabel} htmlFor="pw">
             Password
           </label>
           <div className={passwordInputWrap}>
             <input
               className={loginformInput}
               type={showPassword ? "text" : "password"}
-              id='pw'
-              name='password'
+              id="pw"
+              name="password"
               onChange={handleChange}
               value={values.password}
               onBlur={handleBlur}
             />
             <button
-              type='button'
+              type="button"
               className={pwToggleBtn}
               onClick={togglePasswordVisibility}
             >
@@ -149,7 +146,7 @@ const Login = () => {
           <button
             className={loginbt}
             type="submit"
-          // onClick={() => setCookies("token", "asdf", {})}
+            // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
           </button>

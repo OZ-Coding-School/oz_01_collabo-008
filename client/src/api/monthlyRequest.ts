@@ -1,5 +1,5 @@
 const monthlyRequest = {
-  monthly: "/reports",
+  monthly: "/reports/list",
 };
 
 export default monthlyRequest;

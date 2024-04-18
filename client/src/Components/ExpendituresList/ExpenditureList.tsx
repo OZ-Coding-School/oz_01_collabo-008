@@ -64,7 +64,6 @@ const ExpenditureList = () => {
   const queryClient = useQueryClient();
   const [year] = useState(new Date().getFullYear());
   const [month] = useState(new Date().getMonth() + 1);
-  const memberId: string | null = localStorage.getItem("memberId");
   const [modifyId, setModifyId] = useState(null);
   const [modifiedDate, setModifiedDate] = useState<Date | null>(new Date());
   const [modifiedCategory, setModifiedCategory] = useState("");
@@ -83,7 +82,7 @@ const ExpenditureList = () => {
     queryFn: async () => {
       try {
         const response = await instance.get(
-          expenseRequest.expense + `/${memberId}?year=${year}&month=${month}`
+          expenseRequest.expense + `?year=${year}&month=${month}`
         );
         const expenseListData = response.data.expenses_list;
         console.log("지출 목록", expenseListData);

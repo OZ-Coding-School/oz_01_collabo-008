@@ -31,7 +31,6 @@ const BudgetHistoryTableCell = () => {
   const queryClient = useQueryClient();
   const [year] = useState(new Date().getFullYear());
   const [month] = useState(new Date().getMonth() + 1);
-  const memberId = localStorage.getItem("memberId");
 
   const [modifyId, setModifyId] = useState<number | null>(null);
   const [modifyValue, setModifyValue] = useState("");
@@ -41,8 +40,7 @@ const BudgetHistoryTableCell = () => {
     queryFn: async () => {
       try {
         const response = await instance.get(
-          budgetRegRequest.budgetList +
-            `/${memberId}?year=${year}&month=${month}`
+          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
 
         // 최신 데이터 맨 위로 정렬

@@ -1,11 +1,19 @@
-import { Box, Card } from '@radix-ui/themes';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import instance from '../../api/axios';
-import expenseRequest from '../../api/expenseRequest';
-import BudgetRegTable from '../../components/BudgetRegTable/BudgetRegTable';
-import { addBtn, btnWrap, container, description, title, titleWrap, wrap } from './BudgetRegister.css';
+import { Box, Card } from "@radix-ui/themes";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import instance from "../../api/axios";
+import expenseRequest from "../../api/expenseRequest";
+import BudgetRegTable from "../../components/BudgetRegTable/BudgetRegTable";
+import {
+  addBtn,
+  btnWrap,
+  container,
+  description,
+  title,
+  titleWrap,
+  wrap,
+} from "./BudgetRegister.css";
 
 interface Row {
   category: string;
@@ -16,17 +24,25 @@ interface Row {
   date: string;
 }
 
-
 const BudgetRegister = () => {
-  const [rows, setRows] = useState<Row[]>([{ category: '', payment: '', location: '', price: 0, content: '', date: "" }]);
+  const [rows, setRows] = useState<Row[]>([
+    {
+      category: "",
+      payment: "",
+      location: "",
+      price: 0,
+      content: "",
+      date: "",
+    },
+  ]);
   const [startDate, setStartDate] = useState(new Date());
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
-  const [selectedPayment, setSelectedPayment] = useState<string>('')
-  const memberId = localStorage.getItem("memberId")
-  const navigation = useNavigate()
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedPayment, setSelectedPayment] = useState<string>("");
+  const memberId = localStorage.getItem("memberId");
+  const navigation = useNavigate();
   // 새 행 추가 함수
   const addRow = () => {
-    const newRow = { item: '', amount: 0 }; // 새 행 기본 구조
+    const newRow = { item: "", amount: 0 }; // 새 행 기본 구조
     setRows([...rows, newRow]); // 기존 행에 새 행 추가
   };
 
@@ -38,39 +54,40 @@ const BudgetRegister = () => {
   };
 
   const handleCategoryChange = (value) => {
-    setSelectedCategory(value)
-  }
+    setSelectedCategory(value);
+  };
 
   const handlePaymentChange = (value) => {
-    setSelectedPayment(value)
-  }
-
+    setSelectedPayment(value);
+  };
 
   const handleClickRegi = async () => {
-    const expensesToSend = rows.map(row => ({
+    const expensesToSend = rows.map((row) => ({
       category: selectedCategory, // 카테고리
       payment: selectedPayment, // 카드/현금
       location: row.location, // 사용처
       price: row.price, // 사용금액
       content: row.content, // 사용내역
-      date: startDate.toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', ''), // 사용날짜
+      date: startDate
+        .toLocaleDateString("ko-KR")
+        .replace(/\. /g, "-")
+        .replace(".", ""), // 사용날짜
     }));
     try {
-      const response = await instance.post(expenseRequest.expense + `/${memberId}`, expensesToSend)
-      console.log("지출 등록 성공", response)
-      toast.success("지출이 등록되었습니다.")
-      navigation('/')
+      const response = await instance.post(
+        expenseRequest.expense,
+        expensesToSend
+      );
+      console.log("지출 등록 성공", response);
+      toast.success("지출이 등록되었습니다.");
+      navigation("/");
     } catch (error) {
-      console.log("지출 등록 에러", error)
+      console.log("지출 등록 에러", error);
     }
-
   };
 
   return (
-
     <div className={wrap}>
-
-
       <Box className={container}>
         <Card size="3">
           <div className={titleWrap}>
@@ -78,11 +95,14 @@ const BudgetRegister = () => {
             <p className={description}>오늘 지출한 금액을 등록해보세요</p>
           </div>
           <div className={btnWrap}>
-
-            <button className={addBtn} onClick={addRow}> 행 추가하기</button>
+            <button className={addBtn} onClick={addRow}>
+              {" "}
+              행 추가하기
+            </button>
           </div>
 
-          <BudgetRegTable rows={rows}
+          <BudgetRegTable
+            rows={rows}
             onTableRowChange={handleTableRowChange}
             handlePaymentChange={handlePaymentChange}
             handleCategoryChange={handleCategoryChange}
@@ -92,17 +112,15 @@ const BudgetRegister = () => {
             startDate={startDate}
           />
           <div className={btnWrap}>
-
-            <button className={addBtn} onClick={handleClickRegi}> 등록하기</button>
+            <button className={addBtn} onClick={handleClickRegi}>
+              {" "}
+              등록하기
+            </button>
           </div>
         </Card>
       </Box>
-
-
-
     </div>
+  );
+};
 
-  )
-}
-
-export default BudgetRegister
+export default BudgetRegister;

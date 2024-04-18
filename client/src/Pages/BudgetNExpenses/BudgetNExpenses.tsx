@@ -62,10 +62,7 @@ const BudgetNExpenses = () => {
     // 배열로 출력되는지 확인해보기
 
     try {
-      const response = await instance.post(
-        fixedRequest.fixedReg + `/${memberId}`,
-        expenses
-      );
+      const response = await instance.post(fixedRequest.fixedReg, expenses);
       console.log("고정 지출 등록 성공", response);
       queryClient.invalidateQueries("fixedExpense");
     } catch (error) {
@@ -77,7 +74,7 @@ const BudgetNExpenses = () => {
   //#region 전체 예산 등록
   const handleClickBudgetRegistration = async () => {
     try {
-      await instance.post(budgetRegRequest.budget + `/${memberId}`, {
+      await instance.post(budgetRegRequest.budgetList, {
         value: budget,
       });
       console.log("전체예산 등록성공");

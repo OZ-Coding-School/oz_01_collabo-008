@@ -57,7 +57,7 @@ const MonthlyReport = () => {
 
   const [year] = useState(currentYear);
   const [month] = useState(currentMonth);
-  const [memberId] = useState(localStorage.getItem("memberId"));
+  // const [memberId] = useState(localStorage.getItem("memberId"));
 
   const [cookies, setCookies] = useCookies(["accessToken", "refreshToken"]);
   const [data, setData] = useState<MonthlyReportData | null>(null);
@@ -76,20 +76,19 @@ const MonthlyReport = () => {
   const [savedBudget, setSavedBudget] = useState<number>(0);
 
   useEffect(() => {
-    if (!memberId) return;
+    // if (!memberId) return;
 
     const fetchData = async () => {
       try {
         const response = await instance.get(
-          monthlyRequest.monthly + `/${memberId}?year=${year}&month=${month}`
+          monthlyRequest.monthly + `?year=${year}&month=${month}`
         );
 
         setData(response.data);
 
         //total Budget 가져오기
         const budgetResponse = await instance.get(
-          budgetRegRequest.budgetList +
-            `/${memberId}?year=${year}&month=${month}`
+          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
 
         console.log("budgetData : ", budgetResponse.data);
@@ -124,14 +123,14 @@ const MonthlyReport = () => {
       }
     };
     fetchData();
-  }, [memberId, cookies.accessToken, year, month, setCookies, totalBudget]);
+  }, [cookies.accessToken, year, month, setCookies, totalBudget]); //memberId,
 
   return (
     <Box className={box}>
       <Box className={container}>
         <Box className={titleWrapper}>
           <Text className={headText}>이번 달 레포트</Text>
-          <Text as='p' className={explainText}>
+          <Text as="p" className={explainText}>
             이번 달 지출한 금액을 레포트로 확인해보세요
           </Text>
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
