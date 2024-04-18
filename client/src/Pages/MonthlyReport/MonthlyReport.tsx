@@ -36,18 +36,19 @@ interface MonthlyReportData {
     content: string;
     total_price: number;
   }[];
-  total_expenses_by_location: Top5Places[];
+  total_expenses_by_location: {
+    id: number;
+    location: string | null;
+    total_price: number;
+  }[];
 }
 
-interface Top5Places {
-  id?: number;
-  location: string | null;
-  total_price: number;
-}
-
-interface Top5Categories {
-  content: string;
-  total_price: number;
+interface BudgetData {
+  budget_list: {
+    id: number;
+    value: number;
+    created_at: string;
+  };
 }
 
 const MonthlyReport = () => {
@@ -55,16 +56,16 @@ const MonthlyReport = () => {
   const currentYear = currentDate.getFullYear().toString();
   const currentMonth = (currentDate.getMonth() + 1).toString();
 
-  const [year] = useState(currentYear);
-  const [month] = useState(currentMonth);
-  // const [memberId] = useState(localStorage.getItem("memberId"));
+  const [year, setYear] = useState(currentYear);
+  const [month, setMonth] = useState(currentMonth);
+  const [memberId, setMemberId] = useState(localStorage.getItem("memberId"));
 
   const [cookies, setCookies] = useCookies(["accessToken", "refreshToken"]);
   const [data, setData] = useState<MonthlyReportData | null>(null);
 
   //top5Categories state
   const [top5CategoriesData, setTop5CategoriesData] = useState<
-    { id: number; content: string; total_price: number }[]
+    MonthlyReportData["total_expenses_by_category"]
   >([]);
 
   //top5Places state
@@ -123,14 +124,14 @@ const MonthlyReport = () => {
       }
     };
     fetchData();
-  }, [cookies.accessToken, year, month, setCookies, totalBudget]); //memberId,
+  }, [memberId, cookies.accessToken, year, month, setCookies, totalBudget]);
 
   return (
     <Box className={box}>
       <Box className={container}>
         <Box className={titleWrapper}>
           <Text className={headText}>이번 달 레포트</Text>
-          <Text as="p" className={explainText}>
+          <Text as='p' className={explainText}>
             이번 달 지출한 금액을 레포트로 확인해보세요
           </Text>
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
@@ -219,7 +220,7 @@ const MonthlyReport = () => {
                       animate={{ opacity: 1, y: 0 }} // 애니메이션 적용 후 상태
                       transition={{ duration: 0.2 * (index + 1) }} // 애니메이션 지속 시간
                     >
-                      {index + 1}. {/* {category.id}.{" "} */}
+                      {index + 1}.{" "}
                       {category.content !== null ? category.content : "기타"}
                     </motion.li>
                   ))}
@@ -229,17 +230,8 @@ const MonthlyReport = () => {
             <Box className={doughnutChartBox}>
               <Box className={doughnutChart}>
                 <DoughnutChartCategory
-                  fetchedData={
-                    data || {
-                      total_expenses_by_category: [],
-                      total_expenses_by_location: [],
-                    }
-                  }
-                  top5CategoriesData={(data: Top5Categories[]) =>
-                    setTop5CategoriesData(
-                      data.map((item, index) => ({ ...item, id: index }))
-                    )
-                  }
+                  fetchedData={data}
+                  top5CategoriesData={setTop5CategoriesData}
                 />
               </Box>
             </Box>
@@ -257,7 +249,7 @@ const MonthlyReport = () => {
                       animate={{ opacity: 1, y: 0 }} // 애니메이션 적용 후 상태
                       transition={{ duration: 0.2 * (index + 1) }} // 애니메이션 지속 시간
                     >
-                      {index + 1}. {/* {category.id}.{" "} */}
+                      {index + 1}.{" "}
                       {place.location !== null ? place.location : "기타"}
                     </motion.li>
                   ))}
@@ -267,13 +259,8 @@ const MonthlyReport = () => {
             <Box className={doughnutChartBox}>
               <Box className={doughnutChart}>
                 <DoughnutChartPlace
-                  fetchedData={
-                    data || {
-                      total_expenses_by_category: [],
-                      total_expenses_by_location: [],
-                    }
-                  }
-                  top5PlacesData={(data) => setTop5PlacesData(data)}
+                  fetchedData={data}
+                  top5PlacesData={setTop5PlacesData}
                 />
               </Box>
             </Box>
@@ -281,14 +268,7 @@ const MonthlyReport = () => {
         </Box>
         <Box className={barChartBox}>
           <Box className={barChart}>
-            <BarChart
-              fetchedData={
-                data || {
-                  total_expenses_by_category: [],
-                  total_expenses_by_location: [],
-                }
-              }
-            />
+            <BarChart fetchedData={data} />
           </Box>
         </Box>
       </Box>

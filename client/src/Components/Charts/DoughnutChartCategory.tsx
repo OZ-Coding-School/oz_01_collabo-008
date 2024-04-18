@@ -2,7 +2,7 @@ import { ArcElement, Chart, Tooltip } from "chart.js";
 import { useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 
-Chart.register(ArcElement, Tooltip);
+Chart.register(Tooltip, ArcElement);
 
 interface FetchedData {
   total_expenses_by_category: {
@@ -16,7 +16,8 @@ interface FetchedData {
   }[];
 }
 
-interface Top5Categories {
+interface Top5CategoriesData {
+  id?: number;
   content: string;
   total_price: number;
 }
@@ -26,14 +27,16 @@ const DoughnutChartCategory = ({
   top5CategoriesData,
 }: {
   fetchedData: FetchedData;
-  top5CategoriesData: (data: Top5Categories[]) => void;
+  top5CategoriesData: (data: Top5CategoriesData[]) => void;
 }) => {
   useEffect(() => {
     const top5Categories = getTop5Categories(fetchedData);
     top5CategoriesData(top5Categories);
   }, [fetchedData, top5CategoriesData]);
 
-  const getTop5Categories = (fetchedData: FetchedData): Top5Categories[] => {
+  const getTop5Categories = (
+    fetchedData: FetchedData
+  ): Top5CategoriesData[] => {
     if (
       !fetchedData ||
       !fetchedData.total_expenses_by_category ||
@@ -42,14 +45,13 @@ const DoughnutChartCategory = ({
       return [];
     }
 
-    //내림차순 정렬
+    // 내림차순 정렬
     const sortedTotalExpensesByCategory = [
       ...fetchedData.total_expenses_by_category,
     ].sort((a, b) => b.total_price - a.total_price);
 
-    //top5 카테고리 추출
+    // top5 카테고리 추출
     const top5Categories = sortedTotalExpensesByCategory.slice(0, 5);
-    //console.log("top5Categories:", top5Categories);
 
     return top5Categories;
   };
@@ -64,9 +66,7 @@ const DoughnutChartCategory = ({
     datasets: [
       {
         label: "지출",
-        data: top5Categories.map(
-          (category: Top5Categories) => category.total_price
-        ),
+        data: top5Categories.map((category) => category.total_price),
         backgroundColor: [
           "rgba(240,49,103, 0.8)",
           "rgba(254,172,202,0.8)",
@@ -75,10 +75,33 @@ const DoughnutChartCategory = ({
           "rgba(251,234,235,1)",
         ],
         borderWidth: 10,
+        hoverOffset: 10, // 호버 시 이동 거리
+        hoverShadowBlur: 5, // 호버 시 그림자 흐림 정도
+        hoverShadowColor: "rgba(0, 0, 0, 0.1)", // 호버 시 그림자 색상
       },
     ],
   };
 
-  return <Doughnut data={data} />;
+  const options = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function (context) {
+            const dataLabel = top5Categories[context.dataIndex].content;
+            const value = context.formattedValue;
+            return `${dataLabel} ${value}`;
+          },
+        },
+      },
+    },
+  };
+
+  return <Doughnut data={data} options={options} />;
 };
+
 export default DoughnutChartCategory;
