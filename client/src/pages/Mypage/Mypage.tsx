@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useContext, useState } from "react";
 import { Cookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +43,7 @@ const Mypage = () => {
   const [password, setPassword] = useState("");
   const cookies = new Cookies();
   const { userData } = useContext<UserType>(UserContext)
-
+  const { VITE_BASE_REQUEST_URL } = import.meta.env;
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -50,9 +51,14 @@ const Mypage = () => {
         const formData = new FormData();
         formData.append("image", file);
 
-        // const access = cookies.get("accessToken");
+        const access = cookies.get("accessToken");
 
-        const response = await instance.post(requests.imageUpload, formData);
+        const response = await axios.post(VITE_BASE_REQUEST_URL + requests.imageUpload, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${access}`
+          }
+        });
 
         if (response.data.status_code === 200) {
           toast.success("사진이 성공적으로 업로드되었습니다.");
@@ -67,6 +73,8 @@ const Mypage = () => {
       }
     }
   };
+
+
   const handleNameChange = (e) => {
     setName(e.target.value);
   };
