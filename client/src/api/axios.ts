@@ -39,7 +39,8 @@ instance.interceptors.request.use(
   (config) => {
     const accessToken = cookies.get("accessToken");
 
-    config.headers["Content-Type"] = "application/json";
+    // config.headers["Content-Type"] = "application/json";
+    config.headers["Content-Type"] = "multipart/form-data";
     config.headers.Authorization = `Bearer ${accessToken}`;
 
     return config;
