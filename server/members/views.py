@@ -101,7 +101,7 @@ class RefreshTokenView(TokenRefreshView):
 
 class LogoutView(APIView):
     def post(self, request):
-        refresh_token = request.data["refreshToken"]
+        refresh_token = request.data["refresh"]
         if refresh_token is None:
             return Response(
                 data={
@@ -208,7 +208,7 @@ class MemberDetailView(APIView):
 
 
 class UploadProfileImageView(APIView):
-    def upload_image_to_naver_cloud(self, image_file):
+    def upload_image_to_naver_cloud(self, image_file, member_id):
         try:
             ncloud = boto3.client(
                 's3',
@@ -218,8 +218,9 @@ class UploadProfileImageView(APIView):
                 region_name=env("NCLOUD_REGION_NAME")
             )
             bucket_name = env("NCLOUD_BUCKET_NAME")
-            ncloud.upload_fileobj(image_file, bucket_name, image_file.name)
-            image_url = f"{env('NCLOUD_ENDPOINT_URL')}/{bucket_name}/{image_file.name}"
+            file_name = f"{member_id}_{image_file.name}"
+            ncloud.upload_fileobj(image_file, bucket_name, file_name)
+            image_url = f"{env('NCLOUD_ENDPOINT_URL')}/{bucket_name}/{file_name}"
             return image_url
         except Exception as e:
             return f"error: {str(e)}"
@@ -246,7 +247,7 @@ class UploadProfileImageView(APIView):
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        image_url = self.upload_image_to_naver_cloud(image_file)
+        image_url = self.upload_image_to_naver_cloud(image_file, member_id)
         if "error" not in image_url:
             member.image = image_url
             member.save()

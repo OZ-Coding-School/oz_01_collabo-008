@@ -31,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["ec2-13-124-21-36.ap-northeast-2.compute.amazonaws.com", "13.124.21.36"]
 
 
 # Application definition
@@ -80,7 +80,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "SIGNING_KEY": "SECRET",
+    "SIGNING_KEY": SECRET_KEY,
     "ALGORITHM": "HS256",
     "AUTH_HEADER_TYPES": ("Bearer",),
     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
@@ -217,6 +217,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -229,10 +230,5 @@ CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173']
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
 APPEND_SLASH = False
