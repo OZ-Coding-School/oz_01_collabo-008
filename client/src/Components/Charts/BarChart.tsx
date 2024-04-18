@@ -2,6 +2,7 @@ import {
   BarElement,
   CategoryScale,
   Chart as ChartJS,
+  ChartOptions,
   Legend,
   LinearScale,
   Tooltip,
@@ -21,28 +22,8 @@ interface FetchedData {
     total_price: number;
   }[];
 }
-interface Options {
-  scales: {
-    x: {
-      type: "category";
-      display: boolean;
-      grid: {
-        display: boolean;
-      };
-    };
-    y: {
-      display: boolean;
-    };
-  };
-  plugins: {
-    legend: {
-      display: boolean;
-    };
-  };
-  maintainAspectRatio: boolean;
-}
 
-const options: Options = {
+const options: ChartOptions<"bar"> = {
   scales: {
     x: {
       type: "category",
@@ -64,8 +45,12 @@ const options: Options = {
 };
 
 const BarChart = ({ fetchedData }: { fetchedData: FetchedData }) => {
-  if (!fetchedData || !fetchedData.total_expenses_by_category) {
-    return null; // fetchedData가 없거나 total_expenses_by_category가 없는 경우, null을 반환하여 컴포넌트를 렌더링하지 않음
+  if (
+    !fetchedData ||
+    !fetchedData.total_expenses_by_category ||
+    fetchedData.total_expenses_by_category.length === 0
+  ) {
+    return <div>지출 내역이 없습니다.</div>;
   }
 
   const data = {
