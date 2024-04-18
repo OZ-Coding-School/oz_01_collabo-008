@@ -1,4 +1,12 @@
-import { To, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../App";
+import {
+  BUDGET_N_FIXED_EXPENSES_COMPONENT,
+  BUDGET_REGISTER_PAGE,
+  MONTHLY_REPORT,
+  MY_PAGE,
+} from "../../constants/components-contants";
 import {
   header,
   listItem,
@@ -8,17 +16,22 @@ import {
   selectedListItem,
   user,
 } from "./Header.css";
-import {
-  BUDGET_N_FIXED_EXPENSES_COMPONENT,
-  BUDGET_REGISTER_PAGE,
-  MONTHLY_REPORT,
-  MY_PAGE,
-} from "../../constants/components-contants";
-import { useState } from "react";
+
+interface UserType {
+  userData: {
+    email: string;
+    name: string;
+    id: number;
+    image: string
+
+  }
+}
+
 const Header = () => {
   const navigation = useNavigate();
   const [currentPath, setCurrentPath] = useState("/");
 
+  const { userData } = useContext<UserType>(UserContext)
   const navItems = [
     { name: "지출등록", path: BUDGET_REGISTER_PAGE },
     { name: "전체예산/고정지출", path: BUDGET_N_FIXED_EXPENSES_COMPONENT },
@@ -47,7 +60,8 @@ const Header = () => {
       </ul>
 
       <div className={user} onClick={() => handleClick(MY_PAGE)}>
-        <img src="/images/jandi.png" alt="profileImg" className={profileImg} />
+        <img src={userData?.image ? userData.image : "/images/jandi.png"} alt="profileImg" className={profileImg} />
+
       </div>
     </header>
   );
