@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 
 import requests from "../../api/requests.ts";
+import { useUserContext } from "../../App.tsx";
 
 interface LoginForm {
   email: string;
@@ -48,7 +49,7 @@ const Login = () => {
       .required("필수 입력 항목입니다."),
     password: Yup.string().required("필수 입력 항목입니다."),
   });
-
+  const { setUserData } = useUserContext()
   const formik = useFormik<LoginForm>({
     initialValues: {
       email: "",
@@ -75,6 +76,7 @@ const Login = () => {
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
         navigate("/");
+        setUserData(response.data)
         toast.success("로그인 성공");
       } catch (error) {
         // 오류 처리
@@ -144,7 +146,7 @@ const Login = () => {
           <button
             className={loginbt}
             type='submit'
-            // onClick={() => setCookies("token", "asdf", {})}
+          // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
           </button>

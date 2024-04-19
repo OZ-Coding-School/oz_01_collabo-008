@@ -124,7 +124,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     <DatePicker
                       className={datepicker}
                       showIcon
-                      selected={startDate}
+                      selected={row.date || new Date()}
                       onChange={(date) => {
                         if (date) {
                           const dateString = date.toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', '');

@@ -6,7 +6,10 @@ import { mainContainer, wrap } from "./Main.css";
 
 import { FormControlLabel, Switch } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { useUserContext } from "../../App";
 const Main = () => {
+  const { userData } = useUserContext()
+
   const [showExpenditureList, setShowExpenditureList] = useState(false);
 
   const IOSSwitch = styled((props) => (

@@ -43,7 +43,7 @@ const BudgetNExpenses = () => {
   const handleClickAddRow = () => {
     setIsAddRowClicked((prevExpenses) => [
       ...prevExpenses,
-      { price: "", category: "" }, // 새 지출 항목의 초기값 설정
+      { price: "", category: "1" }, // 새 지출 항목의 초기값 설정
     ]);
     console.log("고정지출 행추가", isAddRowClicked)
 
@@ -92,6 +92,7 @@ const BudgetNExpenses = () => {
       console.log("전체예산 등록성공");
       toast.success("예산이 등록되었습니다");
       queryClient.invalidateQueries({ queryKey: ["budgetList"] });
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     } catch (error) {
       if (error.response && error.response.status === 400) {
 
@@ -157,7 +158,7 @@ const BudgetNExpenses = () => {
                   <button
                     className={addBtn}
                     onClick={handleClickBudgetRegistration}
-                    // disabled={!budget.trim()}
+                  // disabled={!budget.trim()}
                   >
                     등록하기
                   </button>
@@ -202,8 +203,8 @@ const BudgetNExpenses = () => {
               <ExpensesRegiTableCell
                 isAddRowClicked={isAddRowClicked}
                 handleExpenseChange={handleExpenseChange}
-                // setPrice={setPrice}
-                // setCategory={setCategory}
+              // setPrice={setPrice}
+              // setCategory={setCategory}
               />
             </Box>
           </Box>
