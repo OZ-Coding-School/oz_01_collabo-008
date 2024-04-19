@@ -4,11 +4,12 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+// import "react-calendar/dist/Calendar.css";
 import { useCookies } from "react-cookie";
 import instance from "../../api/axios";
 import expenseRequest from "../../api/expenseRequest";
 import { wrap } from "./Calendar.css";
+import './calendarStyle.css';
 
 const CalendarList = () => {
   interface Expenses {

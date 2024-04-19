@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from "react-router-dom";
 import App from './App.tsx';
@@ -15,14 +16,16 @@ async function enableMocking() {
   return worker.start()
 }
 
-
+const queryClient = new QueryClient();
 
 enableMocking().then(() => {
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
-    <BrowserRouter>
-      <App />
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
 
-    </BrowserRouter>
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 })
