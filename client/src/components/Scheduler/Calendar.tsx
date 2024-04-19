@@ -21,11 +21,9 @@ const CalendarList = () => {
   const [date, setDate] = useState(new Date());
   const [expenses, setExpenses] = useState<Expenses[]>([]);
   const [chosenExpenses, setChosenExpenses] = useState<Expenses[]>([]);
-  // const [memberId] = useState(localStorage.getItem("memberId"));
   const [cookies] = useCookies(["accessToken", "refreshToken"]);
 
   useEffect(() => {
-    // if (!memberId) return;
     const fetchData = async () => {
       const year = date.getFullYear();
       const month = date.getMonth() + 1; //월은 1 더해야함
