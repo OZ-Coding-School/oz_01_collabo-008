@@ -32,7 +32,7 @@ interface LoginForm {
 }
 
 const Login = () => {
-  const { VITE_SECRET_KEY } = import.meta.env;
+  // const { VITE_SECRET_KEY } = import.meta.env;
   const { VITE_BASE_REQUEST_URL } = import.meta.env;
   const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
   const [errorText, setErrorText] = useState("");

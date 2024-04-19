@@ -38,7 +38,7 @@ const BudgetNExpenses = () => {
   >([]);
 
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
-  const memberId = localStorage.getItem("memberId");
+
   //#region 고정 지출 등록
   const handleClickAddRow = () => {
     setIsAddRowClicked((prevExpenses) => [
@@ -64,7 +64,7 @@ const BudgetNExpenses = () => {
     try {
       const response = await instance.post(fixedRequest.fixedReg, expenses);
       console.log("고정 지출 등록 성공", response);
-      queryClient.invalidateQueries("fixedExpense");
+      queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
     } catch (error) {
       console.log("고정지출 등록 에러", error);
     }
@@ -79,7 +79,7 @@ const BudgetNExpenses = () => {
       });
       console.log("전체예산 등록성공");
       toast.success("예산이 등록되었습니다");
-      queryClient.invalidateQueries("budgetList");
+      queryClient.invalidateQueries({ queryKey: ["budgetList"] });
     } catch (error) {
       console.error("전체 예산등록 에러");
     }
@@ -139,7 +139,7 @@ const BudgetNExpenses = () => {
                   <button
                     className={addBtn}
                     onClick={handleClickBudgetRegistration}
-                    // disabled={!budget.trim()}
+                  // disabled={!budget.trim()}
                   >
                     등록하기
                   </button>
@@ -184,8 +184,8 @@ const BudgetNExpenses = () => {
               <ExpensesRegiTableCell
                 isAddRowClicked={isAddRowClicked}
                 handleExpenseChange={handleExpenseChange}
-                // setPrice={setPrice}
-                // setCategory={setCategory}
+              // setPrice={setPrice}
+              // setCategory={setCategory}
               />
             </Box>
           </Box>

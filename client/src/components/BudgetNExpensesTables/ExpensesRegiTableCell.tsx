@@ -73,7 +73,6 @@ const ExpensesRegiTableCell = ({
 
   const queryClient = useQueryClient();
 
-  const memberId: string | null = localStorage.getItem("memberId");
   const [modifyId, setModifyId] = useState<number | null>(null);
   const [modifyValue, setModifyValue] = useState("");
   const [modifyCategory, setModifyCategory] = useState("");
@@ -168,7 +167,7 @@ const ExpensesRegiTableCell = ({
       });
       setModifyId(null);
       toast.success("고정지출이 수정되었습니다.");
-      queryClient.invalidateQueries("fixedExpense");
+      queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
     } catch (error) {
       console.error("고정지출 에러", error);
     }
@@ -184,7 +183,7 @@ const ExpensesRegiTableCell = ({
       );
       toast.success("고정지출이 삭제되었습니다.");
 
-      queryClient.invalidateQueries("fixedExpense");
+      queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
     } catch (error) {
       console.error("고정지출 삭제 에러", error);
       toast.error("고정지출 삭제에 실패했습니다.");

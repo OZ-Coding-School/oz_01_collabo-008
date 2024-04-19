@@ -98,7 +98,7 @@ const commonRoutes = [
 function App() {
   const cookies = new Cookies();
   const access = cookies.get("accessToken");
-  const { data: meData, isLoading: isMeLoading, error: meError, isSuccess } = useQuery({
+  const { data: meData, isLoading: isMeLoading, error: meError } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
       try {
@@ -107,6 +107,7 @@ function App() {
         return response.data.member
       } catch (error) {
         console.error("전역 유저정보 에러", error)
+        throw error
       }
     },
     enabled: !!access
@@ -114,6 +115,8 @@ function App() {
 
   if (isMeLoading) return <div>Loading...</div>;
   if (meError && !['/login', '/signup'].includes(window.location.pathname)) return <div>Error: {meError.message}</div>;
+
+
 
   return (
     <>
@@ -136,7 +139,7 @@ function App() {
 
 
         <Routes>
-          {meData || isSuccess ? (
+          {access ? (
             <>
               {...loggedRoutes}
               <Route path="*" element={<Navigate to="/" replace />} />

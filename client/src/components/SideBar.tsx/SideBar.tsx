@@ -102,7 +102,7 @@ const SideBar = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                {latestData.value.toLocaleString()}
+                {latestData ? latestData.value.toLocaleString() : "0"}
               </motion.p>
               <Text as="span" className={wonText}>
                 원

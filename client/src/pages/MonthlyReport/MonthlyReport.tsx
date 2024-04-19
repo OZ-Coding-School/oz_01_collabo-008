@@ -132,6 +132,7 @@ const MonthlyReport = () => {
       totalExpense += category.total_price;
     }
 
+
     const savedBudget = totalBudget - totalExpense;
     setSavedBudget(savedBudget);
 
