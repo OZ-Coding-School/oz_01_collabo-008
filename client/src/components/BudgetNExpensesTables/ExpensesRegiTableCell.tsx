@@ -139,11 +139,11 @@ const ExpensesRegiTableCell = ({
   // 고정지출
   if (isFixedExpense) return <div>Loading...</div>;
   if (fixedExpenseError) return <div>Error:{fixedExpenseError.message}</div>;
-  if (
-    !fixedExpenseData ||
-    fixedExpenseData.fixed_expenses_per_list.length === 0
-  )
-    return <div>등록된 고정지출이 없슈</div>;
+  // if (
+  //   !fixedExpenseData ||
+  //   fixedExpenseData.fixed_expenses_per_list.length === 0
+  // )
+  //   return <div>등록된 고정지출이 없습니다</div>;
 
   const fixedExpenses = fixedExpenseData.fixed_expenses_list;
 
@@ -267,7 +267,7 @@ const ExpensesRegiTableCell = ({
               <StyledTableRow key={index}>
                 <StyledTableCell>
                   <SelectBox
-                    defaultValue="카드"
+                    defaultValue={row.category.toString()}
                     options={options}
                     onChange={(value) => {
                       handleExpenseChange(index, "category", value);

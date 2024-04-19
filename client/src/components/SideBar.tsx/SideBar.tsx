@@ -1,7 +1,7 @@
 import { AnimatedLineProgressBar } from "@frogress/line";
 import { Box, Card, Flex, Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import instance from "../../api/axios";
@@ -26,6 +26,7 @@ interface ItemType {
 }
 
 const SideBar = () => {
+  const queryClient = useQueryClient();
   const [year] = useState(new Date().getFullYear());
   const [month] = useState(new Date().getMonth() + 1);
 
@@ -42,6 +43,8 @@ const SideBar = () => {
           budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
         const data = response.data.budget_list;
+        console.log("사이드바 전체 예산", data)
+        // queryClient.invalidateQueries({ queryKey: ["budget"] });
         return data;
       } catch (error) {
         throw new Error("전체예산 에러");
