@@ -77,7 +77,7 @@ const CalendarList = () => {
           view: string;
         }) => handleActiveStartDateChange(data)}
         value={date}
-        calendarType="gregory"
+        calendarType='gregory'
         formatDay={(_locale, date) => moment(date).format("D")}
         tileContent={({ date, view }) =>
           view === "month" && (

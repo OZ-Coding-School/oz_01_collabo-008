@@ -89,7 +89,7 @@ const BudgetRegister = () => {
   return (
     <div className={wrap}>
       <Box className={container}>
-        <Card size="3">
+        <Card size='3'>
           <div className={titleWrap}>
             <p className={title}>가계부 등록</p>
             <p className={description}>오늘 지출한 금액을 등록해보세요</p>

@@ -114,9 +114,8 @@ function App() {
   return (
     <>
 
-      <UserContext.Provider
-        value={{ userData: { name: meData.name, email: meData.email, id: meData.id, image: meData.image } }}
-      >
+      <UserContext.Provider value={{ userData: { name: meData.name, email: meData.email, id: meData.id, image: meData.image } }}>
+
 
         <ToastContainer
           position="top-center"
@@ -130,7 +129,6 @@ function App() {
           pauseOnHover
           theme="colored"
         />
-
 
 
         <Routes>
