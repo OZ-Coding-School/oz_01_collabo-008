@@ -2,7 +2,7 @@ import { ArcElement, Chart, Tooltip } from "chart.js";
 import { useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 
-Chart.register(Tooltip, ArcElement);
+Chart.register(ArcElement, Tooltip);
 
 interface FetchedData {
   total_expenses_by_category: {
@@ -16,9 +16,9 @@ interface FetchedData {
   }[];
 }
 
-interface Top5CategoriesData {
+interface Top5Categories {
   id?: number;
-  content: string;
+  content: string | null;
   total_price: number;
 }
 
@@ -27,16 +27,15 @@ const DoughnutChartCategory = ({
   top5CategoriesData,
 }: {
   fetchedData: FetchedData;
-  top5CategoriesData: (data: Top5CategoriesData[]) => void;
+  top5CategoriesData: (data: Top5Categories[]) => void;
 }) => {
+  console.log(fetchedData);
   useEffect(() => {
     const top5Categories = getTop5Categories(fetchedData);
     top5CategoriesData(top5Categories);
   }, [fetchedData, top5CategoriesData]);
 
-  const getTop5Categories = (
-    fetchedData: FetchedData
-  ): Top5CategoriesData[] => {
+  const getTop5Categories = (fetchedData: FetchedData): Top5Categories[] => {
     if (
       !fetchedData ||
       !fetchedData.total_expenses_by_category ||
@@ -44,11 +43,14 @@ const DoughnutChartCategory = ({
     ) {
       return [];
     }
+    const filteredCategories = fetchedData.total_expenses_by_category.filter(
+      (category) => category.total_price
+    );
 
     // 내림차순 정렬
-    const sortedTotalExpensesByCategory = [
-      ...fetchedData.total_expenses_by_category,
-    ].sort((a, b) => b.total_price - a.total_price);
+    const sortedTotalExpensesByCategory = filteredCategories.sort(
+      (a, b) => b.total_price - a.total_price
+    );
 
     // top5 카테고리 추출
     const top5Categories = sortedTotalExpensesByCategory.slice(0, 5);

@@ -47,7 +47,7 @@ const DoughnutChartPlace = ({
       ...fetchedData.total_expenses_by_location,
     ].sort((a, b) => b.total_price - a.total_price);
 
-    //top5 카테고리 추출
+    //top5 장소 추출
     const top5Places = sortedTotalExpensesByPlace.slice(0, 5);
 
     return top5Places;
