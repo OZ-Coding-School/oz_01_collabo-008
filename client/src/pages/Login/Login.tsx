@@ -98,14 +98,14 @@ const Login = () => {
         <p className={loginheader}>Login</p>
         {/* 이메일 입력창 */}
         <form className={loginform} onSubmit={handleSubmit}>
-          <label className={loginformLabel} htmlFor="email">
+          <label className={loginformLabel} htmlFor='email'>
             E-mail
           </label>
 
           <input
             className={loginformInput}
-            type="text"
-            id="email"
+            type='text'
+            id='email'
             onChange={handleChange}
             value={values.email}
             onBlur={handleBlur}
@@ -114,21 +114,21 @@ const Login = () => {
             <div className={error}>{errors.email}</div>
           )}
           {/* 패스워드 입력창 */}
-          <label className={loginformLabel} htmlFor="pw">
+          <label className={loginformLabel} htmlFor='pw'>
             Password
           </label>
           <div className={passwordInputWrap}>
             <input
               className={loginformInput}
               type={showPassword ? "text" : "password"}
-              id="pw"
-              name="password"
+              id='pw'
+              name='password'
               onChange={handleChange}
               value={values.password}
               onBlur={handleBlur}
             />
             <button
-              type="button"
+              type='button'
               className={pwToggleBtn}
               onClick={togglePasswordVisibility}
             >
@@ -143,8 +143,8 @@ const Login = () => {
           {/* 입력 버튼 */}
           <button
             className={loginbt}
-            type="submit"
-          // onClick={() => setCookies("token", "asdf", {})}
+            type='submit'
+            // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
           </button>
