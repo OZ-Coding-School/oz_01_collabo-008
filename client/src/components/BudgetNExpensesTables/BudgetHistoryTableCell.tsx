@@ -50,6 +50,7 @@ const BudgetHistoryTableCell = () => {
             b: { created_at: moment.MomentInput }
           ) => moment(b.created_at).valueOf() - moment(a.created_at).valueOf()
         );
+
         return data;
       } catch (error) {
         throw new Error("전체 예산 조회 에러");

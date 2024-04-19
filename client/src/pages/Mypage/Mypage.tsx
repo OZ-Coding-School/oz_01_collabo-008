@@ -131,7 +131,7 @@ const Mypage = () => {
       if (isEditing) {
         try {
           await instance.put(requests.modify, {
-            name: userData.name,
+            name: name,
             password,
           });
           toast.success("회원정보 수정 되었습니다.");
@@ -205,7 +205,8 @@ const Mypage = () => {
                 type="text"
                 id="name"
                 disabled={!isEditing}
-                value={userData.name}
+                value={name}
+                placeholder={userData.name}
                 onChange={handleNameChange}
                 className={input}
               ></input>
