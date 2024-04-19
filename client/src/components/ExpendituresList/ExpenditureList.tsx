@@ -73,6 +73,13 @@ const ExpenditureList = () => {
   const [modifiedContent, setModifiedContent] = useState("");
   const navigation = useNavigate();
 
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const {
     data: expenseListData,
     isLoading: isExpenseListLoading,
@@ -161,6 +168,7 @@ const ExpenditureList = () => {
         location: modifiedLocation,
         price: modifiedPrice,
         content: modifiedContent,
+        date: formatDate(modifiedDate)
       });
       setModifyId(null);
       toast.success("지출이 수정되었습니다.");

@@ -1,9 +1,9 @@
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Cookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { UserContext } from "../../App";
+import { useUserContext } from "../../App";
 import instance from "../../api/axios";
 import requests from "../../api/requests";
 import {
@@ -26,15 +26,7 @@ import {
   wrap,
 } from "./Mypage.css";
 
-interface UserType {
-  userData: {
-    email: string;
-    name: string;
-    id: number;
-    image: string
 
-  }
-}
 
 const Mypage = () => {
   // const [userData, setUserData] = useState([]);
@@ -43,7 +35,7 @@ const Mypage = () => {
   const [password, setPassword] = useState("");
   const cookies = new Cookies();
   const [name, setName] = useState("")
-  const { userData } = useContext<UserType>(UserContext)
+  const { userData, setUserData } = useUserContext()
   const { VITE_BASE_REQUEST_URL } = import.meta.env;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,22 +80,8 @@ const Mypage = () => {
   const handlePasswordChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(target.value);
   };
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await instance.get(requests.userInfo);
-  //       console.log(response.data);
-  //       setUserData(response.data.member);
-  //       setName(response.data.member.name); // 이름을 상태에 설정
-  //       setPassword(response.data.member.password);
-  //       setUserImage(response.data.member.image);
-  //     } catch (error) {
-  //       console.error("회원정보 조회 에러", error);
-  //     }
-  //   };
 
-  //   fetchData();
-  // }, []);
+
   const handleClickDelete = async () => {
     try {
       await instance.delete(requests.userInfo);
@@ -122,6 +100,7 @@ const Mypage = () => {
       Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
       toast.success("로그아웃 되었습니다.");
       navigate("/login");
+      setUserData({ id: -1 })
     } catch (error) {
       console.error("로그아웃 실패", error);
     }

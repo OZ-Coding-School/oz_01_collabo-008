@@ -1,7 +1,7 @@
 import { AnimatedLineProgressBar } from "@frogress/line";
 import { Box, Card, Flex, Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import instance from "../../api/axios";
@@ -26,7 +26,7 @@ interface ItemType {
 }
 
 const SideBar = () => {
-  const queryClient = useQueryClient();
+
   const [year] = useState(new Date().getFullYear());
   const [month] = useState(new Date().getMonth() + 1);
 
@@ -60,7 +60,13 @@ const SideBar = () => {
     queryKey: ["totalExpenses"],
     queryFn: async () => {
       try {
-        const response = await instance.get(
+        const response = await instance.get<
+          {
+            message: string;
+            status_code: number;
+            total_expense: number | null
+          }
+        >(
           expenseRequest.expense + `?year=${year}&month=${month}`
         );
 
@@ -87,8 +93,8 @@ const SideBar = () => {
   );
   // 가장 최신 데이터 선택
   const latestData = sortedData[0];
-  const usedPercentage =
-    (totalExpenseData.total_expense / latestData.value) * 100;
+  const usedPercentage = totalExpenseData?.total_expense ? (totalExpenseData.total_expense / latestData.value) * 100 : 0
+
 
   console.log("너 얼마썻어", totalExpenseData);
   return (
@@ -118,7 +124,7 @@ const SideBar = () => {
             <Text as="p">
               전체 예산의
               <Text as="span" className={spendingText}>
-                {totalExpenseData.total_expense.toLocaleString()}
+                {(totalExpenseData?.total_expense || 0).toLocaleString()}
               </Text>
               원을 사용했어요
             </Text>

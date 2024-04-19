@@ -87,7 +87,7 @@ const ExpensesRegiTableCell = ({
         const newIndex = prevExpenses.length;
         const updatedExpenses = [
           ...prevExpenses,
-          { index: newIndex, category: "", price: "" },
+          { index: newIndex, category: "1", price: "" },
         ];
         return updatedExpenses;
       });

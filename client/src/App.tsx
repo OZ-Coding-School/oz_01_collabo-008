@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -35,16 +35,22 @@ const Layout = () => {
   );
 };
 
-interface UserType {
-  userData: {
-    email: string;
-    name: string;
-    id: number;
-    image: string;
-  };
+export interface UserType {
+
+  email: string;
+  name: string;
+  id: number;
+  image: string;
+
 }
 
-export const UserContext = createContext<UserType>({
+interface UserContextType {
+  setUserData: any;
+  userData: UserType;
+}
+
+export const UserContext = createContext<UserContextType>({
+  setUserData: () => { },
   userData: {
     email: "",
     name: "",
@@ -62,10 +68,7 @@ export const useUserContext = () => {
   return context;
 };
 
-// const MyPage = () => {
-//   const user = useUserContext();
-//   console.log(user.name);
-// };
+
 
 const loggedRoutes = [
   <Route path='/' element={<Layout />}>
@@ -92,7 +95,31 @@ const commonRoutes = [
   </>,
 ];
 
+
+interface GetMemberResponseType {
+  status_code: number,
+  message: string,
+  member: {
+    id: number,
+    email: string,
+    name: string,
+    image: string,
+    created_at: string,
+    updated_at: string
+  }
+}
+
 function App() {
+  const [userData, setUserData] = useState<GetMemberResponseType["member"]>(
+    {
+      id: -1,
+      email: null,
+      name: null,
+      image: null,
+      created_at: null,
+      updated_at: null,
+    },
+  )
   const cookies = new Cookies();
   const access = cookies.get("accessToken");
   const {
@@ -103,7 +130,7 @@ function App() {
     queryKey: ["me"],
     queryFn: async () => {
       try {
-        const response = await instance.get(requests.userInfo);
+        const response = await instance.get<GetMemberResponseType>(requests.userInfo);
         console.log("전역 유저 정보", response.data.member);
         return response.data.member;
       } catch (error) {
@@ -114,9 +141,19 @@ function App() {
     enabled: !!access,
   });
 
+  useEffect(() => {
+    if (meData) {
+      setUserData(meData)
+
+    }
+  }, [meData])
+
+
   if (isMeLoading) return <div>Loading...</div>;
   if (meError && !["/login", "/signup"].includes(window.location.pathname))
     return <div>Error: {meError.message}</div>;
+
+
 
   return (
     <>
@@ -134,16 +171,12 @@ function App() {
       />
       <UserContext.Provider
         value={{
-          userData: {
-            name: meData?.name,
-            email: meData?.email,
-            id: meData?.id,
-            image: meData?.image,
-          },
+          setUserData,
+          userData: userData,
         }}
       >
         <Routes>
-          {access ? (
+          {!isMeLoading && userData?.id !== -1 ? (
             <>
               {...loggedRoutes}
               <Route path='*' element={<Navigate to='/' replace />} />
