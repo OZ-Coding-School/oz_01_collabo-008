@@ -42,11 +42,13 @@ const Mypage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [password, setPassword] = useState("");
   const cookies = new Cookies();
+  const [name, setName] = useState("")
   const { userData } = useContext<UserType>(UserContext)
   const { VITE_BASE_REQUEST_URL } = import.meta.env;
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
       try {
         const formData = new FormData();
         formData.append("image", file);
@@ -71,16 +73,20 @@ const Mypage = () => {
         console.error("사진 업로드 에러", error);
         toast.error("사진 업로드 중 오류가 발생했습니다.");
       }
+    } else {
+      // 파일이 선택되지 않은 경우에 대한 처리
+      console.error("파일이 선택되지 않았습니다.");
+      // 사용자에게 알림을 표시하거나 다른 처리를 수행할 수 있음
     }
   };
 
 
-  const handleNameChange = (e) => {
-    setName(e.target.value);
+  const handleNameChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setName(target.value);
   };
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
+  const handlePasswordChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(target.value);
   };
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -111,6 +117,9 @@ const Mypage = () => {
   const handleClickLogout = async () => {
     try {
       await instance.post(requests.logout, { refresh });
+      // 로그아웃 성공 후, 모든 쿠키 삭제
+      const allCookies = cookies.getAll(); // 모든 쿠키 가져오기
+      Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
       toast.success("로그아웃 되었습니다.");
       navigate("/login");
     } catch (error) {
