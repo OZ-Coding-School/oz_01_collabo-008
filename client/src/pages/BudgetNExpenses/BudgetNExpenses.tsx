@@ -73,6 +73,10 @@ const BudgetNExpenses = () => {
 
   //#region 전체 예산 등록
   const handleClickBudgetRegistration = async () => {
+    if (!budget.trim()) {
+      toast.error("예산을 입력해주세요.");
+      return;
+    }
     try {
       await instance.post(budgetRegRequest.budgetList, {
         value: budget,
@@ -139,7 +143,7 @@ const BudgetNExpenses = () => {
                   <button
                     className={addBtn}
                     onClick={handleClickBudgetRegistration}
-                  // disabled={!budget.trim()}
+                    // disabled={!budget.trim()}
                   >
                     등록하기
                   </button>
@@ -184,8 +188,8 @@ const BudgetNExpenses = () => {
               <ExpensesRegiTableCell
                 isAddRowClicked={isAddRowClicked}
                 handleExpenseChange={handleExpenseChange}
-              // setPrice={setPrice}
-              // setCategory={setCategory}
+                // setPrice={setPrice}
+                // setCategory={setCategory}
               />
             </Box>
           </Box>
@@ -205,9 +209,6 @@ export const ButtonForFixedExpRegi = ({
   onClick: () => void;
 }) => {
   const handleClick = () => {
-    if (!budgetHistory.trim()) {
-      return;
-    }
     onClick();
   };
   return (

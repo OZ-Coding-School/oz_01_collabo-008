@@ -40,9 +40,8 @@ interface UserType {
     email: string;
     name: string;
     id: number;
-    image: string
-
-  }
+    image: string;
+  };
 }
 
 export const UserContext = createContext<UserType>({
@@ -50,9 +49,8 @@ export const UserContext = createContext<UserType>({
     email: "",
     name: "",
     id: -1, // ID가 없는 경우를 위해 음수나 0을 사용할 수 있습니다. 실제 사용 시에는 유효한 ID값을 받아오게 됩니다.
-    image: ""
-  }
-
+    image: "",
+  },
 });
 
 export const useUserContext = () => {
@@ -69,9 +67,8 @@ export const useUserContext = () => {
 //   console.log(user.name);
 // };
 
-
 const loggedRoutes = [
-  <Route path="/" element={<Layout />}>
+  <Route path='/' element={<Layout />}>
     <Route index element={<Main />} />
     <Route
       path={BUDGET_N_FIXED_EXPENSES_COMPONENT}
@@ -90,71 +87,75 @@ const loggedRoutes = [
 
 const commonRoutes = [
   <>
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
+    <Route path='/login' element={<Login />} />
+    <Route path='/signup' element={<Signup />} />
   </>,
 ];
 
 function App() {
   const cookies = new Cookies();
   const access = cookies.get("accessToken");
-  const { data: meData, isLoading: isMeLoading, error: meError } = useQuery({
+  const {
+    data: meData,
+    isLoading: isMeLoading,
+    error: meError,
+  } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
       try {
-        const response = await instance.get(requests.userInfo)
-        console.log("전역 유저 정보", response.data.member)
-        return response.data.member
+        const response = await instance.get(requests.userInfo);
+        console.log("전역 유저 정보", response.data.member);
+        return response.data.member;
       } catch (error) {
-        console.error("전역 유저정보 에러", error)
-        throw error
+        console.error("전역 유저정보 에러", error);
+        throw error;
       }
     },
-    enabled: !!access
+    enabled: !!access,
   });
 
   if (isMeLoading) return <div>Loading...</div>;
-  if (meError && !['/login', '/signup'].includes(window.location.pathname)) return <div>Error: {meError.message}</div>;
-
-
+  if (meError && !["/login", "/signup"].includes(window.location.pathname))
+    return <div>Error: {meError.message}</div>;
 
   return (
     <>
-
-      <UserContext.Provider value={{ userData: { name: meData?.name, email: meData?.email, id: meData?.id, image: meData?.image } }}>
-
-
-        <ToastContainer
-          position="top-center"
-          autoClose={700}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-
-
+      <ToastContainer
+        position='top-center'
+        autoClose={700}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='colored'
+      />
+      <UserContext.Provider
+        value={{
+          userData: {
+            name: meData?.name,
+            email: meData?.email,
+            id: meData?.id,
+            image: meData?.image,
+          },
+        }}
+      >
         <Routes>
           {access ? (
             <>
               {...loggedRoutes}
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path='*' element={<Navigate to='/' replace />} />
             </>
           ) : (
             <>
               {...commonRoutes}
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path='*' element={<Navigate to='/login' replace />} />
             </>
           )}
         </Routes>
-
       </UserContext.Provider>
-
-
     </>
   );
 }

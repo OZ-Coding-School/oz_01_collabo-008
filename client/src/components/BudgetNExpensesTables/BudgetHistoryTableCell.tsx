@@ -43,6 +43,11 @@ const BudgetHistoryTableCell = () => {
           budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
 
+        if (!response.data || response.data.length === 0) {
+          throw new Error(
+            "There is no BugetData. Please register your budget first!"
+          );
+        }
         // 최신 데이터 맨 위로 정렬
         const data = response.data.budget_list.sort(
           (
@@ -59,6 +64,8 @@ const BudgetHistoryTableCell = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error:{error.message}</div>;
+  if (!data || data.length === 0)
+    return <div>예산 정보가 없습니다. 예산을 먼저 등록해주세요.</div>;
 
   // 예산 수정
   const handleClickModify = (id: number, value: number) => {
@@ -87,24 +94,24 @@ const BudgetHistoryTableCell = () => {
     <>
       <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+          <Table sx={{ minWidth: 700 }} aria-label='customized table'>
             <TableHead>
               <TableRow>
-                <StyledTableCell align="left">날짜</StyledTableCell>
-                <StyledTableCell align="left">등록 예산</StyledTableCell>
-                <StyledTableCell align="left"></StyledTableCell>
+                <StyledTableCell align='left'>날짜</StyledTableCell>
+                <StyledTableCell align='left'>등록 예산</StyledTableCell>
+                <StyledTableCell align='left'></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.map((item: ItemType) => (
                 <StyledTableRow key={item.id}>
-                  <StyledTableCell align="left">
+                  <StyledTableCell align='left'>
                     {moment(item.created_at).format("YYYY.MM.DD")}
                   </StyledTableCell>
-                  <StyledTableCell align="left">
+                  <StyledTableCell align='left'>
                     {modifyId === item.id ? (
                       <Input
-                        type="number"
+                        type='number'
                         value={modifyValue}
                         onChange={handleEditChange}
                       />
@@ -112,7 +119,7 @@ const BudgetHistoryTableCell = () => {
                       item.value.toLocaleString()
                     )}
                   </StyledTableCell>
-                  <StyledTableCell align="left">
+                  <StyledTableCell align='left'>
                     {modifyId === item.id ? (
                       <button
                         className={modifyBtn}

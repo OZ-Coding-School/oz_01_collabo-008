@@ -37,7 +37,7 @@ const CalendarList = () => {
 
         return response.data.expenses_list;
       } catch (error) {
-        throw new Error("Expense Data fetching Error");
+        throw new Error(`Expense Data fetching Error: ${error.message}`);
       }
     },
   });

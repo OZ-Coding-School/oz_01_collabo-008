@@ -138,7 +138,7 @@ const ExpenditureList = () => {
   }));
 
   useEffect(() => {
-    if (modifyId !== null) {
+    if (modifyId !== null && expenseListData) {
       const row = (expenseListData as ExpenseItemType[]).find(
         (item) => item.id === modifyId
       );
@@ -183,6 +183,9 @@ const ExpenditureList = () => {
   const handleClick = () => {
     navigation(BUDGET_REGISTER_PAGE);
   };
+
+  if (!expenseListData || expenseListData.length === 0)
+    return <div>There is no Expense List to show</div>;
 
   if (isExpenseListLoading) return <div>Loading...</div>;
   if (expenseListError) return <div>Error:{expenseListError.message}</div>;
@@ -252,7 +255,7 @@ const ExpenditureList = () => {
                 <td className={td}>
                   {modifyId === row.id ? (
                     <Input
-                      type="text"
+                      type='text'
                       value={modifiedLocation}
                       onChange={(e) => setModifiedLocation(e.target.value)}
                     />
@@ -263,7 +266,7 @@ const ExpenditureList = () => {
                 <td className={td}>
                   {modifyId === row.id ? (
                     <Input
-                      type="number"
+                      type='number'
                       value={modifiedPrice}
                       onChange={(e) => setModifiedPrice(e.target.value)}
                     />
@@ -274,7 +277,7 @@ const ExpenditureList = () => {
                 <td className={td}>
                   {modifyId === row.id ? (
                     <Input
-                      type="text"
+                      type='text'
                       value={modifiedContent}
                       onChange={(e) => setModifiedContent(e.target.value)}
                     />

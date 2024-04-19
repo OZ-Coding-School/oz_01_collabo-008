@@ -43,7 +43,7 @@ interface MonthlyReportData {
   }[];
 }
 
-interface Top5CategoriesData {
+interface Top5Categories {
   id?: number;
   content: string;
   total_price: number;
@@ -68,7 +68,7 @@ const MonthlyReport = () => {
   const [data, setData] = useState<MonthlyReportData | null>(null);
 
   const [top5CategoriesData, setTop5CategoriesData] = useState<
-    Top5CategoriesData[]
+    Top5Categories[]
   >([]);
 
   const [top5PlacesData, setTop5PlacesData] = useState<Top5Places[]>([]);
@@ -102,10 +102,14 @@ const MonthlyReport = () => {
   } = useQuery({
     queryKey: ["budgetData", { year, month }],
     queryFn: async () => {
-      const response = await instance.get(
-        budgetRegRequest.budgetList + `?year=${year}&month=${month}`
-      );
-      return response.data;
+      try {
+        const response = await instance.get(
+          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
+        );
+        return response.data;
+      } catch (error) {
+        throw new Error(`Budget data fetching error: ${error.message}`);
+      }
     },
   });
 
@@ -114,6 +118,10 @@ const MonthlyReport = () => {
 
     if (!expensesData) {
       console.error("Expenses Data does not exist");
+      return;
+    }
+    if (!budgetData) {
+      console.error("Budget Data does not exist");
       return;
     }
 
@@ -131,7 +139,6 @@ const MonthlyReport = () => {
     for (const category of expensesData.total_expenses_by_category) {
       totalExpense += category.total_price;
     }
-
 
     const savedBudget = totalBudget - totalExpense;
     setSavedBudget(savedBudget);
