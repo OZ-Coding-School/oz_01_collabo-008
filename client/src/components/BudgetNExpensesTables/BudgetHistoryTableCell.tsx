@@ -10,7 +10,7 @@ import {
 import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 import { Box } from "@radix-ui/themes";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
@@ -77,7 +77,7 @@ const BudgetHistoryTableCell = () => {
       });
       setModifyId(null);
       toast.success("예산이 수정되었습니다.");
-      queryClient.invalidateQueries("budgetList");
+      queryClient.invalidateQueries({ queryKey: ["budgetList"] });
     } catch (error) {
       console.error("예산수정에러", error);
     }

@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,6 +14,7 @@ import Main from "./pages/MainPage/Main";
 import Mypage from "./pages/Mypage/Mypage";
 
 import { useQuery } from "@tanstack/react-query";
+import { Cookies } from "react-cookie";
 import instance from "./api/axios";
 import requests from "./api/requests";
 import {
@@ -95,6 +96,8 @@ const commonRoutes = [
 ];
 
 function App() {
+  const cookies = new Cookies();
+  const access = cookies.get("accessToken");
   const { data: meData, isLoading: isMeLoading, error: meError } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
@@ -104,17 +107,21 @@ function App() {
         return response.data.member
       } catch (error) {
         console.error("전역 유저정보 에러", error)
+        throw error
       }
     },
+    enabled: !!access
   });
 
   if (isMeLoading) return <div>Loading...</div>;
-  if (meError) return <div>Error:{meError.message}</div>;
+  if (meError && !['/login', '/signup'].includes(window.location.pathname)) return <div>Error: {meError.message}</div>;
+
+
 
   return (
     <>
 
-      <UserContext.Provider value={{ userData: { name: meData.name, email: meData.email, id: meData.id, image: meData.image } }}>
+      <UserContext.Provider value={{ userData: { name: meData?.name, email: meData?.email, id: meData?.id, image: meData?.image } }}>
 
 
         <ToastContainer
@@ -132,8 +139,19 @@ function App() {
 
 
         <Routes>
-          {[...loggedRoutes, ...commonRoutes]}
+          {access ? (
+            <>
+              {...loggedRoutes}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </>
+          ) : (
+            <>
+              {...commonRoutes}
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </>
+          )}
         </Routes>
+
       </UserContext.Provider>
 
 

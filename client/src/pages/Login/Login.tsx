@@ -32,7 +32,7 @@ interface LoginForm {
 }
 
 const Login = () => {
-  const { VITE_SECRET_KEY } = import.meta.env;
+  // const { VITE_SECRET_KEY } = import.meta.env;
   const { VITE_BASE_REQUEST_URL } = import.meta.env;
   const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
   const [errorText, setErrorText] = useState("");
@@ -41,8 +41,6 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
-  // memberId를 위한 변수 추가 by. 손지형
-  const memberId: string | null = localStorage.getItem("memberId");
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -146,7 +144,7 @@ const Login = () => {
           <button
             className={loginbt}
             type="submit"
-            // onClick={() => setCookies("token", "asdf", {})}
+          // onClick={() => setCookies("token", "asdf", {})}
           >
             Login
           </button>

@@ -38,7 +38,6 @@ const BudgetRegister = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedPayment, setSelectedPayment] = useState<string>("");
-  const memberId = localStorage.getItem("memberId");
   const navigation = useNavigate();
   // 새 행 추가 함수
   const addRow = () => {

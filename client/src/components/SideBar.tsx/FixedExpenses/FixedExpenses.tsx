@@ -4,12 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import instance from "../../../api/axios";
 import fixedRequest from "../../../api/fixedRequest";
 import {
-  Budget,
   fixedText,
   fixedWrap,
   list,
   listItem,
-  listItems,
+  listItems
 } from "../SideBar.css";
 
 interface FixedExpense {
@@ -43,7 +42,7 @@ const FixedExpenses = () => {
   if (isFixedExpense) return <div>Loading...</div>;
   if (fixedExpenseError) return <div>Error:{fixedExpenseError.message}</div>;
   if (!fixedExpense || fixedExpense.fixed_expenses_per_list.length === 0)
-    return <div className={Budget}>등록된 고정지출이 없슈</div>;
+    return <div>등록된 고정지출이 없습니다.</div>;
 
   const categoryMap: { [key: number]: string } = {
     1: "식비",
