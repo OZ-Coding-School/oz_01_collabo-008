@@ -34,6 +34,10 @@ class MemberSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=True)
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, member: Member) -> Token:

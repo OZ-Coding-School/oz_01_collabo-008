@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 from django.db.models import Sum
 
 from members.models import Member
@@ -19,10 +20,12 @@ from .serializers import (
 
 
 class FixedExpenseView(APIView):
+    serializer_class = FixedExpenseSerializer
+
     def get(self, request):
         member_id = get_member_id(request=request)
         fixed_expenses = FixedExpense.objects.filter(member_id=member_id)
-        serializer = FixedExpenseSerializer(fixed_expenses, many=True)
+        serializer = self.serializer_class(fixed_expenses, many=True)
         total_category_expenses = FixedExpense.objects.filter(member_id=member_id).values('category').annotate(total_price=Sum('price'))
         category_serializer = CategorySumSerializer(total_category_expenses, many=True)
         return Response(
@@ -47,7 +50,7 @@ class FixedExpenseView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         print(request.data)
-        serializer = FixedExpenseSerializer(
+        serializer = self.serializer_class(
             data=request.data,
             many=True,
             context={"member": member}
@@ -71,6 +74,8 @@ class FixedExpenseView(APIView):
 
 
 class FixedExpenseDetailView(APIView):
+    serializer_class = FixedExpenseSerializer
+
     def put(self, request, fixed_expense_id):
         fixed_expense = FixedExpense.objects.filter(pk=fixed_expense_id).first()
         if fixed_expense is None:
@@ -81,10 +86,10 @@ class FixedExpenseDetailView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = FixedExpenseSerializer(fixed_expense, data=request.data, partial=True)
+        serializer = self.serializer_class(fixed_expense, data=request.data, partial=True)
         if serializer.is_valid():
             fixed_expense = serializer.save()
-            serializer = FixedExpenseSerializer(fixed_expense)
+            serializer = self.serializer_class(fixed_expense)
             return Response(
                 data={
                     "status_code": 201,
@@ -122,10 +127,20 @@ class FixedExpenseDetailView(APIView):
 
 
 class ExpenseListView(APIView):
+    serializer_class = ExpenseSerializer
+
+    # Swagger-ui 테스트 시 query parameter 설정할 수 있는 ui 표시
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name='year', description='지출한 연도', required=False, type=OpenApiTypes.STR),
+            OpenApiParameter(name='month', description='지출한 달', required=False, type=OpenApiTypes.STR)
+        ]
+    )
     def get(self, request):
         member_id = get_member_id(request=request)
         year = request.GET.get('year', None)
         month = request.GET.get('month', None)
+        print(type(year), type(month))
         if year is None or month is None:
             return Response(
                 data={
@@ -135,7 +150,7 @@ class ExpenseListView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         expenses = Expense.objects.filter(member_id=member_id, date__year=year, date__month=month)
-        serializer = ExpenseSerializer(expenses, many=True)
+        serializer = self.serializer_class(expenses, many=True)
         total_expense = Expense.objects.filter(member_id=member_id, date__year=year, date__month=month).aggregate(total=Sum('price'))
 
         return Response(
@@ -159,7 +174,7 @@ class ExpenseListView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = ExpenseSerializer(
+        serializer = self.serializer_class(
             data=request.data,
             many=True,
             context={"member": member}
@@ -183,6 +198,8 @@ class ExpenseListView(APIView):
 
 
 class ExpenseDetailView(APIView):
+    serializer_class = ExpenseSerializer
+
     def put(self, request, expense_id):
         expense = Expense.objects.filter(pk=expense_id).first()
         if expense is None:
@@ -193,10 +210,10 @@ class ExpenseDetailView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = ExpenseSerializer(expense, data=request.data, partial=True)
+        serializer = self.serializer_class(expense, data=request.data, partial=True)
         if serializer.is_valid():
             expense = serializer.save()
-            serializer = FixedExpenseSerializer(expense)
+            serializer = self.serializer_class(expense)
             return Response(
                 data={
                     "result_code": 201,
@@ -228,9 +245,11 @@ class ExpenseDetailView(APIView):
 
 
 class CategoryView(APIView):
+    serializer_class = CategorySerializer
+
     def get(self, request):
         category_list = Category.objects.all()
-        serializer = CategorySerializer(category_list, many=True)
+        serializer = self.serializer_class(category_list, many=True)
         return Response(
             data= {
                 "status_code": 200,
@@ -241,9 +260,11 @@ class CategoryView(APIView):
 
 
 class PaymentView(APIView):
+    serializer_class = PaymentSerializer
+
     def get(self, request):
         payment_list = Payment.objects.all()
-        serializer = PaymentSerializer(payment_list, many=True)
+        serializer = self.serializer_class(payment_list, many=True)
         return Response(
             data= {
                 "status_code": 200,
