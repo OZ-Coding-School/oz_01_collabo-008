@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - django
+
   django:
     build: .
     image: swanycastle/django:latest
