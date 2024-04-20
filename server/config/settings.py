@@ -31,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["ec2-13-124-21-36.ap-northeast-2.compute.amazonaws.com", "13.124.21.36"]
+ALLOWED_HOSTS = ["ec2-13-124-21-36.ap-northeast-2.compute.amazonaws.com", "13.124.21.36", "127.0.0.1"]
 
 
 # Application definition
@@ -116,9 +116,9 @@ SIMPLE_JWT = {
 
 SPECTACULAR_SETTINGS = {
     # Swagger UI에서 API 문서에 대한 제목 설정
-    'TITLE': 'My Project API',
+    'TITLE': 'Red Ribbon API',
     # API 문서에 대한 설명 설정 (선택 사항)
-    'DESCRIPTION': 'API documentation for My Project',
+    'DESCRIPTION': 'API documentation for Red Ribbon',
     # API 문서의 버전 설정
     'VERSION': '1.0.0',
     # 사용할 스키마 생성자 설정

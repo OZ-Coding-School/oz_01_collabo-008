@@ -3,12 +3,59 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum, Q, Value
 from django.db.models.functions import Coalesce
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, OpenApiResponse
+from drf_spectacular.types import OpenApiTypes
 
 from expenses.models import Category, Expense
 from members.views import get_member_id
+from .serializers import ReportSerializer
 
 
 class ReportListView(APIView):
+    serializer_class = ReportSerializer
+
+    # Swagger-ui 표시설정
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name='year', description='현재 연도', required=False, type=OpenApiTypes.STR),
+            OpenApiParameter(name='month', description='현재 달', required=False, type=OpenApiTypes.STR)
+        ],
+        responses={
+            200: OpenApiResponse(description='성공', response=serializer_class),
+        },
+        examples=[
+            OpenApiExample(
+                name='성공 예시',
+                description='API 호출이 성공했을 때의 응답 예시',
+                value={
+                    "status_code": 200,
+                    "message": "Success",
+                    "total_expenses_by_category": [
+                        {
+                            "id": 1,
+                            "content": "식비",
+                            "total_price" : 50000
+                        },
+                        {
+                            "id": 3,
+                            "content": "생활용품",
+                            "total_price" : 30000
+                        }
+                    ],
+                    "total_expenses_by_location": [
+                        {
+                            "location": "CU",
+                            "total_price": 20000
+                        },
+                        {
+                            "location": "올영",
+                            "total_price" : 30000
+                        }
+                    ]
+                },
+            ),
+        ],
+    )
     def get(self, request):
         member_id = get_member_id(request=request)
         year = request.GET.get("year", None)

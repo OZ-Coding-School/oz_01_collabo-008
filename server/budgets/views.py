@@ -9,6 +9,8 @@ from members.views import get_member_id
 from .serializers import BudgetSerializer
 
 class BudgetListView(APIView):
+    serializer_class = BudgetSerializer
+
     def get(self, request):
         member_id = get_member_id(request=request)
         budgets = Budget.objects.filter(member_id=member_id)
@@ -54,6 +56,8 @@ class BudgetListView(APIView):
         )
 
 class BudgetDetailView(APIView):
+    serializer_class = BudgetSerializer
+
     def put(self, request, budget_id):
         budget = Budget.objects.filter(pk=budget_id).first()
         if budget is None:
