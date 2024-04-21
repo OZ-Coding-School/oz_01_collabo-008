@@ -63,5 +63,6 @@
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "proxy": "https://red-ribbon.shop"
 }
