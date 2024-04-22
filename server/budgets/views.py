@@ -16,7 +16,7 @@ class BudgetListView(APIView):
         year = request.GET.get('year', None)
         month = request.GET.get('month', None)
         budgets = Budget.objects.filter(member_id=member_id)
-        total_budget = Budget.objects.filter(member_id=member_id, date__year=year, date__month=month).aggregate(total=Sum('amount'))
+        total_budget = Budget.objects.filter(member_id=member_id, created_at__year=year, created_at__month=month).aggregate(total=Sum('value'))
         serializer = BudgetSerializer(budgets, many=True)
         return Response(
             data={
