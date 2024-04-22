@@ -7,10 +7,14 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 
 from .models import Member
-from .serializers import MemberSerializer, LogoutSerializer, MyTokenObtainPairSerializer
+from .serializers import (
+    MemberSerializer,
+    MemberUpdateSerializer,
+    LogoutSerializer,
+    MyTokenObtainPairSerializer
+)
 from config.settings import env
 
 import boto3
@@ -181,7 +185,7 @@ class MemberDetailView(APIView):
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        serializer = self.serializer_class(member, data=request.data, partial=True)
+        serializer = MemberUpdateSerializer(member, data=request.data, partial=True)
         if serializer.is_valid():
             member = serializer.save()
             serializer = self.serializer_class(member)
@@ -190,8 +194,14 @@ class MemberDetailView(APIView):
                 "message": "Success",
                 "member": serializer.data
             }
-            return Response(data=response, status=status.HTTP_201_CREATED)
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data=response,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            data=serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request):
         member_id = get_member_id(request=request)
@@ -244,6 +254,20 @@ class UploadProfileImageView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if image_file:
+            file_size = image_file.size
+            max_size_mb = 10
+            max_size_bytes = max_size_mb * 1024 * 1024
+
+            if file_size > max_size_bytes:
+                return Response(
+                    data={
+                        "status_code": 413,
+                        "message": "The file size exceeds 10MB."
+                    }, 
+                    status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+                )
+
         member_id = get_member_id(request)
         member = Member.objects.filter(pk=member_id).first()
         if member is None:
@@ -258,7 +282,6 @@ class UploadProfileImageView(APIView):
         if "error" not in image_url:
             member.image = image_url
             member.save()
-        
             return Response(
                 data={
                     "status_code": 200,
@@ -286,10 +309,10 @@ def get_member_id(request):
         token_type, token = auth_header.split()
         if token_type != 'Bearer':
             raise AuthenticationFailed("잘못된 토큰 타입입니다.")
-        
+
         access_token = AccessToken(token)
         member_id = access_token.payload.get("id")
-        
+
         return member_id
     except ValueError:
         raise AuthenticationFailed("잘못된 토큰 형식입니다.")
