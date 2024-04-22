@@ -122,10 +122,13 @@ const Mypage = () => {
       } else {
         setIsEditing(true);
       }
+      console.log()
     } catch (error) {
       console.error("회원정보 수정 실패", error);
     }
   };
+
+
 
   return (
     <div className={wrap}>
