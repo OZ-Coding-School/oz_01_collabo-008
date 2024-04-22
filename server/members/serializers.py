@@ -27,11 +27,25 @@ class MemberSerializer(serializers.ModelSerializer):
         )
         return member
 
+
+class MemberUpdateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
+    class Meta:
+        model = Member
+        fields = ("id", "email", "password", "name", "image", "created_at", "updated_at")
+
     def update(self, instance, validated_data):
-        if validated_data.get("password") is not None:
-            passowrd = validated_data["password"]
-            validated_data["password"] = make_password(passowrd)
-        return super().update(instance, validated_data)
+        if validated_data.get("name") is not None and validated_data.get("name") != "":
+            instance.name = validated_data.get("name")
+
+        if validated_data.get("password") is not None and validated_data.get("password") != "":
+            password = validated_data["password"]
+            instance.password = make_password(password)
+
+        instance.save()
+        return instance
 
 
 class LogoutSerializer(serializers.Serializer):
