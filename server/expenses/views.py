@@ -49,7 +49,6 @@ class FixedExpenseView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
-        print(request.data)
         serializer = self.serializer_class(
             data=request.data,
             many=True,
@@ -140,7 +139,6 @@ class ExpenseListView(APIView):
         member_id = get_member_id(request=request)
         year = request.GET.get('year', None)
         month = request.GET.get('month', None)
-        print(type(year), type(month))
         if year is None or month is None:
             return Response(
                 data={
