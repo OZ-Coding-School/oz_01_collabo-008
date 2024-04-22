@@ -102,7 +102,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
     // 정규 표현식을 사용하여 숫자인지 확인
     const isValidPrice = /^\d+$/.test(value);
     if (!isValidPrice) {
-      toast.warning("숫자를 입력해주세요.");
+      toast.warning("사용금액을 유효한 숫자로 입력해주세요.");
       return; // 숫자가 아닌 경우 함수 종료
     }
     onTableRowChange(index, 'price', value);
