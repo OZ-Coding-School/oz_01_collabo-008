@@ -198,7 +198,7 @@ const MonthlyReport = () => {
           </Box>
           <Box>
             <Box>
-              +{" "}
+              {savedBudget > 0 ? "+" : " "}{" "}
               <Box
                 sx={{
                   color: "#F03167",
@@ -209,7 +209,7 @@ const MonthlyReport = () => {
                   marginRight: "0.5rem",
                 }}
               >
-                {Number(savedBudget)
+                {Math.abs(savedBudget)
                   .toLocaleString()
                   .split("")
                   .map((char, index) => (
@@ -226,7 +226,10 @@ const MonthlyReport = () => {
                     </motion.span>
                   ))}
               </Box>
-              원이 세이브 되었습니다.
+              원
+              {savedBudget > 0
+                ? "이 세이브 되었습니다."
+                : "을 더 사용했습니다."}
             </Box>
           </Box>
         </Box>
