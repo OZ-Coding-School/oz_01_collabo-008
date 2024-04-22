@@ -35,8 +35,8 @@ class RegisterMember(APIView):
         if serializer.is_valid():
             serializer.save()
             response = {
-                "result_code": 201,
-                "result_message": "Success"
+                "status_code": 201,
+                "message": "Success"
             }
             return Response(data=response, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -108,7 +108,8 @@ class LogoutView(APIView):
         if refresh_token is None:
             return Response(
                 data={
-                    "detail": "No refresh token provided"
+                    "status_code": 200,
+                    "message": "No refresh token provided"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -126,7 +127,8 @@ class LogoutView(APIView):
         except Exception as e:
             return Response(
                 data={
-                    "error_message": str(e)
+                    "status_code": 200,
+                    "message": str(e)
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )

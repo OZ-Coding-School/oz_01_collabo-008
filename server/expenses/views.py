@@ -118,8 +118,8 @@ class FixedExpenseDetailView(APIView):
         fixed_expense.delete()
         return Response(
             data={
-                "result_code": 200,
-                "result_message": "Success"
+                "status_code": 200,
+                "message": "Success"
             },
             status=status.HTTP_200_OK
         )
@@ -214,8 +214,8 @@ class ExpenseDetailView(APIView):
             serializer = self.serializer_class(expense)
             return Response(
                 data={
-                    "result_code": 201,
-                    "result_message": "Success",
+                    "status_code": 201,
+                    "message": "Success",
                     "fixed_expense": serializer.data
                 },
                 status=status.HTTP_201_CREATED
