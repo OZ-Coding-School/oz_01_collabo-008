@@ -49,5 +49,7 @@ export const modifyBtn = style({
 });
 
 export const h1 = style({
+  fontSize: "26px",
   marginBottom: "16px",
+  fontWeight: 500,
 });

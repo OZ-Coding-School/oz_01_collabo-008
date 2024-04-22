@@ -7,7 +7,7 @@ import instance from "../../api/axios";
 import categoriesRequest from "../../api/categoriesRequest";
 import expenseRequest from "../../api/expenseRequest";
 import { BUDGET_REGISTER_PAGE } from "../../constants/components-contants";
-import { expenseBtn, expenseBtnWrap } from "../../pages/MainPage/Main.css";
+import { expenseBtn, expenseBtnWrap, noneList } from "../../pages/MainPage/Main.css";
 import { datepicker } from "../BudgetRegTable/BudgetRegTable.css";
 import Input from "../Input/Input";
 import SelectBox from "../SelectBox/Select";
@@ -193,7 +193,7 @@ const ExpenditureList = () => {
   };
 
   if (!expenseListData || expenseListData.length === 0)
-    return <div>There is no Expense List to show</div>;
+    return <div className={noneList}>등록된 지출 목록이 없어요</div>;
 
   if (isExpenseListLoading) return <div>Loading...</div>;
   if (expenseListError) return <div>Error:{expenseListError.message}</div>;
@@ -207,14 +207,14 @@ const ExpenditureList = () => {
   return (
     <div className={wrap}>
       <div className={title}>
-        <h1 className={h1}>2024년 4월 </h1>
+        <p className={h1}>{year}년 {month}월 </p>
       </div>
       <table className={table}>
         <thead>
           <tr>
             <th className={head}>사용날짜</th>
             <th className={head}>카테고리</th>
-            <th className={head}>카드/현금</th>
+            <th className={head}>결제수단</th>
             <th className={head}>사용처</th>
             <th className={head}>사용금액</th>
             <th className={head}>사용 내역</th>
