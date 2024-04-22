@@ -135,7 +135,6 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     <ReactDatePicker
                       className={datepicker}
                       showIcon
-                      toggleCalendarOnIconClick
                       selected={startDate}
                       onChange={(date) => {
                         if (date instanceof Date) { // date가 Date 인스턴스인지 확인
