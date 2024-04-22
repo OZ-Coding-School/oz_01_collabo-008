@@ -163,6 +163,7 @@ const ExpenditureList = () => {
   }, [modifyId, expenseListData]);
 
   const handleModify = async (expenseId: number) => {
+
     try {
       await instance.put(expenseRequest.expenseModify + `/${expenseId}`, {
         category: modifiedCategory,
@@ -281,6 +282,7 @@ const ExpenditureList = () => {
                       type='number'
                       value={modifiedPrice}
                       onChange={(e) => setModifiedPrice(e.target.value)}
+                      min={0}
                     />
                   ) : (
                     row.price.toLocaleString()

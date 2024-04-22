@@ -205,6 +205,7 @@ const BudgetNExpenses = () => {
                 handleExpenseChange={handleExpenseChange}
               // setPrice={setPrice}
               // setCategory={setCategory}
+
               />
             </Box>
           </Box>

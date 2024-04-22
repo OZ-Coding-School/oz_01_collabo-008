@@ -87,7 +87,7 @@ const ExpensesRegiTableCell = ({
         const newIndex = prevExpenses.length;
         const updatedExpenses = [
           ...prevExpenses,
-          { index: newIndex, category: "1", price: "" },
+          { index: newIndex, category: "", price: "" },
         ];
         return updatedExpenses;
       });
@@ -225,6 +225,7 @@ const ExpensesRegiTableCell = ({
                       type="number"
                       value={modifyValue}
                       onChange={handleEditChange}
+                      min={0}
                     />
                   ) : (
                     fixedExpense.price.toLocaleString()
@@ -283,6 +284,7 @@ const ExpensesRegiTableCell = ({
                       const value = e.target.value;
                       handleExpenseChange(index, "price", value);
                     }}
+                    min={0}
                   />
                 </StyledTableCell>
                 <StyledTableCell align="left"></StyledTableCell>
