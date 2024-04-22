@@ -7,15 +7,17 @@ import instance from "../../api/axios";
 import categoriesRequest from "../../api/categoriesRequest";
 import expenseRequest from "../../api/expenseRequest";
 import { BUDGET_REGISTER_PAGE } from "../../constants/components-contants";
-import { expenseBtn, expenseBtnWrap, noneList } from "../../pages/MainPage/Main.css";
+import { expenseBtn, expenseBtnWrap } from "../../pages/MainPage/Main.css";
 import { datepicker } from "../BudgetRegTable/BudgetRegTable.css";
 import Input from "../Input/Input";
 import SelectBox from "../SelectBox/Select";
 import {
+  addExpenseBtn,
   evenRow,
   h1,
   head,
   modifyBtn,
+  noneList,
   oddRow,
   table,
   td,
@@ -193,7 +195,9 @@ const ExpenditureList = () => {
   };
 
   if (!expenseListData || expenseListData.length === 0)
-    return <div className={noneList}>등록된 지출 목록이 없어요</div>;
+    return <div className={noneList}>등록된 지출 목록이 없어요
+      <button className={addExpenseBtn}>등록하러 가기</button>
+    </div>;
 
   if (isExpenseListLoading) return <div>Loading...</div>;
   if (expenseListError) return <div>Error:{expenseListError.message}</div>;
