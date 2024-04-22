@@ -35,7 +35,7 @@ class BudgetListView(APIView):
             return Response(
                 data={
                     "status_code":404,
-                    "message": "NotFound Member Data"
+                    "message": "멤버 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
@@ -67,7 +67,7 @@ class BudgetDetailView(APIView):
             return Response(
                 data={
                     "status_code":404,
-                    "message": "NotFound Budget Data"
+                    "message": "예산 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
@@ -97,7 +97,7 @@ class BudgetDetailView(APIView):
             return Response(
                 data={
                     "status_code":404,
-                    "message": "NotFound Budget Data"
+                    "message": "예산 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
