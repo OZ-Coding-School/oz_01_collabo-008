@@ -51,16 +51,17 @@ interface ExpenseItem extends Props {
 }
 
 const categoryMap: { [key: number]: string } = {
-  1: "식비",
-  2: "주거/통신",
-  3: "생활용품",
-  4: "의복/미용",
-  5: "건강/문화",
-  6: "교육/육아",
-  7: "교통/차량",
-  8: "경조사/회비",
-  9: "세금/이자",
-  10: "기타",
+  1: "카테고리 선택",
+  2: "식비",
+  3: "주거/통신",
+  4: "생활용품",
+  5: "의복/미용",
+  6: "건강/문화",
+  7: "교육/육아",
+  8: "교통/차량",
+  9: "경조사/회비",
+  10: "세금/이자",
+  11: "기타",
 };
 
 const ExpensesRegiTableCell = ({
@@ -93,6 +94,7 @@ const ExpensesRegiTableCell = ({
       });
     }
   }, [isAddRowClicked]);
+
 
   // 카테고리
   const { data, isLoading, error } = useQuery({
@@ -139,11 +141,7 @@ const ExpensesRegiTableCell = ({
   // 고정지출
   if (isFixedExpense) return <div>Loading...</div>;
   if (fixedExpenseError) return <div>Error:{fixedExpenseError.message}</div>;
-  // if (
-  //   !fixedExpenseData ||
-  //   fixedExpenseData.fixed_expenses_per_list.length === 0
-  // )
-  //   return <div>등록된 고정지출이 없습니다</div>;
+
 
   const fixedExpenses = fixedExpenseData.fixed_expenses_list;
 

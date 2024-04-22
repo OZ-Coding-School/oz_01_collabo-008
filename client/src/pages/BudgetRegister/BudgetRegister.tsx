@@ -89,7 +89,7 @@ const BudgetRegister = () => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
 
-        toast.error("지출 값을 입력해주세요")
+        toast.error("값을 입력해주세요")
       } else {
         console.log("예산등록 에러", error);
         toast.error("예산을 등록하는 중에 오류가 발생했습니다.")
