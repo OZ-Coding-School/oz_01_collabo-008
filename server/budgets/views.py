@@ -6,20 +6,24 @@ from .models import Budget
 from members.models import Member
 from members.views import get_member_id
 from .serializers import BudgetSerializer
+from django.db.models import Sum
 
 class BudgetListView(APIView):
     serializer_class = BudgetSerializer
 
     def get(self, request):
         member_id = get_member_id(request=request)
+        year = request.GET.get('year', None)
+        month = request.GET.get('month', None)
         budgets = Budget.objects.filter(member_id=member_id)
-
+        total_budget = Budget.objects.filter(member_id=member_id, date__year=year, date__month=month).aggregate(total=Sum('amount'))
         serializer = BudgetSerializer(budgets, many=True)
         return Response(
             data={
                 "status_code": 200,
                 "message":"Success",
-                "budget_list": serializer.data
+                "budget_list": serializer.data,
+                "total_budget": total_budget['total']
             },
             status=status.HTTP_200_OK
         )
@@ -85,4 +89,23 @@ class BudgetDetailView(APIView):
                 "message": serializer.errors
             },
             status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    def delete(self, request, budget_id):
+        budget = Budget.objects.filter(pk=budget_id).first()
+        if budget is None:
+            return Response(
+                data={
+                    "status_code":404,
+                    "message": "NotFound Budget Data"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        budget.delete()
+        return Response(
+            data={
+                "status_code": 200,
+                "message": "Success"
+            },
+            status=status.HTTP_200_OK
         )
