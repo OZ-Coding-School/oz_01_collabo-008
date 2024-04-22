@@ -1,14 +1,15 @@
-version: '3.8'
+version: "3.8"
 
 services:
   nginx:
     image: nginx:latest
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
+      - ./static:/app/static
     depends_on:
       - django
 
@@ -18,7 +19,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - 80:80
+      - "8000:8000"
     depends_on:
       - db
 
