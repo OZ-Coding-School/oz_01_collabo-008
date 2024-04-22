@@ -46,6 +46,7 @@ interface Props {
 
 const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate, setStartDate }: Props) => {
 
+
   const [priceInput, setPriceInput] = useState(""); // 사용금액
 
 
@@ -171,7 +172,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <Input placeholder="사용금액" type="text" value={priceInput} onChange={(e) => handlePriceChange(e, index)} />
-                  </StyledTableCell>
+                  </StyledTableCell >
                   <StyledTableCell align="left">
                     <Input placeholder="사용내역" onChange={(e) => {
                       const { value } = e.target;
@@ -179,13 +180,13 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     }} />
                   </StyledTableCell>
 
-                </StyledTableRow>
+                </StyledTableRow >
               ))}
 
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+            </TableBody >
+          </Table >
+        </TableContainer >
+      </Box >
     </>
 
   )
