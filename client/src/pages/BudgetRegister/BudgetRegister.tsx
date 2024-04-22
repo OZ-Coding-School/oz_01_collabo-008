@@ -41,10 +41,16 @@ const BudgetRegister = () => {
   const navigation = useNavigate();
   // 새 행 추가 함수
   const addRow = () => {
-    const newRow = { item: "", amount: 0 }; // 새 행 기본 구조
+    const newRow: Row = {
+      category: "",
+      payment: "",
+      location: "",
+      price: 0,
+      content: "",
+      date: startDate.toLocaleDateString("ko-KR").replace(/\. /g, "-").replace(".", ""), // 현재 선택된 날짜를 초기값으로 설정합니다.
+    };
     setRows([...rows, newRow]); // 기존 행에 새 행 추가
   };
-
   // BudgetRegTable 컴포넌트에서 호출할 함수
   const handleTableRowChange = (index, field, value) => {
     const updatedRows = [...rows];
