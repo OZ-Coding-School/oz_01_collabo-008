@@ -56,17 +56,18 @@ const BudgetNExpenses = () => {
       updatedExpenses[index] = updatedExpense;
       return updatedExpenses;
     });
+
   };
 
   const handleClickRegi = async () => {
-    // setIsExpRegiClicked((prevState) => !prevState);
-    // BudgetHistoryTableCell에서 state에 저장되도록
-    // 배열로 출력되는지 확인해보기
+
 
     try {
       const response = await instance.post(fixedRequest.fixedReg, expenses);
       console.log("고정 지출 등록 성공", response);
+      toast.success("고정 지출이 등록되었습니다.")
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
+      setExpenses([])
     } catch (error) {
       if (error.response && error.response.status === 400) {
 
@@ -203,8 +204,9 @@ const BudgetNExpenses = () => {
               <ExpensesRegiTableCell
                 isAddRowClicked={isAddRowClicked}
                 handleExpenseChange={handleExpenseChange}
-              // setPrice={setPrice}
-              // setCategory={setCategory}
+                expenses={expenses}
+                setExpenses={setExpenses}
+
               />
             </Box>
           </Box>

@@ -19,12 +19,12 @@ export const titleWrapper = style({
 
 export const headText = style({
   fontSize: "26px",
-  fontWeight: "bold",
+  fontWeight: 600,
 });
 
 export const explainText = style({
-  fontSize: "0.8rem",
-  fontWeight: "500",
+  fontSize: "16px",
+  fontWeight: 400,
   display: "flex",
   flexDirection: "column",
   flexGrow: 1,
@@ -37,7 +37,7 @@ export const explainText = style({
 export const resultTextBox = style({
   display: "flex",
   fontSize: "26px",
-  fontWeight: "800",
+  fontWeight: "600",
   flexDirection: "column",
   paddingTop: "40px",
   paddingBottom: "56px",
@@ -120,7 +120,7 @@ export const doughnutChart = style({
 
 //#region 바 차트
 export const barChartBox = style({
-  backgroundColor: "rgba(255,255,255,0.8)",
+  // backgroundColor: "rgba(255,255,255,0.8)",
   border: "none",
   display: "flex",
   width: "100%",

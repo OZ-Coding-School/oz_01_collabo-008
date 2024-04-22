@@ -12,10 +12,12 @@ import { datepicker } from "../BudgetRegTable/BudgetRegTable.css";
 import Input from "../Input/Input";
 import SelectBox from "../SelectBox/Select";
 import {
+  addExpenseBtn,
   evenRow,
   h1,
   head,
   modifyBtn,
+  noneList,
   oddRow,
   table,
   td,
@@ -43,22 +45,24 @@ interface ExpenseItemType {
 }
 
 const categoryMap: { [key: number]: string } = {
-  1: "식비",
-  2: "주거/통신",
-  3: "생활용품",
-  4: "의복/미용",
-  5: "건강/문화",
-  6: "교육/육아",
-  7: "교통/차량",
-  8: "경조사/회비",
-  9: "세금/이자",
-  10: "기타",
+  1: "카테고리 선택",
+  2: "식비",
+  3: "주거/통신",
+  4: "생활용품",
+  5: "의복/미용",
+  6: "건강/문화",
+  7: "교육/육아",
+  8: "교통/차량",
+  9: "경조사/회비",
+  10: "세금/이자",
+  11: "기타",
 };
 
 const paymentMap: { [key: number]: string } = {
-  1: "현금",
-  2: "카드",
-  3: "계좌이체",
+  1: "결제수단 선택",
+  2: "현금",
+  3: "카드",
+  4: "계좌이체",
 };
 const ExpenditureList = () => {
   const queryClient = useQueryClient();
@@ -161,6 +165,7 @@ const ExpenditureList = () => {
   }, [modifyId, expenseListData]);
 
   const handleModify = async (expenseId: number) => {
+
     try {
       await instance.put(expenseRequest.expenseModify + `/${expenseId}`, {
         category: modifiedCategory,
@@ -193,7 +198,9 @@ const ExpenditureList = () => {
   };
 
   if (!expenseListData || expenseListData.length === 0)
-    return <div>There is no Expense List to show</div>;
+    return <div className={noneList}>등록된 지출 목록이 없어요
+      <button className={addExpenseBtn} onClick={handleClick}>등록하러 가기</button>
+    </div>;
 
   if (isExpenseListLoading) return <div>Loading...</div>;
   if (expenseListError) return <div>Error:{expenseListError.message}</div>;
@@ -207,14 +214,14 @@ const ExpenditureList = () => {
   return (
     <div className={wrap}>
       <div className={title}>
-        <h1 className={h1}>2024년 4월 </h1>
+        <p className={h1}>{year}년 {month}월 </p>
       </div>
       <table className={table}>
         <thead>
           <tr>
             <th className={head}>사용날짜</th>
             <th className={head}>카테고리</th>
-            <th className={head}>카드/현금</th>
+            <th className={head}>결제수단</th>
             <th className={head}>사용처</th>
             <th className={head}>사용금액</th>
             <th className={head}>사용 내역</th>
@@ -277,6 +284,7 @@ const ExpenditureList = () => {
                       type='number'
                       value={modifiedPrice}
                       onChange={(e) => setModifiedPrice(e.target.value)}
+                      min={0}
                     />
                   ) : (
                     row.price.toLocaleString()

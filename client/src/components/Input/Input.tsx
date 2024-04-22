@@ -1,4 +1,3 @@
-import { HTMLInputTypeAttribute } from "react";
 import { input } from "./Input.css";
 
 
@@ -6,10 +5,11 @@ type InputProps = {
   children?: React.ReactNode;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  type?: HTMLInputTypeAttribute;
+  type?: "text" | "number" | "password" | "email" | "tel";
   placeholder?: string;
+  min?: number;
 };
-const Input = ({ children, value, onChange, type, placeholder }: InputProps) => {
+const Input = ({ children, value, onChange, type, placeholder, min }: InputProps) => {
   return (
     <div>
       <label>
@@ -21,6 +21,7 @@ const Input = ({ children, value, onChange, type, placeholder }: InputProps) => 
           type={type}
           required
           placeholder={placeholder}
+          min={min}
         ></input>
       </label>
     </div>

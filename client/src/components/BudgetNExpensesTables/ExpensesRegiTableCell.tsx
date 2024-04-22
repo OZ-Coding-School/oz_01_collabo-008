@@ -43,6 +43,8 @@ interface FixedExpense {
 interface Props {
   isAddRowClicked: boolean;
   handleExpenseChange: (index: number, field: string, value: string) => void;
+  expenses: ExpenseItem[];
+  setExpenses: React.Dispatch<React.SetStateAction<ExpenseItem[]>>;
 }
 
 interface ExpenseItem extends Props {
@@ -51,25 +53,28 @@ interface ExpenseItem extends Props {
 }
 
 const categoryMap: { [key: number]: string } = {
-  1: "식비",
-  2: "주거/통신",
-  3: "생활용품",
-  4: "의복/미용",
-  5: "건강/문화",
-  6: "교육/육아",
-  7: "교통/차량",
-  8: "경조사/회비",
-  9: "세금/이자",
-  10: "기타",
+  1: "카테고리 선택",
+  2: "식비",
+  3: "주거/통신",
+  4: "생활용품",
+  5: "의복/미용",
+  6: "건강/문화",
+  7: "교육/육아",
+  8: "교통/차량",
+  9: "경조사/회비",
+  10: "세금/이자",
+  11: "기타",
 };
 
 const ExpensesRegiTableCell = ({
   isAddRowClicked,
   handleExpenseChange,
-}: ExpenseItem) => {
-  const [expenses, setExpenses] = useState<
-    { index: number; category: string; price: string }[]
-  >([]);
+  setExpenses,
+  expenses
+}: Props) => {
+  // const [expenses, setExpenses] = useState<
+  //   { index: number; category: string; price: string }[]
+  // >([]);
 
   const queryClient = useQueryClient();
 
@@ -87,12 +92,25 @@ const ExpensesRegiTableCell = ({
         const newIndex = prevExpenses.length;
         const updatedExpenses = [
           ...prevExpenses,
-          { index: newIndex, category: "1", price: "" },
+          { index: newIndex, category: "", price: "" },
         ];
         return updatedExpenses;
       });
     }
+
   }, [isAddRowClicked]);
+
+
+  const handlePriceChange = (index: number, value: string) => {
+    const isValidPrice = /^[1-9]\d*(\.\d+)?$/.test(value);
+    if (!isValidPrice || Number(value) === 0) {
+      toast.warning("지출금액을 유효한 숫자로 입력해주세요.");
+      return;
+    }
+    handleExpenseChange(index, "price", value);
+  };
+
+
 
   // 카테고리
   const { data, isLoading, error } = useQuery({
@@ -139,11 +157,7 @@ const ExpensesRegiTableCell = ({
   // 고정지출
   if (isFixedExpense) return <div>Loading...</div>;
   if (fixedExpenseError) return <div>Error:{fixedExpenseError.message}</div>;
-  // if (
-  //   !fixedExpenseData ||
-  //   fixedExpenseData.fixed_expenses_per_list.length === 0
-  // )
-  //   return <div>등록된 고정지출이 없습니다</div>;
+
 
   const fixedExpenses = fixedExpenseData.fixed_expenses_list;
 
@@ -169,7 +183,14 @@ const ExpensesRegiTableCell = ({
       toast.success("고정지출이 수정되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
     } catch (error) {
-      console.error("고정지출 에러", error);
+      if (error.response && error.response.status === 400) {
+
+        toast.error("값을 입력해주세요")
+      } else {
+        // console.log("예산등록 에러", error);
+        toast.error("고정지출을 등록하는 중에 오류가 발생했습니다.")
+      }
+
     }
   };
 
@@ -225,6 +246,7 @@ const ExpensesRegiTableCell = ({
                       type="number"
                       value={modifyValue}
                       onChange={handleEditChange}
+                      min={0}
                     />
                   ) : (
                     fixedExpense.price.toLocaleString()
@@ -279,10 +301,8 @@ const ExpensesRegiTableCell = ({
                   <Input
                     placeholder="지출금액"
                     type="number"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      handleExpenseChange(index, "price", value);
-                    }}
+                    onChange={(e) => handlePriceChange(index, e.target.value)}
+                    min={0}
                   />
                 </StyledTableCell>
                 <StyledTableCell align="left"></StyledTableCell>

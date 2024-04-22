@@ -3,8 +3,10 @@ import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import { Box } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import ReactDatePicker from "react-datepicker";
+// import 'react-datepicker/dist/react-datepicker.css';
+import { useState } from "react";
+import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import categoriesRequest from "../../api/categoriesRequest";
 import Input from "../Input/Input";
@@ -31,7 +33,8 @@ interface RowType {
 
 interface Props {
   rows: RowType[];
-  onTableRowChange: (index: number, field: keyof RowType, value: string | number) => void;
+  onTableRowChange: (index: number, field: keyof RowType, value: string | number | Date) => void;
+
   handlePaymentChange: (value: string) => void;
   handleCategoryChange: (value: string) => void;
   selectedCategory: string;
@@ -41,9 +44,10 @@ interface Props {
 }
 
 
-const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate }: Props) => {
+const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate, setStartDate }: Props) => {
 
 
+  const [priceInput, setPriceInput] = useState(""); // 사용금액
 
 
   // 카테고리 
@@ -95,7 +99,19 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
   if (paymentError) return <div>Error:{paymentError.message}</div>
 
 
+  const handlePriceChange = (e, index) => {
+    const { value } = e.target;
+    // 정규 표현식을 사용하여 숫자인지 확인
+    const isValidPrice = /^[1-9]\d*\.?\d*$/.test(value);
 
+    if (!isValidPrice || Number(value) < 0) {
+      toast.warning("사용금액을 유효한 숫자로 입력해주세요.");
+      setPriceInput("");
+      return; // 숫자가 아닌 경우 함수 종료
+    }
+    setPriceInput(value);
+    onTableRowChange(index, 'price', value);
+  };
 
 
   return (
@@ -109,7 +125,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
               <TableRow>
                 <StyledTableCell>사용날짜</StyledTableCell>
                 <StyledTableCell align="left">카테고리</StyledTableCell>
-                <StyledTableCell align="left">카드/현금</StyledTableCell>
+                <StyledTableCell align="left">결제수단</StyledTableCell>
                 <StyledTableCell align="left">사용처</StyledTableCell>
                 <StyledTableCell align="left">사용금액</StyledTableCell>
                 <StyledTableCell align="left">사용내역</StyledTableCell>
@@ -121,17 +137,19 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
 
                 <StyledTableRow key={index} >
                   <StyledTableCell component="th" scope="row">
-                    <DatePicker
+                    <ReactDatePicker
                       className={datepicker}
                       showIcon
-                      selected={row.date || new Date()}
+                      selected={startDate}
                       onChange={(date) => {
-                        if (date) {
-                          const dateString = date.toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', '');
-                          onTableRowChange(index, 'date', dateString);
+                        if (date instanceof Date) { // date가 Date 인스턴스인지 확인
+                          setStartDate(date); //
+                          onTableRowChange(index, 'date', date); // Date 객체를 직접 전달
                         }
                       }}
+
                     />
+
                   </StyledTableCell>
 
                   <StyledTableCell align="left">
@@ -153,11 +171,8 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     }} />
                   </StyledTableCell>
                   <StyledTableCell align="left">
-                    <Input placeholder="사용금액" type="number" onChange={(e) => {
-                      const { value } = e.target;
-                      onTableRowChange(index, 'price', value);
-                    }} />
-                  </StyledTableCell>
+                    <Input placeholder="사용금액" type="text" value={priceInput} onChange={(e) => handlePriceChange(e, index)} />
+                  </StyledTableCell >
                   <StyledTableCell align="left">
                     <Input placeholder="사용내역" onChange={(e) => {
                       const { value } = e.target;
@@ -165,13 +180,13 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     }} />
                   </StyledTableCell>
 
-                </StyledTableRow>
+                </StyledTableRow >
               ))}
 
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+            </TableBody >
+          </Table >
+        </TableContainer >
+      </Box >
     </>
 
   )
