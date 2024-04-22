@@ -5,6 +5,7 @@ import { Box } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import ReactDatePicker from "react-datepicker";
 // import 'react-datepicker/dist/react-datepicker.css';
+import { useState } from "react";
 import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import categoriesRequest from "../../api/categoriesRequest";
@@ -45,7 +46,7 @@ interface Props {
 
 const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate, setStartDate }: Props) => {
 
-
+  const [priceInput, setPriceInput] = useState(""); // 사용금액
 
 
   // 카테고리 
@@ -100,11 +101,14 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
   const handlePriceChange = (e, index) => {
     const { value } = e.target;
     // 정규 표현식을 사용하여 숫자인지 확인
-    const isValidPrice = /^\d+$/.test(value);
-    if (!isValidPrice) {
+    const isValidPrice = /^[1-9]\d*\.?\d*$/.test(value);
+
+    if (!isValidPrice || Number(value) < 0) {
       toast.warning("사용금액을 유효한 숫자로 입력해주세요.");
+      setPriceInput("");
       return; // 숫자가 아닌 경우 함수 종료
     }
+    setPriceInput(value);
     onTableRowChange(index, 'price', value);
   };
 
@@ -166,7 +170,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     }} />
                   </StyledTableCell>
                   <StyledTableCell align="left">
-                    <Input placeholder="사용금액" type="number" onChange={(e) => handlePriceChange(e, index)} min={0} />
+                    <Input placeholder="사용금액" type="text" value={priceInput} onChange={(e) => handlePriceChange(e, index)} />
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <Input placeholder="사용내역" onChange={(e) => {
