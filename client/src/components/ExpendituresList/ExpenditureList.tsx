@@ -196,7 +196,7 @@ const ExpenditureList = () => {
 
   if (!expenseListData || expenseListData.length === 0)
     return <div className={noneList}>등록된 지출 목록이 없어요
-      <button className={addExpenseBtn}>등록하러 가기</button>
+      <button className={addExpenseBtn} onClick={handleClick}>등록하러 가기</button>
     </div>;
 
   if (isExpenseListLoading) return <div>Loading...</div>;
