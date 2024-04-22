@@ -31,7 +31,7 @@ class RegisterMember(APIView):
             return Response(
                 data={
                     "status_code": 409,
-                    "message": "CONFLICT: member with this email already exists",
+                    "message": "이미 등록된 이메일 입니다.",
                 }, 
                 status=status.HTTP_409_CONFLICT
             )
@@ -59,7 +59,7 @@ class LoginView(APIView):
             return Response(
                 data={
                     "status_code": 401,
-                    "message": "UNAUTHORIZED: permission expired or permission denied",
+                    "message": "권한이 만료 되었거나 권한이 없습니다.",
                 }, 
                 status=status.HTTP_401_UNAUTHORIZED
             )
@@ -88,7 +88,7 @@ class LoginView(APIView):
         return Response(
             data={
                 "status_code": 401,
-                "message": "UNAUTHORIZED: permission expired or permission denied",
+                "message": "권한이 만료 되었거나 권한이 없습니다.",
             }, 
             status=status.HTTP_401_UNAUTHORIZED
         )
@@ -112,8 +112,8 @@ class LogoutView(APIView):
         if refresh_token is None:
             return Response(
                 data={
-                    "status_code": 200,
-                    "message": "No refresh token provided"
+                    "status_code": 400,
+                    "message": "Refresh Token 정보가 전달되지 않았습니다."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -168,8 +168,8 @@ class MemberDetailView(APIView):
             return Response(data=response, status=status.HTTP_200_OK)
         return Response(
             data={
-                "status_code": 400,
-                "message": "BAD_REQEUST",
+                "status_code": 404,
+                "message": "멤버 정보를 찾을 수 없습니다.",
             }, 
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -181,7 +181,7 @@ class MemberDetailView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "BAD_REQEUST",
+                    "message": "멤버 정보를 찾을 수 없습니다.",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -210,7 +210,7 @@ class MemberDetailView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "BAD_REQEUST",
+                    "message": "멤버 정보를 찾을 수 없습니다.",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -249,7 +249,7 @@ class UploadProfileImageView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "No image provided"
+                    "message": "이미지 파일이 제공되지 않았습니다."
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -263,7 +263,7 @@ class UploadProfileImageView(APIView):
                 return Response(
                     data={
                         "status_code": 413,
-                        "message": "The file size exceeds 10MB."
+                        "message": "이 파일의 크기는 10MB를 초과합니다."
                     }, 
                     status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
                 )
@@ -274,7 +274,7 @@ class UploadProfileImageView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "BAD_REQEUST",
+                    "message": "멤버 정보를 찾을 수 없습니다.",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -290,12 +290,12 @@ class UploadProfileImageView(APIView):
                 status=status.HTTP_200_OK
             )
         return Response(
-                data={
-                    "status_code": 500,
-                    "message": image_url
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            data={
+                "status_code": 500,
+                "message": image_url
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @staticmethod
