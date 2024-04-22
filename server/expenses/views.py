@@ -235,8 +235,8 @@ class ExpenseDetailView(APIView):
         expense.delete()
         return Response(
             data={
-                "result_code": 200,
-                "result_message": "Success"
+                "status_code": 200,
+                "message": "Success"
             },
             status=status.HTTP_200_OK
         )
