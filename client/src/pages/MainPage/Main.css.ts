@@ -33,3 +33,8 @@ export const expenseBtn = style({
   padding: "8px",
   cursor: "pointer",
 });
+
+export const noneList = style({
+  display: "flex",
+  justifyContent: "center",
+});

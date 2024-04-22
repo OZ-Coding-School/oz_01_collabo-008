@@ -3,8 +3,8 @@ import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import { Box } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import ReactDatePicker from "react-datepicker";
+// import 'react-datepicker/dist/react-datepicker.css';
 import instance from "../../api/axios";
 import categoriesRequest from "../../api/categoriesRequest";
 import Input from "../Input/Input";
@@ -110,7 +110,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
               <TableRow>
                 <StyledTableCell>사용날짜</StyledTableCell>
                 <StyledTableCell align="left">카테고리</StyledTableCell>
-                <StyledTableCell align="left">카드/현금</StyledTableCell>
+                <StyledTableCell align="left">결제수단</StyledTableCell>
                 <StyledTableCell align="left">사용처</StyledTableCell>
                 <StyledTableCell align="left">사용금액</StyledTableCell>
                 <StyledTableCell align="left">사용내역</StyledTableCell>
@@ -122,9 +122,10 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
 
                 <StyledTableRow key={index} >
                   <StyledTableCell component="th" scope="row">
-                    <DatePicker
+                    <ReactDatePicker
                       className={datepicker}
                       showIcon
+                      toggleCalendarOnIconClick
                       selected={startDate}
                       onChange={(date) => {
                         if (date instanceof Date) { // date가 Date 인스턴스인지 확인
@@ -132,6 +133,7 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                           onTableRowChange(index, 'date', date); // Date 객체를 직접 전달
                         }
                       }}
+
                     />
 
                   </StyledTableCell>
