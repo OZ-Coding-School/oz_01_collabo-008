@@ -102,7 +102,7 @@ class FixedExpenseDetailView(APIView):
                 "status_code": 400,
                 "message": serializer.errors
             },
-            status=status.HTTP_400_BAD_REQUES
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     def delete(self, request, fixed_expense_id):
