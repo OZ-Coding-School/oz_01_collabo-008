@@ -31,7 +31,8 @@ interface RowType {
 
 interface Props {
   rows: RowType[];
-  onTableRowChange: (index: number, field: keyof RowType, value: string | number) => void;
+  onTableRowChange: (index: number, field: keyof RowType, value: string | number | Date) => void;
+
   handlePaymentChange: (value: string) => void;
   handleCategoryChange: (value: string) => void;
   selectedCategory: string;
@@ -41,7 +42,7 @@ interface Props {
 }
 
 
-const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate }: Props) => {
+const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate, setStartDate }: Props) => {
 
 
 
@@ -124,14 +125,15 @@ const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCat
                     <DatePicker
                       className={datepicker}
                       showIcon
-                      selected={row.date || new Date()}
+                      selected={startDate}
                       onChange={(date) => {
-                        if (date) {
-                          const dateString = date.toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', '');
-                          onTableRowChange(index, 'date', dateString);
+                        if (date instanceof Date) { // date가 Date 인스턴스인지 확인
+                          setStartDate(date); //
+                          onTableRowChange(index, 'date', date); // Date 객체를 직접 전달
                         }
                       }}
                     />
+
                   </StyledTableCell>
 
                   <StyledTableCell align="left">
