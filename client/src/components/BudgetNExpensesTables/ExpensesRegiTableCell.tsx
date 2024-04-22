@@ -43,6 +43,8 @@ interface FixedExpense {
 interface Props {
   isAddRowClicked: boolean;
   handleExpenseChange: (index: number, field: string, value: string) => void;
+  expenses: ExpenseItem[];
+  setExpenses: React.Dispatch<React.SetStateAction<ExpenseItem[]>>;
 }
 
 interface ExpenseItem extends Props {
@@ -67,10 +69,12 @@ const categoryMap: { [key: number]: string } = {
 const ExpensesRegiTableCell = ({
   isAddRowClicked,
   handleExpenseChange,
-}: ExpenseItem) => {
-  const [expenses, setExpenses] = useState<
-    { index: number; category: string; price: string }[]
-  >([]);
+  setExpenses,
+  expenses
+}: Props) => {
+  // const [expenses, setExpenses] = useState<
+  //   { index: number; category: string; price: string }[]
+  // >([]);
 
   const queryClient = useQueryClient();
 
@@ -93,7 +97,19 @@ const ExpensesRegiTableCell = ({
         return updatedExpenses;
       });
     }
+
   }, [isAddRowClicked]);
+
+
+  const handlePriceChange = (index: number, value: string) => {
+    const isValidPrice = /^[1-9]\d*(\.\d+)?$/.test(value);
+    if (!isValidPrice || Number(value) === 0) {
+      toast.warning("지출금액을 유효한 숫자로 입력해주세요.");
+      return;
+    }
+    handleExpenseChange(index, "price", value);
+  };
+
 
 
   // 카테고리
@@ -167,7 +183,14 @@ const ExpensesRegiTableCell = ({
       toast.success("고정지출이 수정되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
     } catch (error) {
-      console.error("고정지출 에러", error);
+      if (error.response && error.response.status === 400) {
+
+        toast.error("값을 입력해주세요")
+      } else {
+        // console.log("예산등록 에러", error);
+        toast.error("고정지출을 등록하는 중에 오류가 발생했습니다.")
+      }
+
     }
   };
 
@@ -278,10 +301,7 @@ const ExpensesRegiTableCell = ({
                   <Input
                     placeholder="지출금액"
                     type="number"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      handleExpenseChange(index, "price", value);
-                    }}
+                    onChange={(e) => handlePriceChange(index, e.target.value)}
                     min={0}
                   />
                 </StyledTableCell>
