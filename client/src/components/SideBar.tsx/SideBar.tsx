@@ -42,6 +42,7 @@ const SideBar = () => {
         const response = await instance.get(
           budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
+        console.log("response : ", response);
         const totalBudget = response.data.total_budget;
         console.log("사이드 바 전체 예산 : ", totalBudget);
 
