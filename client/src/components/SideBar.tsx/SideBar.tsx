@@ -28,6 +28,7 @@ interface ItemType {
 const SideBar = () => {
   const [year] = useState(new Date().getFullYear());
   const [month] = useState(new Date().getMonth() + 1);
+  const [totalBudget, setTotalBudget] = useState<number>(0);
 
   // 전체예산
   const {
@@ -41,10 +42,11 @@ const SideBar = () => {
         const response = await instance.get(
           budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
-        const data = response.data.budget_list;
-        console.log("사이드바 전체 예산", data);
-        // queryClient.invalidateQueries({ queryKey: ["budget"] });
-        return data;
+        const totalBudget = response.data.total_budget;
+        console.log("사이드 바 전체 예산 : ", totalBudget);
+
+        setTotalBudget(totalBudget);
+        return totalBudget;
       } catch (error) {
         throw new Error("전체예산 에러");
       }
@@ -78,18 +80,10 @@ const SideBar = () => {
 
   if (isBudgetLoading) return <div>Loading...</div>;
   if (budgetError) return <div>Error:{budgetError.message}</div>;
-  if (!budgetList || budgetList.length === 0)
-    return <div className={Budget}>0</div>;
+  if (!budgetList || budgetList.length === 0) return null;
 
-  // 데이터 created_at 기준으로 내림차순 정렬
-  const sortedData: ItemType[] = [...budgetList].sort(
-    (a: ItemType, b: ItemType) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-  // 가장 최신 데이터 선택
-  const latestData = sortedData[0];
   const usedPercentage = totalExpenseData?.total_expense
-    ? (totalExpenseData.total_expense / latestData.value) * 100
+    ? (totalExpenseData?.total_expense / totalBudget) * 100
     : 0;
 
   console.log("너 얼마썻어", totalExpenseData);
@@ -101,13 +95,13 @@ const SideBar = () => {
             <Text as='div' weight='bold'>
               이번 달 총 예산
             </Text>
-            <Text as='div' className={Budget} key={latestData.id}>
+            <Text as='div' className={Budget}>
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                {latestData ? latestData.value.toLocaleString() : "0"}
+                {totalBudget ? totalBudget.toLocaleString() : "0"}
               </motion.p>
               <Text as='span' className={wonText}>
                 원
@@ -120,8 +114,8 @@ const SideBar = () => {
             <Text as='p'>
               전체 예산 중{" "}
               <Text as='span' className={spendingText}>
-                {(totalExpenseData?.total_expense || 0).toLocaleString()}
-              </Text>
+                {(totalExpenseData?.total_expense ?? 0).toLocaleString()}
+              </Text>{" "}
               원을 사용했어요
             </Text>
           </Box>
