@@ -118,7 +118,7 @@ const SideBar = () => {
         <Flex gap='4' direction='column'>
           <Box className={spendingTextwrap}>
             <Text as='p'>
-              전체 예산의
+              전체 예산 중{" "}
               <Text as='span' className={spendingText}>
                 {(totalExpenseData?.total_expense || 0).toLocaleString()}
               </Text>

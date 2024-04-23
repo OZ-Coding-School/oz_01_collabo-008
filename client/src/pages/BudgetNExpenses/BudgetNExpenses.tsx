@@ -157,7 +157,6 @@ const BudgetNExpenses = () => {
                   <button
                     className={addBtn}
                     onClick={handleClickBudgetRegistration}
-                    // disabled={!budget.trim()}
                   >
                     등록하기
                   </button>

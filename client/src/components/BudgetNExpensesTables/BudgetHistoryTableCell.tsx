@@ -78,7 +78,9 @@ const BudgetHistoryTableCell = () => {
     try {
       await instance.delete(budgetRegRequest.modifyBudget + `/${budgetId}`);
       toast.success("예산 내역이 삭제되었습니다.");
+      setModifyId(null);
       refetch();
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
       queryClient.invalidateQueries({ queryKey: ["budgetList"] });
     } catch (error) {
       console.error("예산 내역 삭제 에러", error);
