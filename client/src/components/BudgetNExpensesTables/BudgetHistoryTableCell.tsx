@@ -21,7 +21,7 @@ import { modifyBtn } from "../ExpendituresList/ExpenditureList.css";
 import Input from "../Input/Input";
 import { wrap } from "./BudgetHistoryTableCell.css";
 
-interface ItemType {
+interface Budget {
   id: number;
   created_at: string;
   value: number;
@@ -35,19 +35,18 @@ const BudgetHistoryTableCell = () => {
   const [modifyId, setModifyId] = useState<number | null>(null);
   const [modifyValue, setModifyValue] = useState("");
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["budgetList"],
     queryFn: async () => {
       try {
         const response = await instance.get(
           budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
-
-        if (!response.data || response.data.length === 0) {
-          throw new Error(
-            "There is no BugetData. Please register your budget first!"
-          );
-        }
+        // if (!response.data || response.data.length === 0) {
+        //   throw new Error(
+        //     "There is no BugetData. Please register your budget first!"
+        //   );
+        // }
         // 최신 데이터 맨 위로 정렬
         const data = response.data.budget_list.sort(
           (
@@ -72,6 +71,19 @@ const BudgetHistoryTableCell = () => {
   const handleClickModify = (id: number, value: number) => {
     setModifyId(id);
     setModifyValue(value.toString());
+  };
+
+  //예산 삭제
+  const handleClickDelete = async (budgetId: number) => {
+    try {
+      await instance.delete(budgetRegRequest.modifyBudget + `/${budgetId}`);
+      toast.success("예산 내역이 삭제되었습니다.");
+      refetch();
+      queryClient.invalidateQueries({ queryKey: ["budgetList"] });
+    } catch (error) {
+      console.error("예산 내역 삭제 에러", error);
+      toast.error("예산 내역 삭제에 실패했습니다.");
+    }
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,10 +113,11 @@ const BudgetHistoryTableCell = () => {
                 <StyledTableCell align='left'>날짜</StyledTableCell>
                 <StyledTableCell align='left'>등록 예산</StyledTableCell>
                 <StyledTableCell align='left'></StyledTableCell>
+                <StyledTableCell align='left'></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((item: ItemType) => (
+              {data.map((item: Budget) => (
                 <StyledTableRow key={item.id}>
                   <StyledTableCell align='left'>
                     {moment(item.created_at).format("YYYY.MM.DD")}
@@ -137,6 +150,14 @@ const BudgetHistoryTableCell = () => {
                       </button>
                     )}
                   </StyledTableCell>
+                  <StyledTableCell align='left'>
+                    <button
+                      className={modifyBtn}
+                      onClick={() => handleClickDelete(item.id)}
+                    >
+                      삭제
+                    </button>
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
@@ -152,9 +173,17 @@ const StyledTableCell = styled(TableCell)(() => ({
     backgroundColor: "white",
     color: "black",
     borderBottom: "2px solid #FFF4F5",
+    padding: "16px",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
+    padding: "16px",
+  },
+  "&:nth-child(1)": {
+    width: "30%",
+  },
+  "&:nth-child(2)": {
+    width: "40%",
   },
 }));
 
