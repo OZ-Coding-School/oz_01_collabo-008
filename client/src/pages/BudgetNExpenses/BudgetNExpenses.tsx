@@ -45,8 +45,7 @@ const BudgetNExpenses = () => {
       ...prevExpenses,
       { price: "", category: "1" }, // 새 지출 항목의 초기값 설정
     ]);
-    console.log("고정지출 행추가", isAddRowClicked)
-
+    console.log("고정지출 행추가", isAddRowClicked);
   };
 
   const handleExpenseChange = (index: number, field: string, value: string) => {
@@ -56,25 +55,21 @@ const BudgetNExpenses = () => {
       updatedExpenses[index] = updatedExpense;
       return updatedExpenses;
     });
-
   };
 
   const handleClickRegi = async () => {
-
-
     try {
       const response = await instance.post(fixedRequest.fixedReg, expenses);
       console.log("고정 지출 등록 성공", response);
-      toast.success("고정 지출이 등록되었습니다.")
+      toast.success("고정 지출이 등록되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
-      setExpenses([])
+      setExpenses([]);
     } catch (error) {
       if (error.response && error.response.status === 400) {
-
-        toast.error("카테고리,지출금액을 입력해주세요")
+        toast.error("카테고리,지출금액을 입력해주세요");
       } else {
         console.log("고정지출 등록 에러", error);
-        toast.error("고정 지출을 등록하는 중에 오류가 발생했습니다.")
+        toast.error("고정 지출을 등록하는 중에 오류가 발생했습니다.");
       }
     }
   };
@@ -86,6 +81,7 @@ const BudgetNExpenses = () => {
       toast.error("예산을 입력해주세요.");
       return;
     }
+
     try {
       await instance.post(budgetRegRequest.budgetList, {
         value: budget,
@@ -96,11 +92,10 @@ const BudgetNExpenses = () => {
       queryClient.invalidateQueries({ queryKey: ["budget"] });
     } catch (error) {
       if (error.response && error.response.status === 400) {
-
-        toast.error("예산 값을 입력해주세요")
+        toast.error("예산 값을 입력해주세요");
       } else {
         console.log("예산등록 에러", error);
-        toast.error("예산을 등록하는 중에 오류가 발생했습니다.")
+        toast.error("예산을 등록하는 중에 오류가 발생했습니다.");
       }
     }
   };
@@ -150,6 +145,9 @@ const BudgetNExpenses = () => {
                         },
                       },
                     }}
+                    inputProps={{
+                      min: 0,
+                    }}
                     name='totalBudget'
                     value={budget}
                     onChange={(event) => setBudget(event.target.value)}
@@ -159,7 +157,6 @@ const BudgetNExpenses = () => {
                   <button
                     className={addBtn}
                     onClick={handleClickBudgetRegistration}
-                  // disabled={!budget.trim()}
                   >
                     등록하기
                   </button>
@@ -206,7 +203,6 @@ const BudgetNExpenses = () => {
                 handleExpenseChange={handleExpenseChange}
                 expenses={expenses}
                 setExpenses={setExpenses}
-
               />
             </Box>
           </Box>
