@@ -123,11 +123,20 @@ const ExpensesRegiTableCell = ({
     },
   });
 
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content,
-  }));
-
+  // const options = data?.map((item: ItemType) => ({
+  //   value: item.id,
+  //   label: item.content,
+  // }));
+  const options = [
+    {
+      value: 1,
+      label: "카테고리 선택",
+    },
+    ...(data?.map((item: ItemType) => ({
+      value: item.id,
+      label: item.content,
+    })) || []),
+  ];
   //고정지출
   const {
     data: fixedExpenseData,

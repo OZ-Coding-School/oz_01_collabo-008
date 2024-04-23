@@ -10,10 +10,10 @@ interface FetchedData {
     content: string;
     total_price: number;
   }[];
-  total_expenses_by_location: {
-    location: string | null;
-    total_price: number;
-  }[];
+  // total_expenses_by_location: {
+  //   location: string | null;
+  //   total_price: number;
+  // }[];
 }
 
 interface Top5Categories {
