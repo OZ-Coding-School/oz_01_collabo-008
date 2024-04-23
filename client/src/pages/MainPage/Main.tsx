@@ -8,7 +8,7 @@ import { FormControlLabel, Switch } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useUserContext } from "../../App";
 const Main = () => {
-  const { userData } = useUserContext()
+  const { userData } = useUserContext();
 
   const [showExpenditureList, setShowExpenditureList] = useState(false);
 
@@ -71,6 +71,7 @@ const Main = () => {
   return (
     <div className={wrap}>
       <SideBar />
+      {/* <SideBar /> */}
       <div className={mainContainer}>
         <FormControlLabel
           control={<IOSSwitch sx={{ m: 1 }} />}

@@ -39,6 +39,13 @@ const BudgetNExpenses = () => {
 
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
 
+  const handleChangeBudget = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (/^\d+$/.test(value) || value === "") {
+      setBudget(value);
+    }
+  };
+
   //#region 고정 지출 등록
   const handleClickAddRow = () => {
     setIsAddRowClicked((prevExpenses) => [
@@ -98,6 +105,7 @@ const BudgetNExpenses = () => {
         toast.error("예산을 등록하는 중에 오류가 발생했습니다.");
       }
     }
+    setBudget("");
   };
   //#endregion
 
@@ -150,9 +158,10 @@ const BudgetNExpenses = () => {
                     }}
                     name='totalBudget'
                     value={budget}
-                    onChange={(event) => setBudget(event.target.value)}
+                    onChange={handleChangeBudget}
                     autoFocus
-                    type='number'
+                    // type='number'
+                    type='text'
                   ></TextField>
                   <button
                     className={addBtn}
