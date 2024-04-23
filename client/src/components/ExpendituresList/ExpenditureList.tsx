@@ -45,24 +45,24 @@ interface ExpenseItemType {
 }
 
 const categoryMap: { [key: number]: string } = {
-  1: "카테고리 선택",
-  2: "식비",
-  3: "주거/통신",
-  4: "생활용품",
-  5: "의복/미용",
-  6: "건강/문화",
-  7: "교육/육아",
-  8: "교통/차량",
-  9: "경조사/회비",
-  10: "세금/이자",
-  11: "기타",
+  0: "카테고리 선택",
+  1: "식비",
+  2: "주거/통신",
+  3: "생활용품",
+  4: "의복/미용",
+  5: "건강/문화",
+  6: "교육/육아",
+  7: "교통/차량",
+  8: "경조사/회비",
+  9: "세금/이자",
+  10: "기타",
 };
 
 const paymentMap: { [key: number]: string } = {
-  1: "결제수단 선택",
-  2: "현금",
-  3: "카드",
-  4: "계좌이체",
+  0: "결제수단 선택",
+  1: "현금",
+  2: "카드",
+  3: "계좌이체",
 };
 const ExpenditureList = () => {
   const queryClient = useQueryClient();
@@ -79,8 +79,8 @@ const ExpenditureList = () => {
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -119,11 +119,16 @@ const ExpenditureList = () => {
     },
   });
 
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content,
-  }));
-
+  const options = [
+    {
+      value: null,
+      label: "카테고리 선택",
+    },
+    ...(data?.map((item: ItemType) => ({
+      value: item.id,
+      label: item.content,
+    })) || []),
+  ];
   //지불방법
   const {
     data: paymentData,
@@ -138,15 +143,21 @@ const ExpenditureList = () => {
         console.log("지불방법", data);
         return data;
       } catch (error) {
-        throw new Error("카테고리 조회 에러");
+        throw new Error("지불방법 조회 에러");
       }
     },
   });
 
-  const payment = paymentData?.map((item: Payment) => ({
-    value: item.id,
-    label: item.type,
-  }));
+  const payment = [
+    {
+      value: null,
+      label: "결제수단 선택",
+    },
+    ...(paymentData?.map((item: Payment) => ({
+      value: item.id,
+      label: item.type,
+    })) || []),
+  ];
 
   useEffect(() => {
     if (modifyId !== null && expenseListData) {
@@ -165,18 +176,24 @@ const ExpenditureList = () => {
   }, [modifyId, expenseListData]);
 
   const handleModify = async (expenseId: number) => {
-
     try {
+      if (!modifiedCategory || !modifiedPayment) {
+        toast.error("카테고리와 결제수단을 선택해주세요.");
+        return;
+      }
+
       await instance.put(expenseRequest.expenseModify + `/${expenseId}`, {
         category: modifiedCategory,
         payment: modifiedPayment,
         location: modifiedLocation,
         price: modifiedPrice,
         content: modifiedContent,
-        date: formatDate(modifiedDate)
+        date: formatDate(modifiedDate),
       });
-      setModifyId(null);
+
       toast.success("지출이 수정되었습니다.");
+
+      setModifyId(null);
       queryClient.invalidateQueries({ queryKey: ["expensesList"] });
     } catch (error) {
       console.error("예산수정에러", error);
@@ -198,23 +215,31 @@ const ExpenditureList = () => {
   };
 
   if (!expenseListData || expenseListData.length === 0)
-    return <div className={noneList}>등록된 지출 목록이 없어요
-      <button className={addExpenseBtn} onClick={handleClick}>등록하러 가기</button>
-    </div>;
+    return (
+      <div className={noneList}>
+        등록된 지출 목록이 없어요
+        <button className={addExpenseBtn} onClick={handleClick}>
+          등록하러 가기
+        </button>
+      </div>
+    );
 
-  if (isExpenseListLoading) return <div>Loading...</div>;
+  // 로딩 중인 경우
+  if (isExpenseListLoading || isPaymentLoading || isLoading)
+    return <div>Loading...</div>;
+
   if (expenseListError) return <div>Error:{expenseListError.message}</div>;
 
-  if (isPaymentLoading) return <div>Loading...</div>;
   if (paymentError) return <div>Error:{paymentError.message}</div>;
 
-  if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error:{error.message}</div>;
 
   return (
     <div className={wrap}>
       <div className={title}>
-        <p className={h1}>{year}년 {month}월 </p>
+        <p className={h1}>
+          {year}년 {month}월{" "}
+        </p>
       </div>
       <table className={table}>
         <thead>
@@ -248,9 +273,12 @@ const ExpenditureList = () => {
                 <td className={td}>
                   {modifyId === row.id ? (
                     <SelectBox
-                      defaultValue={modifiedCategory}
+                      key={row.id}
+                      value={
+                        modifyId === row.id ? modifiedCategory : row.category
+                      }
                       options={options}
-                      onChange={(value) => console.log(value)}
+                      onChange={(value) => setModifiedCategory(value)}
                     />
                   ) : (
                     categoryMap[row.category]
@@ -259,9 +287,12 @@ const ExpenditureList = () => {
                 <td className={td}>
                   {modifyId === row.id ? (
                     <SelectBox
-                      defaultValue={modifiedPayment}
+                      key={row.id}
+                      value={
+                        modifyId === row.id ? modifiedPayment : row.payment
+                      }
                       options={payment}
-                      onChange={(value) => console.log(value)}
+                      onChange={(value) => setModifiedPayment(value)}
                     />
                   ) : (
                     paymentMap[row.payment]

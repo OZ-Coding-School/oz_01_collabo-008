@@ -3,6 +3,7 @@ import { Text } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import budgetRegRequest from "../../api/budgetRegRequest";
 import monthlyRequest from "../../api/monthlyRequest";
@@ -77,6 +78,27 @@ const MonthlyReport = () => {
   const [savedBudget, setSavedBudget] = useState<number>(0);
 
   const {
+    data: budgetData,
+    isLoading: isBudgetDataLoading,
+    error: budgetDataError,
+  } = useQuery({
+    queryKey: ["budgetData", { year, month }],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(
+          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
+        );
+        const totalBudget = response.data.total_budget;
+        setTotalBudget(totalBudget);
+
+        return totalBudget;
+      } catch (error) {
+        throw new Error(`Budget data fetching error: ${error.message}`);
+      }
+    },
+  });
+
+  const {
     data: expensesData,
     isLoading: isExpensesDataLoading,
     error: expensesDataError,
@@ -95,51 +117,35 @@ const MonthlyReport = () => {
     },
   });
 
-  const {
-    data: budgetData,
-    isLoading: isBudgetDataLoading,
-    error: budgetDataError,
-  } = useQuery({
-    queryKey: ["budgetData", { year, month }],
-    queryFn: async () => {
-      try {
-        const response = await instance.get(
-          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
-        );
-        return response.data;
-      } catch (error) {
-        throw new Error(`Budget data fetching error: ${error.message}`);
-      }
-    },
-  });
-
   useEffect(() => {
     setIsLoading(true);
 
-    if (!expensesData) {
-      console.error("Expenses Data does not exist");
+    if (!budgetData && !toast.isActive("budgetToast")) {
+      toast.error(
+        "설정하신 예산이 0원 입니까? 아니라면 예산을 먼저 등록해주세요!",
+        { toastId: "budgetToast" }
+      );
+
+      console.error("예산 데이터 먼저 등록 필요");
+      setTotalBudget(0);
+      setIsLoading(false);
       return;
     }
-    if (!budgetData) {
-      console.error("Budget Data does not exist");
+
+    if (!expensesData) {
+      console.error("Expenses Data does not exist");
+      setIsLoading(false);
       return;
     }
 
     setData(expensesData);
-
-    if (budgetData && budgetData.budget_list.length > 0) {
-      const budgetItem = budgetData.budget_list[0];
-      setTotalBudget(budgetItem.value);
-    } else {
-      console.log("Budget Data does not exist. please set your budget first!");
-      setTotalBudget(0);
-    }
 
     let totalExpense = 0;
     for (const category of expensesData.total_expenses_by_category) {
       totalExpense += category.total_price;
     }
 
+    //세이브 된 액수 계산
     const savedBudget = totalBudget - totalExpense;
     setSavedBudget(savedBudget);
 
@@ -169,7 +175,8 @@ const MonthlyReport = () => {
               <Box
                 sx={{
                   color: "#F03167",
-                  fontSize: "2.1rem",
+                  fontSize: "2.2rem",
+                  fontWeight: "700",
                   display: "inline-block",
                   verticalAlign: "middle",
                   marginLeft: "0.5rem",
@@ -202,7 +209,8 @@ const MonthlyReport = () => {
               <Box
                 sx={{
                   color: "#F03167",
-                  fontSize: "2.1rem",
+                  fontSize: "2.2rem",
+                  fontWeight: "700",
                   display: "inline-block",
                   verticalAlign: "middle",
                   marginLeft: "0.5rem",

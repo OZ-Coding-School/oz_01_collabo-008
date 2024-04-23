@@ -53,17 +53,17 @@ interface ExpenseItem extends Props {
 }
 
 const categoryMap: { [key: number]: string } = {
-  1: "카테고리 선택",
-  2: "식비",
-  3: "주거/통신",
-  4: "생활용품",
-  5: "의복/미용",
-  6: "건강/문화",
-  7: "교육/육아",
-  8: "교통/차량",
-  9: "경조사/회비",
-  10: "세금/이자",
-  11: "기타",
+  0: "카테고리 선택",
+  1: "식비",
+  2: "주거/통신",
+  3: "생활용품",
+  4: "의복/미용",
+  5: "건강/문화",
+  6: "교육/육아",
+  7: "교통/차량",
+  8: "경조사/회비",
+  9: "세금/이자",
+  10: "기타",
 };
 
 const ExpensesRegiTableCell = ({
@@ -123,11 +123,20 @@ const ExpensesRegiTableCell = ({
     },
   });
 
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content,
-  }));
-
+  // const options = data?.map((item: ItemType) => ({
+  //   value: item.id,
+  //   label: item.content,
+  // }));
+  const options = [
+    {
+      value: null,
+      label: "카테고리 선택",
+    },
+    ...(data?.map((item: ItemType) => ({
+      value: item.id,
+      label: item.content,
+    })) || []),
+  ];
   //고정지출
   const {
     data: fixedExpenseData,
