@@ -63,5 +63,6 @@
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "proxy": "https://619f-59-5-169-61.ngrok-free.app/"
 }

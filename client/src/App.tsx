@@ -23,6 +23,7 @@ import {
   MONTHLY_REPORT,
   MY_PAGE,
 } from "./constants/components-contants";
+import LoginHandler from "./pages/LoginHandler/LoginHandler";
 import Signup from "./pages/SignUp/Signup";
 
 const Layout = () => {
@@ -92,6 +93,7 @@ const commonRoutes = [
   <>
     <Route path='/login' element={<Login />} />
     <Route path='/signup' element={<Signup />} />
+    <Route path='/oauth2/redirect' element={<LoginHandler />} />
   </>,
 ];
 
@@ -150,7 +152,7 @@ function App() {
 
 
   if (isMeLoading) return <div>Loading...</div>;
-  if (meError && !["/login", "/signup"].includes(window.location.pathname))
+  if (meError && !["/login", "/signup", "/oauth2/redirect"].includes(window.location.pathname))
     return <div>Error: {meError.message}</div>;
 
 
