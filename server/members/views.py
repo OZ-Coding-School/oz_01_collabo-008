@@ -95,8 +95,23 @@ class LoginView(APIView):
 
 
 class KakaoLoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request, *args, **kwargs):
-        access_token = request.data.get('access_token')
+        authorization_code = request.data.get('code')
+
+        url = "https://kauth.kakao.com/oauth/token"
+        headers={"Content-type": "application/x-www-form-urlencoded;charset=utf-8"}
+        data = {
+            "grant_type": "authorization_code",
+            "client_id": env("KAKAO_REST_API_KEY"),
+            "redirect_uri": env("KAKAO_REDIRECT_URI"),
+            "code": authorization_code,
+        }
+        token_response = requests.post(url, headers=headers, data=data)
+        token_response_json = token_response.json()
+        access_token = token_response_json.get('access_token')
+
         if not access_token:
             return Response(
                 data={
