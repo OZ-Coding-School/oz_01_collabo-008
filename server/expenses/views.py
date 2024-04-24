@@ -26,7 +26,7 @@ class FixedExpenseView(APIView):
         member_id = get_member_id(request=request)
         fixed_expenses = FixedExpense.objects.filter(member_id=member_id)
         serializer = self.serializer_class(fixed_expenses, many=True)
-        total_category_expenses = FixedExpense.objects.filter(member_id=member_id).values('category').annotate(total_price=Sum('price'))
+        total_category_expenses = FixedExpense.objects.filter(member_id=member_id).values('category').annotate(total_price=Sum('price')).order_by('category')
         category_serializer = CategorySumSerializer(total_category_expenses, many=True)
         return Response(
             data={
@@ -45,11 +45,10 @@ class FixedExpenseView(APIView):
             return Response(
                 data={
                     "status_code": 404,
-                    "message": "NotFound Member Data"
+                    "message": "멤버 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
-        print(request.data)
         serializer = self.serializer_class(
             data=request.data,
             many=True,
@@ -82,7 +81,7 @@ class FixedExpenseDetailView(APIView):
             return Response(
                 data={
                     "status_code": 404,
-                    "message": "NotFound Fixed-Expense Data"
+                    "message": "고정 지출 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
@@ -103,7 +102,7 @@ class FixedExpenseDetailView(APIView):
                 "status_code": 400,
                 "message": serializer.errors
             },
-            status=status.HTTP_400_BAD_REQUES
+            status=status.HTTP_400_BAD_REQUEST
         )
 
     def delete(self, request, fixed_expense_id):
@@ -112,15 +111,15 @@ class FixedExpenseDetailView(APIView):
             return Response(
                 data={
                     "status_code": 404,
-                    "message": "NotFound Fixed-Expense Data"
+                    "message": "고정 지출 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
         fixed_expense.delete()
         return Response(
             data={
-                "result_code": 200,
-                "result_message": "Success"
+                "status_code": 200,
+                "message": "Success"
             },
             status=status.HTTP_200_OK
         )
@@ -140,12 +139,11 @@ class ExpenseListView(APIView):
         member_id = get_member_id(request=request)
         year = request.GET.get('year', None)
         month = request.GET.get('month', None)
-        print(type(year), type(month))
         if year is None or month is None:
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "Year and month parameters are required."
+                    "message": "지출한 연도(year)와 지출한 달(month) 정보가 필요합니다."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -170,7 +168,7 @@ class ExpenseListView(APIView):
             return Response(
                 data={
                     "status_code": 404,
-                    "message": "NotFound Member Data"
+                    "message": "멤버 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
@@ -206,7 +204,7 @@ class ExpenseDetailView(APIView):
             return Response(
                 data={
                     "status_code": 404,
-                    "message": "NotFound Expense Data"
+                    "message": "지출 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
@@ -216,9 +214,9 @@ class ExpenseDetailView(APIView):
             serializer = self.serializer_class(expense)
             return Response(
                 data={
-                    "result_code": 201,
-                    "result_message": "Success",
-                    "fixed_expense": serializer.data
+                    "status_code": 201,
+                    "message": "Success",
+                    "expense": serializer.data
                 },
                 status=status.HTTP_201_CREATED
             )
@@ -230,15 +228,15 @@ class ExpenseDetailView(APIView):
             return Response(
                 data={
                     "status_code": 404,
-                    "message": "NotFound Expense Data"
+                    "message": "지출 정보를 찾을 수 없습니다."
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
         expense.delete()
         return Response(
             data={
-                "result_code": 200,
-                "result_message": "Success"
+                "status_code": 200,
+                "message": "Success"
             },
             status=status.HTTP_200_OK
         )

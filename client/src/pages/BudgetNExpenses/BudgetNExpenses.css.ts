@@ -74,16 +74,3 @@ export const fixedExpenseBox = style({
   height: "60%",
 });
 //#endregion
-
-// export const addRowBtn = style({
-//   backgroundColor: "#F03167",
-//   borderRadius: "8px",
-//   marginLeft: "8px",
-//   width: "90px",
-//   height: "38px",
-//   fontSize: "11px",
-//   // hover": {
-//   //   backgroundColor: "#F03167",
-//   // },
-//   boxShadow: "none",
-// });

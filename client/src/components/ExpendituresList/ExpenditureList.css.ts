@@ -49,5 +49,28 @@ export const modifyBtn = style({
 });
 
 export const h1 = style({
+  fontSize: "26px",
   marginBottom: "16px",
+  fontWeight: 500,
+});
+
+export const addExpenseBtn = style({
+  outline: "none",
+  border: "none",
+  backgroundColor: "#F03167",
+  marginTop: "16px",
+  fontSize: "16px",
+  fontWeight: 400,
+  padding: "8px",
+  borderRadius: "8px",
+  color: "white",
+  cursor: "pointer",
+});
+
+export const noneList = style({
+  display: "flex",
+  justifyContent: "center",
+  flexDirection: "column",
+  alignItems: "center",
+  height: "100%",
 });

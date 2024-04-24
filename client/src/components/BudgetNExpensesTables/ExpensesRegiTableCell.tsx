@@ -43,6 +43,8 @@ interface FixedExpense {
 interface Props {
   isAddRowClicked: boolean;
   handleExpenseChange: (index: number, field: string, value: string) => void;
+  expenses: ExpenseItem[];
+  setExpenses: React.Dispatch<React.SetStateAction<ExpenseItem[]>>;
 }
 
 interface ExpenseItem extends Props {
@@ -51,6 +53,7 @@ interface ExpenseItem extends Props {
 }
 
 const categoryMap: { [key: number]: string } = {
+  0: "카테고리 선택",
   1: "식비",
   2: "주거/통신",
   3: "생활용품",
@@ -66,10 +69,12 @@ const categoryMap: { [key: number]: string } = {
 const ExpensesRegiTableCell = ({
   isAddRowClicked,
   handleExpenseChange,
-}: ExpenseItem) => {
-  const [expenses, setExpenses] = useState<
-    { index: number; category: string; price: string }[]
-  >([]);
+  setExpenses,
+  expenses,
+}: Props) => {
+  // const [expenses, setExpenses] = useState<
+  //   { index: number; category: string; price: string }[]
+  // >([]);
 
   const queryClient = useQueryClient();
 
@@ -87,12 +92,21 @@ const ExpensesRegiTableCell = ({
         const newIndex = prevExpenses.length;
         const updatedExpenses = [
           ...prevExpenses,
-          { index: newIndex, category: "1", price: "" },
+          { index: newIndex, category: "", price: "" },
         ];
         return updatedExpenses;
       });
     }
   }, [isAddRowClicked]);
+
+  const handlePriceChange = (index: number, value: string) => {
+    const isValidPrice = /^[1-9]\d*(\.\d+)?$/.test(value);
+    if (!isValidPrice || Number(value) === 0) {
+      toast.warning("지출금액을 유효한 숫자로 입력해주세요.");
+      return;
+    }
+    handleExpenseChange(index, "price", value);
+  };
 
   // 카테고리
   const { data, isLoading, error } = useQuery({
@@ -109,11 +123,20 @@ const ExpensesRegiTableCell = ({
     },
   });
 
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content,
-  }));
-
+  // const options = data?.map((item: ItemType) => ({
+  //   value: item.id,
+  //   label: item.content,
+  // }));
+  const options = [
+    {
+      value: null,
+      label: "카테고리 선택",
+    },
+    ...(data?.map((item: ItemType) => ({
+      value: item.id,
+      label: item.content,
+    })) || []),
+  ];
   //고정지출
   const {
     data: fixedExpenseData,
@@ -139,11 +162,6 @@ const ExpensesRegiTableCell = ({
   // 고정지출
   if (isFixedExpense) return <div>Loading...</div>;
   if (fixedExpenseError) return <div>Error:{fixedExpenseError.message}</div>;
-  // if (
-  //   !fixedExpenseData ||
-  //   fixedExpenseData.fixed_expenses_per_list.length === 0
-  // )
-  //   return <div>등록된 고정지출이 없습니다</div>;
 
   const fixedExpenses = fixedExpenseData.fixed_expenses_list;
 
@@ -169,7 +187,12 @@ const ExpensesRegiTableCell = ({
       toast.success("고정지출이 수정되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
     } catch (error) {
-      console.error("고정지출 에러", error);
+      if (error.response && error.response.status === 400) {
+        toast.error("값을 입력해주세요");
+      } else {
+        // console.log("예산등록 에러", error);
+        toast.error("고정지출을 등록하는 중에 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -195,14 +218,14 @@ const ExpensesRegiTableCell = ({
       <TableContainer>
         <Table
           sx={{ minWidth: 700, overflowX: "auto" }}
-          aria-label="customized table"
+          aria-label='customized table'
         >
           <TableHead>
             <TableRow>
               <StyledTableCell>카테고리</StyledTableCell>
-              <StyledTableCell align="left">지출 금액</StyledTableCell>
-              <StyledTableCell align="left"></StyledTableCell>
-              <StyledTableCell align="left"></StyledTableCell>
+              <StyledTableCell align='left'>지출 금액</StyledTableCell>
+              <StyledTableCell align='left'></StyledTableCell>
+              <StyledTableCell align='left'></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -219,18 +242,19 @@ const ExpensesRegiTableCell = ({
                     categoryMap[fixedExpense.category] || "기타"
                   )}
                 </StyledTableCell>
-                <StyledTableCell align="left">
+                <StyledTableCell align='left'>
                   {modifyId === fixedExpense.id ? (
                     <Input
-                      type="number"
+                      type='number'
                       value={modifyValue}
                       onChange={handleEditChange}
+                      min={0}
                     />
                   ) : (
                     fixedExpense.price.toLocaleString()
                   )}
                 </StyledTableCell>
-                <StyledTableCell align="left">
+                <StyledTableCell align='left'>
                   {modifyId === fixedExpense.id ? (
                     <button
                       className={modifyBtn}
@@ -253,7 +277,7 @@ const ExpensesRegiTableCell = ({
                     </button>
                   )}
                 </StyledTableCell>
-                <StyledTableCell align="left">
+                <StyledTableCell align='left'>
                   <button
                     className={modifyBtn}
                     onClick={() => deleteFixedExpenses(fixedExpense.id)}
@@ -275,18 +299,22 @@ const ExpensesRegiTableCell = ({
                   />
                 </StyledTableCell>
 
-                <StyledTableCell align="left">
+                <StyledTableCell align='left'>
                   <Input
-                    placeholder="지출금액"
-                    type="number"
+                    placeholder='지출금액'
+                    type='number'
+                    onChange={(e) => handlePriceChange(index, e.target.value)}
+                    min={0}
+                    placeholder='지출금액'
+                    type='number'
                     onChange={(e) => {
                       const value = e.target.value;
                       handleExpenseChange(index, "price", value);
                     }}
                   />
                 </StyledTableCell>
-                <StyledTableCell align="left"></StyledTableCell>
-                <StyledTableCell align="left"></StyledTableCell>
+                <StyledTableCell align='left'></StyledTableCell>
+                <StyledTableCell align='left'></StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -301,9 +329,17 @@ const StyledTableCell = styled(TableCell)(() => ({
     backgroundColor: "white",
     color: "black",
     borderBottom: "2px solid #FFF4F5",
+    padding: "16px",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
+    padding: "16px",
+  },
+  "&:nth-child(1)": {
+    width: "30%",
+  },
+  "&:nth-child(2)": {
+    width: "40%",
   },
 }));
 

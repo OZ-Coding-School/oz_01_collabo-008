@@ -31,8 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["ec2-13-124-21-36.ap-northeast-2.compute.amazonaws.com", "13.124.21.36", "127.0.0.1"]
-
+ALLOWED_HOSTS = ["www.red-ribbon.shop", "red-ribbon.shop", "127.0.0.1"]
 
 # Application definition
 
@@ -69,9 +68,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated', # 인증된 사용자만 접근
-        # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근
-        # 'rest_framework.permissions.AllowAny', # 누구나 접근
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -121,18 +118,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API documentation for Red Ribbon',
     # API 문서의 버전 설정
     'VERSION': '1.0.0',
-    # 사용할 스키마 생성자 설정
-    # 'SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # # 선택 사항: Swagger UI에서 권한 인증 토큰을 사용할지 여부를 설정
-    # 'SECURITY': [{'Token': []}],
-    # # 선택 사항: Swagger UI에서 OAuth2 인증을 사용할 때 토큰 URL 설정
-    # 'OAUTH2_URLS': [
-    #     {
-    #         'name': 'Authorization Code Token',
-    #         'authorize': 'https://example.com/o/authorize/',
-    #         'token': 'https://example.com/o/token/',
-    #     },
-    # ],
 }
 
 MIDDLEWARE = [
@@ -225,10 +210,18 @@ STATIC_ROOT = BASE_DIR / "static"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS 설정
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173']
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173', "https://client-six-psi-85.vercel.app", 'https://*.red-ribbon.shop', 'https://red-ribbon.shop']
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# SECURE_SSL_REDIRECT = True
+
+CSRF_TRUSTED_ORIGINS = ['https://*.red-ribbon.shop', 'https://red-ribbon.shop']
+
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SECURE = True
 
 APPEND_SLASH = False

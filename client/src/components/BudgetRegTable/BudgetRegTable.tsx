@@ -1,10 +1,19 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { tableCellClasses } from '@mui/material/TableCell';
-import { styled } from '@mui/material/styles';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
 import { Box } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import ReactDatePicker from "react-datepicker";
+// import 'react-datepicker/dist/react-datepicker.css';
+import { useState } from "react";
+import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import categoriesRequest from "../../api/categoriesRequest";
 import Input from "../Input/Input";
@@ -16,9 +25,8 @@ interface ItemType {
   content: number;
 }
 
-
 interface Payment extends ItemType {
-  type: string
+  type: string;
 }
 interface RowType {
   date: Date;
@@ -31,7 +39,12 @@ interface RowType {
 
 interface Props {
   rows: RowType[];
-  onTableRowChange: (index: number, field: keyof RowType, value: string | number) => void;
+  onTableRowChange: (
+    index: number,
+    field: keyof RowType,
+    value: string | number | Date
+  ) => void;
+
   handlePaymentChange: (value: string) => void;
   handleCategoryChange: (value: string) => void;
   selectedCategory: string;
@@ -40,142 +53,175 @@ interface Props {
   startDate: Date;
 }
 
+const BudgetRegTable = ({
+  rows,
+  onTableRowChange,
+  handlePaymentChange,
+  handleCategoryChange,
+  selectedCategory,
+  selectedPayment,
+  startDate,
+  setStartDate,
+}: Props) => {
+  const [priceInput, setPriceInput] = useState(""); // 사용금액
 
-const BudgetRegTable = ({ rows, onTableRowChange, handlePaymentChange, handleCategoryChange, selectedCategory, selectedPayment, startDate }: Props) => {
-
-
-
-
-  // 카테고리 
+  // 카테고리
   const { data, isLoading, error } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       try {
         const response = await instance.get(categoriesRequest.category);
-        const data = response.data.categories
-        console.log("카테고리 조회 성공", data)
-        return data
+        const data = response.data.categories;
+        console.log("카테고리 조회 성공", data);
+        return data;
       } catch (error) {
-        throw new Error("카테고리 조회 에러")
+        throw new Error("카테고리 조회 에러");
       }
-    }
-  })
+    },
+  });
 
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content
-  }));
-
-
+  const options = [
+    {
+      value: null,
+      label: "카테고리 선택",
+    },
+    ...(data?.map((item: ItemType) => ({
+      value: item.id,
+      label: item.content,
+    })) || []),
+  ];
   //지불방법
-  const { data: paymentData, isLoading: isPaymentLoading, error: paymentError } = useQuery({
+  const {
+    data: paymentData,
+    isLoading: isPaymentLoading,
+    error: paymentError,
+  } = useQuery({
     queryKey: ["payments"],
     queryFn: async () => {
       try {
         const response = await instance.get(categoriesRequest.payment);
-        const data = response.data.payments
-        console.log("지불방법", data)
-        return data
+        const data = response.data.payments;
+        console.log("지불방법", data);
+        return data;
       } catch (error) {
-        throw new Error("카테고리 조회 에러")
+        throw new Error("카테고리 조회 에러");
       }
+    },
+  });
+
+  const payment = [
+    {
+      value: null,
+      label: "결제수단 선택",
+    },
+    ...(paymentData?.map((item: Payment) => ({
+      value: item.id,
+      label: item.type,
+    })) || []),
+  ];
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error:{error.message}</div>;
+
+  if (isPaymentLoading) return <div>Loading...</div>;
+  if (paymentError) return <div>Error:{paymentError.message}</div>;
+
+  const handlePriceChange = (e, index) => {
+    const { value } = e.target;
+    // 정규 표현식을 사용하여 숫자인지 확인
+    const isValidPrice = /^[1-9]\d*\.?\d*$/.test(value);
+
+    if (!isValidPrice || Number(value) < 0) {
+      toast.warning("사용금액을 유효한 숫자로 입력해주세요.");
+      setPriceInput("");
+      return; // 숫자가 아닌 경우 함수 종료
     }
-  })
-
-  const payment = paymentData?.map((item: Payment) => ({
-    value: item.id,
-    label: item.type
-  }))
-
-
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error:{error.message}</div>
-
-  if (isPaymentLoading) return <div>Loading...</div>
-  if (paymentError) return <div>Error:{paymentError.message}</div>
-
-
-
-
+    setPriceInput(value);
+    onTableRowChange(index, "price", value);
+  };
 
   return (
-
     <>
-
       <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
-        <TableContainer >
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+        <TableContainer>
+          <Table sx={{ minWidth: 700 }} aria-label='customized table'>
             <TableHead>
               <TableRow>
                 <StyledTableCell>사용날짜</StyledTableCell>
-                <StyledTableCell align="left">카테고리</StyledTableCell>
-                <StyledTableCell align="left">카드/현금</StyledTableCell>
-                <StyledTableCell align="left">사용처</StyledTableCell>
-                <StyledTableCell align="left">사용금액</StyledTableCell>
-                <StyledTableCell align="left">사용내역</StyledTableCell>
+                <StyledTableCell align='left'>카테고리</StyledTableCell>
+                <StyledTableCell align='left'>결제수단</StyledTableCell>
+                <StyledTableCell align='left'>사용처</StyledTableCell>
+                <StyledTableCell align='left'>사용금액</StyledTableCell>
+                <StyledTableCell align='left'>사용내역</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-
               {rows.map((row: RowType, index) => (
-
-                <StyledTableRow key={index} >
-                  <StyledTableCell component="th" scope="row">
-                    <DatePicker
+                <StyledTableRow key={index}>
+                  <StyledTableCell component='th' scope='row'>
+                    <ReactDatePicker
                       className={datepicker}
                       showIcon
-                      selected={row.date || new Date()}
+                      selected={startDate}
                       onChange={(date) => {
-                        if (date) {
-                          const dateString = date.toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', '');
-                          onTableRowChange(index, 'date', dateString);
+                        if (date instanceof Date) {
+                          // date가 Date 인스턴스인지 확인
+                          setStartDate(date); //
+                          onTableRowChange(index, "date", date); // Date 객체를 직접 전달
                         }
                       }}
                     />
                   </StyledTableCell>
 
-                  <StyledTableCell align="left">
-
-
-                    <SelectBox defaultValue={selectedCategory} options={options} onChange={(value) => handleCategoryChange(value)} />
-
-
+                  <StyledTableCell align='left'>
+                    <SelectBox
+                      defaultValue={selectedCategory}
+                      options={options}
+                      onChange={(value) => handleCategoryChange(value)}
+                    />
                   </StyledTableCell>
-                  <StyledTableCell align="left">
-
-                    <SelectBox defaultValue={selectedPayment} options={payment} onChange={(value) => handlePaymentChange(value)} />
-
+                  <StyledTableCell align='left'>
+                    <SelectBox
+                      defaultValue={selectedPayment}
+                      options={payment}
+                      onChange={(value) => handlePaymentChange(value)}
+                    />
                   </StyledTableCell>
-                  <StyledTableCell align="left">
-                    <Input placeholder="사용처" onChange={(e) => {
-                      const { value } = e.target;
-                      onTableRowChange(index, 'location', value);
-                    }} />
+                  <StyledTableCell align='left'>
+                    <Input
+                      placeholder='사용처'
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        onTableRowChange(index, "location", value);
+                      }}
+                    />
                   </StyledTableCell>
-                  <StyledTableCell align="left">
-                    <Input placeholder="사용금액" type="number" onChange={(e) => {
-                      const { value } = e.target;
-                      onTableRowChange(index, 'price', value);
-                    }} />
+                  <StyledTableCell align='left'>
+                    <Input
+                      placeholder='사용금액'
+                      type='text'
+                      value={priceInput}
+                      onChange={(e) => handlePriceChange(e, index)}
+                    />
                   </StyledTableCell>
-                  <StyledTableCell align="left">
-                    <Input placeholder="사용내역" onChange={(e) => {
-                      const { value } = e.target;
-                      onTableRowChange(index, 'content', value);
-                    }} />
+                  <StyledTableCell align='left'>
+                    <Input
+                      placeholder='사용내역'
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        onTableRowChange(index, "content", value);
+                      }}
+                    />
                   </StyledTableCell>
-
                 </StyledTableRow>
               ))}
-
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
     </>
-
-  )
-}
+  );
+};
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
@@ -189,19 +235,19 @@ const StyledTableCell = styled(TableCell)(() => ({
 }));
 
 const StyledTableRow = styled(TableRow)(() => ({
-  '&:nth-of-type(odd)': {
+  "&:nth-of-type(odd)": {
     backgroundColor: "white", // 짝수 번째 행의 배경색
   },
-  '&:nth-of-type(even)': {
+  "&:nth-of-type(even)": {
     backgroundColor: "#FFF4F5", // 홀수 번째 행의 배경색
   },
   // 마지막 테두리 숨기기
-  '&:last-child td, &:last-child th': {
+  "&:last-child td, &:last-child th": {
     border: 0,
   },
-  '& td, & th': {
+  "& td, & th": {
     borderBottom: `none`, // 경계선의 색상과 두께 조정
   },
 }));
 
-export default BudgetRegTable
+export default BudgetRegTable;

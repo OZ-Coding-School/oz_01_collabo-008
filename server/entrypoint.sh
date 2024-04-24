@@ -2,7 +2,7 @@
 
 # Collect static files
 echo "Collect static files"
-python manage.py collectstatic --noinput
+python manage.py collectstatic
 
 # Apply database migrations
 # echo "Apply database migrations"
@@ -11,4 +11,4 @@ python manage.py collectstatic --noinput
 
 # Start Gunicorn
 echo "Starting Gunicorn"
-gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
+gunicorn config.wsgi:application --bind 0.0.0.0:8000

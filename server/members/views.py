@@ -7,14 +7,18 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 
 from .models import Member
-from .serializers import MemberSerializer, LogoutSerializer, MyTokenObtainPairSerializer
+from .serializers import (
+    MemberSerializer,
+    MemberUpdateSerializer,
+    LogoutSerializer,
+    MyTokenObtainPairSerializer
+)
 from config.settings import env
 
 import boto3
-
+import requests
 
 class RegisterMember(APIView):
     permission_classes = [AllowAny]
@@ -27,7 +31,7 @@ class RegisterMember(APIView):
             return Response(
                 data={
                     "status_code": 409,
-                    "message": "CONFLICT: member with this email already exists",
+                    "message": "이미 등록된 이메일 입니다.",
                 }, 
                 status=status.HTTP_409_CONFLICT
             )
@@ -35,8 +39,8 @@ class RegisterMember(APIView):
         if serializer.is_valid():
             serializer.save()
             response = {
-                "result_code": 201,
-                "result_message": "Success"
+                "status_code": 201,
+                "message": "Success"
             }
             return Response(data=response, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -55,7 +59,7 @@ class LoginView(APIView):
             return Response(
                 data={
                     "status_code": 401,
-                    "message": "UNAUTHORIZED: permission expired or permission denied",
+                    "message": "권한이 만료 되었거나 권한이 없습니다.",
                 }, 
                 status=status.HTTP_401_UNAUTHORIZED
             )
@@ -84,37 +88,44 @@ class LoginView(APIView):
         return Response(
             data={
                 "status_code": 401,
-                "message": "UNAUTHORIZED: permission expired or permission denied",
+                "message": "권한이 만료 되었거나 권한이 없습니다.",
             }, 
             status=status.HTTP_401_UNAUTHORIZED
         )
-
-
-class RefreshTokenView(TokenRefreshView):
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-
-        if 'access' in response.data:
-            access_token = response.data['access']
-            response.set_cookie(key='access_token', value=access_token)
-        return response
 
 
 class LogoutView(APIView):
     serializer_class = LogoutSerializer
 
     def post(self, request):
+        member_id = get_member_id(request=request)
+        member = Member.objects.filter(pk=member_id).first()
         refresh_token = request.data["refresh"]
         if refresh_token is None:
             return Response(
                 data={
-                    "detail": "No refresh token provided"
+                    "status_code": 400,
+                    "message": "Refresh Token 정보가 전달되지 않았습니다."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
             refresh_token_obj = RefreshToken(refresh_token)
             refresh_token_obj.blacklist()
+            if member.kakao_token:
+                headers = {
+                    "Authorization": f"Bearer {member.kakao_token}",
+                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+                }
+                response = requests.post("https://kapi.kakao.com/v1/user/logout", headers=headers)
+                if response.status_code != 200:
+                    return Response(
+                        data={
+                            "status_code": 500,
+                            "message": "로그아웃 처리중 에러가 발생했습니다."
+                        },
+                        status=status.HTTP_500_BAD_REQUEST
+                    )
             response =  Response(
                 data= { 
                     "status_code": 200,
@@ -126,10 +137,92 @@ class LogoutView(APIView):
         except Exception as e:
             return Response(
                 data={
-                    "error_message": str(e)
+                    "status_code": 400,
+                    "message": str(e)
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class KakaoLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        authorization_code = request.data.get('code')
+
+        url = "https://kauth.kakao.com/oauth/token"
+        headers={"Content-type": "application/x-www-form-urlencoded;charset=utf-8"}
+        data = {
+            "grant_type": "authorization_code",
+            "client_id": env("KAKAO_REST_API_KEY"),
+            "redirect_uri": env("KAKAO_REDIRECT_URI"),
+            "code": authorization_code,
+        }
+        token_response = requests.post(url, headers=headers, data=data)
+        token_response_json = token_response.json()
+        access_token = token_response_json.get('access_token')
+
+        if not access_token:
+            return Response(
+                data={
+                    "status_code": 400,
+                    "message": "엑세스 토큰이 필요합니다."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        headers = {"Authorization": f"Bearer {access_token}"}
+        url = "https://kapi.kakao.com/v2/user/me"
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            return Response(
+                data={
+                    "status_code": 400,
+                    "message": "카카오 계정 정보를 불러오지 못했습니다."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        user_info = response.json()
+
+        email = user_info.get('kakao_account').get('email')
+        member = Member.objects.filter(email=email).first()
+
+        if member is None:
+            member = Member.objects.create(
+                email=email,
+                name=user_info.get('properties').get('nickname')
+            )
+            member.set_unusable_password()
+            member.kakao_token = access_token
+            member.save()
+
+        token = MyTokenObtainPairSerializer.get_token(member)
+        refresh_token = str(token)
+        access_token = str(token.access_token)
+
+        serializer = MemberSerializer(member)
+
+        return Response(
+            data={
+                "status_code": 200,
+                "message": "Success",
+                "member": serializer.data,
+                "access": access_token,
+                "refresh": refresh_token
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class RefreshTokenView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if 'access' in response.data:
+            access_token = response.data['access']
+            response.set_cookie(key='access_token', value=access_token)
+        return response
 
 
 class MemberDetailView(APIView):
@@ -162,8 +255,8 @@ class MemberDetailView(APIView):
             return Response(data=response, status=status.HTTP_200_OK)
         return Response(
             data={
-                "status_code": 400,
-                "message": "BAD_REQEUST",
+                "status_code": 404,
+                "message": "멤버 정보를 찾을 수 없습니다.",
             }, 
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -175,11 +268,11 @@ class MemberDetailView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "BAD_REQEUST",
+                    "message": "멤버 정보를 찾을 수 없습니다.",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        serializer = self.serializer_class(member, data=request.data, partial=True)
+        serializer = MemberUpdateSerializer(member, data=request.data, partial=True)
         if serializer.is_valid():
             member = serializer.save()
             serializer = self.serializer_class(member)
@@ -188,8 +281,14 @@ class MemberDetailView(APIView):
                 "message": "Success",
                 "member": serializer.data
             }
-            return Response(data=response, status=status.HTTP_201_CREATED)
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data=response,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            data=serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request):
         member_id = get_member_id(request=request)
@@ -198,7 +297,7 @@ class MemberDetailView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "BAD_REQEUST",
+                    "message": "멤버 정보를 찾을 수 없습니다.",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -237,10 +336,24 @@ class UploadProfileImageView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "No image provided"
+                    "message": "이미지 파일이 제공되지 않았습니다."
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        if image_file:
+            file_size = image_file.size
+            max_size_mb = 10
+            max_size_bytes = max_size_mb * 1024 * 1024
+
+            if file_size > max_size_bytes:
+                return Response(
+                    data={
+                        "status_code": 413,
+                        "message": "이 파일의 크기는 10MB를 초과합니다."
+                    }, 
+                    status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+                )
 
         member_id = get_member_id(request)
         member = Member.objects.filter(pk=member_id).first()
@@ -248,7 +361,7 @@ class UploadProfileImageView(APIView):
             return Response(
                 data={
                     "status_code": 400,
-                    "message": "BAD_REQEUST",
+                    "message": "멤버 정보를 찾을 수 없습니다.",
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -256,7 +369,6 @@ class UploadProfileImageView(APIView):
         if "error" not in image_url:
             member.image = image_url
             member.save()
-        
             return Response(
                 data={
                     "status_code": 200,
@@ -265,12 +377,12 @@ class UploadProfileImageView(APIView):
                 status=status.HTTP_200_OK
             )
         return Response(
-                data={
-                    "status_code": 500,
-                    "message": image_url
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            data={
+                "status_code": 500,
+                "message": image_url
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @staticmethod
@@ -284,10 +396,10 @@ def get_member_id(request):
         token_type, token = auth_header.split()
         if token_type != 'Bearer':
             raise AuthenticationFailed("잘못된 토큰 타입입니다.")
-        
+
         access_token = AccessToken(token)
         member_id = access_token.payload.get("id")
-        
+
         return member_id
     except ValueError:
         raise AuthenticationFailed("잘못된 토큰 형식입니다.")
