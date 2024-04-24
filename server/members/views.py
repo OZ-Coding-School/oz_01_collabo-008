@@ -94,6 +94,45 @@ class LoginView(APIView):
         )
 
 
+class LogoutView(APIView):
+    serializer_class = LogoutSerializer
+
+    def post(self, request):
+        member_id = get_member_id(request=request)
+        member = Member.objects.filter(pk=member_id).first()
+        refresh_token = request.data["refresh"]
+        if refresh_token is None:
+            return Response(
+                data={
+                    "status_code": 400,
+                    "message": "Refresh Token 정보가 전달되지 않았습니다."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            refresh_token_obj = RefreshToken(refresh_token)
+            refresh_token_obj.blacklist()
+            if member.kakao_token:
+                logout_response = requests.get(f'https://kauth.kakao.com/oauth/logout?client_id=${env("REST_API_KEY")}&logout_redirect_uri=${env("KAKAO_LOGOUT_REDIRECT_URI")}')
+                print(logout_response)
+            response =  Response(
+                data= { 
+                    "status_code": 200,
+                    "message": "Success"
+                },
+                status=status.HTTP_200_OK
+            )
+            return response
+        except Exception as e:
+            return Response(
+                data={
+                    "status_code": 200,
+                    "message": str(e)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 class KakaoLoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -141,9 +180,10 @@ class KakaoLoginView(APIView):
         if member is None:
             member = Member.objects.create(
                 email=email,
-                name=user_info.get('properties').get('nickname'),
+                name=user_info.get('properties').get('nickname')
             )
             member.set_unusable_password()
+            member.kakao_token = access_token
             member.save()
 
         token = MyTokenObtainPairSerializer.get_token(member)
@@ -172,40 +212,6 @@ class RefreshTokenView(TokenRefreshView):
             access_token = response.data['access']
             response.set_cookie(key='access_token', value=access_token)
         return response
-
-
-class LogoutView(APIView):
-    serializer_class = LogoutSerializer
-
-    def post(self, request):
-        refresh_token = request.data["refresh"]
-        if refresh_token is None:
-            return Response(
-                data={
-                    "status_code": 400,
-                    "message": "Refresh Token 정보가 전달되지 않았습니다."
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            refresh_token_obj = RefreshToken(refresh_token)
-            refresh_token_obj.blacklist()
-            response =  Response(
-                data= { 
-                    "status_code": 200,
-                    "message": "Success"
-                },
-                status=status.HTTP_200_OK
-            )
-            return response
-        except Exception as e:
-            return Response(
-                data={
-                    "status_code": 200,
-                    "message": str(e)
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
 
 class MemberDetailView(APIView):
