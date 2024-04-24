@@ -113,8 +113,19 @@ class LogoutView(APIView):
             refresh_token_obj = RefreshToken(refresh_token)
             refresh_token_obj.blacklist()
             if member.kakao_token:
-                logout_response = requests.get(f'https://kauth.kakao.com/oauth/logout?client_id=${env("REST_API_KEY")}&logout_redirect_uri=${env("KAKAO_LOGOUT_REDIRECT_URI")}')
-                print(logout_response)
+                headers = {
+                    "Authorization": f"Bearer {member.kakao_token}",
+                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+                }
+                response = requests.post("https://kapi.kakao.com/v1/user/logout", headers=headers)
+                if response.status_code != 200:
+                    return Response(
+                        data={
+                            "status_code": 500,
+                            "message": "로그아웃 처리중 에러가 발생했습니다."
+                        },
+                        status=status.HTTP_500_BAD_REQUEST
+                    )
             response =  Response(
                 data= { 
                     "status_code": 200,
@@ -126,7 +137,7 @@ class LogoutView(APIView):
         except Exception as e:
             return Response(
                 data={
-                    "status_code": 200,
+                    "status_code": 400,
                     "message": str(e)
                 },
                 status=status.HTTP_400_BAD_REQUEST
