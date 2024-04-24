@@ -99,6 +99,7 @@ const BudgetHistoryTableCell = () => {
       });
       setModifyId(null);
       toast.success("예산이 수정되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
       queryClient.invalidateQueries({ queryKey: ["budgetList"] });
     } catch (error) {
       console.error("예산수정에러", error);
