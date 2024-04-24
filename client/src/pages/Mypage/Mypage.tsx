@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import { Cookies } from "react-cookie";
@@ -37,7 +38,7 @@ const Mypage = () => {
   const [name, setName] = useState("")
   const { userData, setUserData } = useUserContext()
   const { VITE_BASE_REQUEST_URL } = import.meta.env;
-
+  const queryClient = useQueryClient();
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -116,6 +117,7 @@ const Mypage = () => {
           toast.success("회원정보 수정 되었습니다.");
           setIsEditing(!isEditing);
           // setIsEditing(false); // 수정 완료 후 isEditing 상태를 false로 변경
+          queryClient.invalidateQueries({ queryKey: ["me"] });
         } catch (error) {
           console.error("회원정보 수정 실패", error);
         }

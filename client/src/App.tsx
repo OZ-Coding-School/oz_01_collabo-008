@@ -13,7 +13,7 @@ import MonthlyReport from "./pages/MonthlyReport/MonthlyReport";
 import Main from "./pages/MainPage/Main";
 import Mypage from "./pages/Mypage/Mypage";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cookies } from "react-cookie";
 import instance from "./api/axios";
 import requests from "./api/requests";
@@ -122,6 +122,7 @@ function App() {
       updated_at: null,
     },
   )
+  const queryClient = useQueryClient();
   const cookies = new Cookies();
   const access = cookies.get("accessToken");
   const {
