@@ -54,7 +54,7 @@
 
 ### :wrench: System Architecture
 
-![version3](https://github.com/OZ-Coding-School/oz_01_collabo-008/assets/49240318/76e0dc71-3508-4530-8d5f-9862d12cd605)
+![Red Ribbon Architecture](https://github.com/SwanyCastle/SwanyCastle/assets/49240318/366cfffc-20eb-46c7-8fae-af4742e64c2a)
 
 ### FE
 
