@@ -56,7 +56,7 @@
 
 ### :wrench: System Architecture
 
-<img src="https://user-images.githubusercontent.com/90237119/215304129-d8006105-cf1c-49c7-a819-4f819dfac523.png"/>
+![version3](https://github.com/OZ-Coding-School/oz_01_collabo-008/assets/49240318/76e0dc71-3508-4530-8d5f-9862d12cd605)
 
 ### FE
 
