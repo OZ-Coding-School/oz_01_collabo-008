@@ -208,4 +208,4 @@
 >
 > [📜 테이블 명세서](https://docs.google.com/spreadsheets/d/1KEXe4gPQBVFX8zxiZwEHXTJVGXFkXbs8_CvjanX_Sug/edit#gid=0)
 >
-> [📜 화면 정의서 예시](https://docs.google.com/spreadsheets/d/1vud5xV8rB9Y6akOIma49hSzdZsoj8DVG0-fYE4NdP_g/edit?usp=sharing)
+> [📜 화면 정의서](https://drive.google.com/file/d/1PUcXA4h4bXP4gws97k-ytQ4VcVNWS8R6/view?usp=sharing)
