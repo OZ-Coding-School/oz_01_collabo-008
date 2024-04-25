@@ -98,8 +98,6 @@ class LogoutView(APIView):
     serializer_class = LogoutSerializer
 
     def post(self, request):
-        member_id = get_member_id(request=request)
-        member = Member.objects.filter(pk=member_id).first()
         refresh_token = request.data["refresh"]
         if refresh_token is None:
             return Response(
@@ -112,20 +110,6 @@ class LogoutView(APIView):
         try:
             refresh_token_obj = RefreshToken(refresh_token)
             refresh_token_obj.blacklist()
-            if member.kakao_token:
-                headers = {
-                    "Authorization": f"Bearer {member.kakao_token}",
-                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-                }
-                response = requests.post("https://kapi.kakao.com/v1/user/logout", headers=headers)
-                if response.status_code != 200:
-                    return Response(
-                        data={
-                            "status_code": 500,
-                            "message": "로그아웃 처리중 에러가 발생했습니다."
-                        },
-                        status=status.HTTP_500_BAD_REQUEST
-                    )
             response =  Response(
                 data= { 
                     "status_code": 200,
