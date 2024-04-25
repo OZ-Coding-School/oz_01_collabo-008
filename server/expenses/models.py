@@ -23,7 +23,7 @@ class Expense(models.Model):
     date = models.DateField()
     content = models.CharField(max_length=100)
     location = models.CharField(max_length=100, null=True, blank=True)
-    price = models.BigIntegerField()
+    price = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,7 +33,7 @@ class Expense(models.Model):
 
 
 class FixedExpense(models.Model):
-    price = models.BigIntegerField()
+    price = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
