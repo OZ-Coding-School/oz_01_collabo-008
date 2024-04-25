@@ -1,21 +1,22 @@
 ## 📖 프로젝트 소개
 
-> 더 이상 독서는 혼자만의 취미가 아니다❌
-> 책을 사랑하는, 책과 가까워지고 싶은, 혹은 비슷한 사람들끼리 취미를 공유하고 싶어하는
-> 모두가 모여 하나의 마을을 형성하는 `프로젝트 예시`는 사용자 모두가 이웃처럼
-> 서로의 지식을 나누고 책을 공유합니다.
+> 🎀 Red-Ribbon 과 함께 현명한 소비생활 🎀
 
-## 함께하는 독서 습관을 만들어주는 서비스, `프로젝트 예시`에 오신 걸 환영합니다!
+> 📌 자신만의 한달 예산과 고정지출을 정하고 나의 소비를 작성하고 👩🏻‍💻
+
+> 📌 자신의 소비습관을 확인해보세요 😊
+
+## 현명한 소비 습관을 만들어주는 서비스, `Red-Ribbon`에 오신 걸 환영합니다!
 
 ## :link: 배포 링크
 
-> ### [⛪ 배포 링크 예시 - 네이버](https:www.naver.com)
+> ### [🎀 Red-Ribbon](https://www.red-ribbon.shop/)
 
 ---
 
 ## 🗣️ 프로젝트 발표 영상 & 발표 문서
 
-> ### 🗓️ 2024.00-.00 - 2024.00.00
+> ### 🗓️ 2024.04.01 - 2024.04.30
 >
 > ### [📺 발표 영상 예시]()
 >
@@ -62,40 +63,44 @@
 <div align=center>
   <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> 
   <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"> 
-  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"> 
+  <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"> 
   <br>
 
   <img src="https://img.shields.io/badge/react-00A8E1?style=for-the-badge&logo=react&logoColor=black"> 
-  <img src="https://img.shields.io/badge/figma-EF2D5E?style=for-the-badge&logo=figma&logoColor=black">
-  <img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white">
-  <img src="https://img.shields.io/badge/prettier-FF4F8B?style=for-the-badge&logo=prettier&logoColor=white">
+  <img src="https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=black"> 
+  <img src="https://img.shields.io/badge/axios-6935D3?style=for-the-badge&logo=axios&logoColor=white">
+  <img src="https://img.shields.io/badge/yarn-2C8EBB?style=for-the-badge&logo=yarn&logoColor=white">
   <br>
 
-  <img src="https://img.shields.io/badge/axios-6935D3?style=for-the-badge&logo=axios&logoColor=white">
-  <img src="https://img.shields.io/badge/styled Components-E9568E?style=for-the-badge&logo=styledComponents&logoColor=white">
-  <img src="https://img.shields.io/badge/redux toolkit-66459B?style=for-the-badge&logo=redux&logoColor=white">
-  <img src="https://img.shields.io/badge/npm-ED1C24?style=for-the-badge&logo=npm&logoColor=white">
-  
+  <img src="https://img.shields.io/badge/figma-EF2D5E?style=for-the-badge&logo=figma&logoColor=black">
+  <img src="https://img.shields.io/badge/prettier-FF4F8B?style=for-the-badge&logo=prettier&logoColor=white">
+  <img src="https://img.shields.io/badge/vanilla-extract-FF4F8B?style=for-the-badge&logo=&logoColor=white">
   <br>
 </div>
 
 ### BE
 
 <div align=center> 
-  <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
-  <img src="https://img.shields.io/badge/redis-D0271D?style=for-the-badge&logo=redis&logoColor=white">
+  <img src="https://img.shields.io/badge/PYTHON-3776AB?style=for-the-badge&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/django-092E20?style=for-the-badge&logo=django&logoColor=white">
+  <img src="https://img.shields.io/badge/django restframework-092E20F?style=for-the-badge&logo=django restframework&logoColor=white">
   <br>
-
-  <img src="https://img.shields.io/badge/spring Boot-6DB33F?style=for-the-badge&logo=springBoot&logoColor=white">
-  <img src="https://img.shields.io/badge/fly way-ED1C24?style=for-the-badge&logo=flyway&logoColor=white">
+  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
   <img src="https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"> 
+  <img src="https://img.shields.io/badge/nginx-006272?style=for-the-badge&logo=nginx&logoColor=green">
+  <br>
+  <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+  <img src="https://img.shields.io/badge/docker compose-2496ED?style=for-the-badge&logo=docker compose&logoColor=white">
   <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
   <br>
+</div>
 
-  <img src="https://img.shields.io/badge/nginx-006272?style=for-the-badge&logo=nginx&logoColor=green">
-  <img src="https://img.shields.io/badge/spring security-6DB33F?style=for-the-badge&logo=springSecurity&logoColor=white">
-  <img src="https://img.shields.io/badge/query dsl-008FC7?style=for-the-badge&logo=queryDsl&logoColor=white">
+### 협업 툴
+
+<div align=center> 
+  <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
+  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
+  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
   <br>
 </div>
 
@@ -105,15 +110,15 @@
 
 ### FE
 
-| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@deswaq1220</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@jhsonnn</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@pparksse1</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/111436967?v=4" width=100px/><br/><sub><b>@nayeon2im</b></sub></a><br/> |
-| :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                       변경원                                                                       |                                                                        손지형                                                                        |                                                                        박세원                                                                        |                                                                        연나연                                                                       |
+| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@deswaq1220</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@jhsonnn</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@pparksse1</b></sub></a><br/> |
+| :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                                                                       변경원                                                                       |                                                                        손지형                                                                        |                                                                        박세원                                                                        |
 
 ### BE
 
-| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/85716720?v=4" width=100px/><br/><sub><b>@SwanyCastle</b></sub></a><br/> | <a href=https://github.com/orioncsy><img src="https://avatars.githubusercontent.com/u/90237119?v=4" width=100px/><br/><sub><b>@kimhamney</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/77969043?v=4" width=100px/><br/><sub><b>@ready-oun</b></sub></a><br/> |
-| :------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                        곽승환                                                                        |                                                                            김혜민                                                                            |                                                                        임희연                                                                        |
+| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/85716720?v=4" width=100px/><br/><sub><b>@SwanyCastle</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/77969043?v=4" width=100px/><br/><sub><b>@ready-oun</b></sub></a><br/> |
+| :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                                                                        곽승환                                                                        |                                                                        임희연                                                                        |
 
 ## 📑 프로젝트 규칙
 
