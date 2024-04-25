@@ -31,7 +31,7 @@ const FixedExpenses = () => {
         const response = await instance.get(fixedRequest.fixedReg);
         const data = response.data;
 
-        console.log("고정지출", data);
+        // console.log("고정지출", data);
         return data;
       } catch (error) {
         throw new Error("고정지출 에러");

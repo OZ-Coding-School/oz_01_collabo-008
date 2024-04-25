@@ -61,7 +61,7 @@ const Mypage = () => {
         } else {
           toast.error("사진 업로드 실패");
         }
-        console.log("사진 업로드", response.data);
+        // console.log("사진 업로드", response.data);
       } catch (error) {
         console.error("사진 업로드 에러", error);
         toast.error("사진 업로드 중 오류가 발생했습니다.");
@@ -89,7 +89,7 @@ const Mypage = () => {
       const allCookies = cookies.getAll(); // 모든 쿠키 가져오기
       Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
       toast.success("회원 탈퇴 되었습니다.");
-      navigate("/login");
+      window.location.href = "/login"
     } catch (error) {
       console.error("회원탈퇴 실패", error);
     }

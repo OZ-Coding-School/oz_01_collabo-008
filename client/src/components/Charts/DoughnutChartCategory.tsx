@@ -29,7 +29,7 @@ const DoughnutChartCategory = ({
   fetchedData: FetchedData;
   top5CategoriesData: (data: Top5Categories[]) => void;
 }) => {
-  console.log(fetchedData);
+  // console.log(fetchedData);
   useEffect(() => {
     const top5Categories = getTop5Categories(fetchedData);
     top5CategoriesData(top5Categories);

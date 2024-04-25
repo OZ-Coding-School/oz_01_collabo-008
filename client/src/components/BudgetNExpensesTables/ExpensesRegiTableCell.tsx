@@ -116,7 +116,7 @@ const ExpensesRegiTableCell = ({
       try {
         const response = await instance.get(categoriesRequest.category);
         const data = response.data.categories;
-        console.log("카테고리 조회 성공", data);
+        // console.log("카테고리 조회 성공", data);
         return data;
       } catch (error) {
         throw new Error("카테고리 조회 에러");
@@ -150,7 +150,7 @@ const ExpensesRegiTableCell = ({
         const response = await instance.get(fixedRequest.fixedReg);
         const data = response.data;
 
-        console.log("고정지출", data);
+        // console.log("고정지출", data);
         return data;
       } catch (error) {
         throw new Error("고정지출 에러");

@@ -110,14 +110,14 @@ const MonthlyReport = () => {
 
   useEffect(() => {
     if (expensesDataError) {
-      console.error(`Data fetching Error: ${expensesDataError.message}`);
+      // console.error(`Data fetching Error: ${expensesDataError.message}`);
     }
 
     setIsLoading(true);
 
     if (budgetData === null) {
-      console.log("budgetData가 null일 때", budgetData);
-      toast.error("예산이 0 입니까? 아니라면 예산을 먼저 설정해주세요!", {
+      // console.log("budgetData가 null일 때", budgetData);
+      toast.error("예산이 0원인경우 예산등록을 해주세요.", {
         toastId: "budgetToast",
       });
 
@@ -126,7 +126,7 @@ const MonthlyReport = () => {
     }
 
     if (!expensesData) {
-      console.error("지출 내역이 존재하지 않습니다.");
+      // console.error("지출 내역이 존재하지 않습니다.");
 
       setIsLoading(false);
       return;

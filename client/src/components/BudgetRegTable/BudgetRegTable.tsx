@@ -73,7 +73,7 @@ const BudgetRegTable = ({
       try {
         const response = await instance.get(categoriesRequest.category);
         const data = response.data.categories;
-        console.log("카테고리 조회 성공", data);
+        // console.log("카테고리 조회 성공", data);
         return data;
       } catch (error) {
         throw new Error("카테고리 조회 에러");
@@ -102,7 +102,7 @@ const BudgetRegTable = ({
       try {
         const response = await instance.get(categoriesRequest.payment);
         const data = response.data.payments;
-        console.log("지불방법", data);
+        // console.log("지불방법", data);
         return data;
       } catch (error) {
         throw new Error("카테고리 조회 에러");

@@ -42,9 +42,9 @@ const SideBar = () => {
         const response = await instance.get(
           budgetRegRequest.budgetList + `?year=${year}&month=${month}`
         );
-        console.log("response : ", response);
+        // console.log("response : ", response);
         const totalBudget = response.data.total_budget;
-        console.log("사이드 바 전체 예산 : ", totalBudget);
+        // console.log("사이드 바 전체 예산 : ", totalBudget);
 
         setTotalBudget(totalBudget);
         return totalBudget;
@@ -68,7 +68,7 @@ const SideBar = () => {
           total_expense: number | null;
         }>(expenseRequest.expense + `?year=${year}&month=${month}`);
 
-        console.log("지출 목록", totalExpenseData);
+        // console.log("지출 목록", totalExpenseData);
         return response.data;
       } catch (error) {
         throw new Error("지출 목록 조회 에러");
@@ -87,7 +87,7 @@ const SideBar = () => {
     ? (totalExpenseData?.total_expense / totalBudget) * 100
     : 0;
 
-  console.log("너 얼마썻어", totalExpenseData);
+  // console.log("너 얼마썻어", totalExpenseData);
   return (
     <Box width='500px' className={sideBox}>
       <Card size='5'>

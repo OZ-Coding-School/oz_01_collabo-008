@@ -83,7 +83,7 @@ const BudgetRegister = () => {
         expenseRequest.expense,
         expensesToSend
       );
-      console.log("지출 등록 성공", response);
+      // console.log("지출 등록 성공", response);
       toast.success("지출이 등록되었습니다.");
       navigation("/");
     } catch (error) {

@@ -20,7 +20,7 @@ const LoginHandler = () => {
         }
       }
       );
-      console.log("카카오", response)
+      // console.log("카카오", response)
       // localStorage.setItem("name",response.data)
       cookies.set("accessToken", response.data.access, { path: '/', secure: true, })
       cookies.set("refreshToken", response.data.refresh, { path: '/', secure: true, })

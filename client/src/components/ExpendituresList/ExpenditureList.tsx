@@ -96,7 +96,7 @@ const ExpenditureList = () => {
           expenseRequest.expense + `?year=${year}&month=${month}`
         );
         const expenseListData = response.data.expenses_list;
-        console.log("지출 목록", expenseListData);
+        // console.log("지출 목록", expenseListData);
         return expenseListData;
       } catch (error) {
         throw new Error("지출 목록 조회 에러");
@@ -111,7 +111,7 @@ const ExpenditureList = () => {
       try {
         const response = await instance.get(categoriesRequest.category);
         const data = response.data.categories;
-        console.log("카테고리 조회 성공", data);
+        // console.log("카테고리 조회 성공", data);
         return data;
       } catch (error) {
         throw new Error("카테고리 조회 에러");
@@ -140,7 +140,7 @@ const ExpenditureList = () => {
       try {
         const response = await instance.get(categoriesRequest.payment);
         const data = response.data.payments;
-        console.log("지불방법", data);
+        // console.log("지불방법", data);
         return data;
       } catch (error) {
         throw new Error("지불방법 조회 에러");

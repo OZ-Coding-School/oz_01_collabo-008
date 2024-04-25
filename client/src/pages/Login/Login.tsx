@@ -82,7 +82,7 @@ const Login = () => {
         );
 
         // 로그인 성공 처리
-        console.log("로그인 성공:", response.data);
+        // console.log("로그인 성공:", response.data);
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
         navigate("/");
@@ -90,7 +90,7 @@ const Login = () => {
         toast.success("로그인 성공");
       } catch (error) {
         // 오류 처리
-        console.error("로그인 오류:", error);
+        // console.error("로그인 오류:", error);
         setErrorText("아이디 또는 비밀번호가 잘못되었습니다.");
       }
     },
