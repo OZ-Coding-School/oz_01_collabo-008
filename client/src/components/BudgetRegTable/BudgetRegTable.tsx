@@ -63,7 +63,8 @@ const BudgetRegTable = ({
   startDate,
   setStartDate,
 }: Props) => {
-  const [priceInput, setPriceInput] = useState(""); // 사용금액
+  const [priceInputs, setPriceInputs] = useState<string[]>(Array(rows.length).fill(""));
+
 
   // 카테고리
   const { data, isLoading, error } = useQuery({
@@ -128,15 +129,18 @@ const BudgetRegTable = ({
 
   const handlePriceChange = (e, index) => {
     const { value } = e.target;
-    // 정규 표현식을 사용하여 숫자인지 확인
     const isValidPrice = /^[1-9]\d*\.?\d*$/.test(value);
 
     if (!isValidPrice || Number(value) < 0) {
       toast.warning("사용금액을 유효한 숫자로 입력해주세요.");
-      setPriceInput("");
-      return; // 숫자가 아닌 경우 함수 종료
+      const updatedPriceInputs = [...priceInputs];
+      updatedPriceInputs[index] = ""; // 잘못된 값이 입력되었을 때 초기화
+      setPriceInputs(updatedPriceInputs);
+      return;
     }
-    setPriceInput(value);
+    const updatedPriceInputs = [...priceInputs];
+    updatedPriceInputs[index] = value;
+    setPriceInputs(updatedPriceInputs);
     onTableRowChange(index, "price", value);
   };
 
@@ -198,10 +202,10 @@ const BudgetRegTable = ({
                   </StyledTableCell>
                   <StyledTableCell align='left'>
                     <Input
-                      placeholder='사용금액'
-                      type='text'
-                      value={priceInput}
-                      onChange={(e) => handlePriceChange(e, index)}
+                      placeholder="사용금액"
+                      type="number"
+                      value={priceInputs[index]} // 각 행의 입력값을 개별 state로 연결
+                      onChange={(e) => handlePriceChange(e, index)} // index 전달
                     />
                   </StyledTableCell>
                   <StyledTableCell align='left'>

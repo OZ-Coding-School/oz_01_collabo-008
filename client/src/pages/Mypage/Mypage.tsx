@@ -86,6 +86,8 @@ const Mypage = () => {
   const handleClickDelete = async () => {
     try {
       await instance.delete(requests.userInfo);
+      const allCookies = cookies.getAll(); // 모든 쿠키 가져오기
+      Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
       toast.success("회원 탈퇴 되었습니다.");
       navigate("/login");
     } catch (error) {

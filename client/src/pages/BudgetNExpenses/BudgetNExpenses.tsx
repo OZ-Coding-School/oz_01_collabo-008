@@ -109,6 +109,8 @@ const BudgetNExpenses = () => {
   };
   //#endregion
 
+
+
   return (
     <Box className={box}>
       <SideBar />

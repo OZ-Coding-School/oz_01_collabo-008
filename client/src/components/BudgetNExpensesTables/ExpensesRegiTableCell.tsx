@@ -45,6 +45,7 @@ interface Props {
   handleExpenseChange: (index: number, field: string, value: string) => void;
   expenses: ExpenseItem[];
   setExpenses: React.Dispatch<React.SetStateAction<ExpenseItem[]>>;
+  // handleDeleteRow: (index: number) => void;
 }
 
 interface ExpenseItem extends Props {
@@ -213,6 +214,14 @@ const ExpensesRegiTableCell = ({
     }
   };
 
+  //행추가 삭제
+  const handleDeleteRow = (indexToRemove) => {
+    setExpenses((prevExpenses) => {
+      // indexToRemove를 제외한 새로운 배열 생성
+      return prevExpenses.filter((_, index) => index !== indexToRemove);
+    });
+  };
+
   return (
     <Box className={wrap}>
       <TableContainer>
@@ -305,15 +314,19 @@ const ExpensesRegiTableCell = ({
                     type='number'
                     onChange={(e) => handlePriceChange(index, e.target.value)}
                     min={0}
-                    placeholder='지출금액'
-                    type='number'
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      handleExpenseChange(index, "price", value);
-                    }}
+                  // onChange={(e) => {
+                  //   const value = e.target.value;
+                  //   handleExpenseChange(index, "price", value);
+                  // }}
                   />
                 </StyledTableCell>
-                <StyledTableCell align='left'></StyledTableCell>
+                <StyledTableCell align='left'>
+                  <button
+                    className={modifyBtn}
+                    onClick={() => handleDeleteRow(index)} // 해당 행의 인덱스 전달
+                  >
+                    행 삭제
+                  </button></StyledTableCell>
                 <StyledTableCell align='left'></StyledTableCell>
               </StyledTableRow>
             ))}
