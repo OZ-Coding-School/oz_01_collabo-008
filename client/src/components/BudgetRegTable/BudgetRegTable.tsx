@@ -144,6 +144,13 @@ const BudgetRegTable = ({
     onTableRowChange(index, "price", value);
   };
 
+  const formatDateForBackend = (date) => {
+    return date.toISOString().split('T')[0]; // ISO 8601 포맷으로 변환 후, 날짜 부분만 추출
+  };
+
+
+
+
   return (
     <>
       <Box className={wrap} style={{ maxHeight: "600px", overflowY: "auto" }}>
@@ -166,12 +173,10 @@ const BudgetRegTable = ({
                     <ReactDatePicker
                       className={datepicker}
                       showIcon
-                      selected={startDate}
+                      selected={row.date} // 각 행의 날짜 상태를 사용
                       onChange={(date) => {
                         if (date instanceof Date) {
-                          // date가 Date 인스턴스인지 확인
-                          setStartDate(date); //
-                          onTableRowChange(index, "date", date); // Date 객체를 직접 전달
+                          onTableRowChange(index, "date", formatDateForBackend(date));
                         }
                       }}
                     />

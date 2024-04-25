@@ -33,7 +33,7 @@ const CalendarList = () => {
         const response = await instance.get(
           expenseRequest.expense + `?year=${year}&month=${month}`
         );
-        // console.log("Expenses Data:", response.data);
+        console.log("Expenses Data:", response.data);
 
         return response.data.expenses_list;
       } catch (error) {
