@@ -98,13 +98,13 @@
 
 ### FE
 
-| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@deswaq1220</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@jhsonnn</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@pparksse1</b></sub></a><br/> |
+| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/121841669?v=4" width=100px/><br/><sub><b>@deswaq1220</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@jhsonnn</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/93540726?v=4" width=100px/><br/><sub><b>@pparksse1</b></sub></a><br/> |
 | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
 |                                                                       변경원                                                                       |                                                                        손지형                                                                        |                                                                        박세원                                                                        |
 
 ### BE
 
-| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/85716720?v=4" width=100px/><br/><sub><b>@SwanyCastle</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/77969043?v=4" width=100px/><br/><sub><b>@ready-oun</b></sub></a><br/> |
+| <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/49240318?v=4" width=100px/><br/><sub><b>@SwanyCastle</b></sub></a><br/> | <a href=https://github.com/><img src="https://avatars.githubusercontent.com/u/148455749?v=4" width=100px/><br/><sub><b>@ready-oun</b></sub></a><br/> |
 | :------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------: |
 |                                                                        곽승환                                                                        |                                                                        임희연                                                                        |
 
