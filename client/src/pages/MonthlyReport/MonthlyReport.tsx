@@ -74,7 +74,7 @@ const MonthlyReport = () => {
 
   const [top5PlacesData, setTop5PlacesData] = useState<Top5Places[]>([]);
 
-  const [totalBudget, setTotalBudget] = useState<number | null>(0);
+  const [totalBudget, setTotalBudget] = useState<number | null>(null);
   const [savedBudget, setSavedBudget] = useState<number>(0);
 
   const {
@@ -87,8 +87,18 @@ const MonthlyReport = () => {
       const response = await instance.get(
         budgetRegRequest.budgetList + `?year=${year}&month=${month}`
       );
+
       const totalBudget: number = response.data.total_budget;
       setTotalBudget(totalBudget);
+
+      if (totalBudget === null) {
+        console.log("totalBudget가 null일 때 인가? : ", totalBudget);
+        toast.error("등록된 예산이 없습니다. 예산을 먼저 설정해주세요!", {
+          toastId: "budgetNullToast",
+        });
+      }
+
+      setIsLoading(false);
 
       return totalBudget;
     },
@@ -114,16 +124,6 @@ const MonthlyReport = () => {
     }
 
     setIsLoading(true);
-
-    if (budgetData === null) {
-      // console.log("budgetData가 null일 때", budgetData);
-      toast.error("예산이 0원인경우 예산등록을 해주세요.", {
-        toastId: "budgetToast",
-      });
-
-      setIsLoading(false);
-      return;
-    }
 
     if (!expensesData) {
       // console.error("지출 내역이 존재하지 않습니다.");
