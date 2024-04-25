@@ -66,7 +66,7 @@
 
   <img src="https://img.shields.io/badge/react-00A8E1?style=for-the-badge&logo=react&logoColor=black"> 
   <img src="https://img.shields.io/badge/react query-FF4154?style=for-the-badge&logo=react query&logoColor=black"> 
-  <img src="https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=black"> 
+  <img src="https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=white"> 
   <img src="https://img.shields.io/badge/axios-6935D3?style=for-the-badge&logo=axios&logoColor=white">
   <img src="https://img.shields.io/badge/yarn-2C8EBB?style=for-the-badge&logo=yarn&logoColor=white">
   <br>
