@@ -28,12 +28,16 @@ class FixedExpenseView(APIView):
         serializer = self.serializer_class(fixed_expenses, many=True)
         total_category_expenses = FixedExpense.objects.filter(member_id=member_id).values('category').annotate(total_price=Sum('price')).order_by('category')
         category_serializer = CategorySumSerializer(total_category_expenses, many=True)
+        total_expense = Expense.objects.filter(member_id=member_id).aggregate(total=Sum('price'))['total'] or 0
+        total_fixed_expense = FixedExpense.objects.filter(member_id=member_id).aggregate(total=Sum('price'))['total'] or 0
+        sum_expenses = total_expense + total_fixed_expense
         return Response(
             data={
                 "status_code": 200,
                 "message": "Success",
                 "fixed_expenses_list": serializer.data,
-                "fixed_expenses_per_list": category_serializer.data
+                "fixed_expenses_per_list": category_serializer.data,
+                "total_expense_fixed_expense": sum_expenses
             },
             status=status.HTTP_200_OK
         )

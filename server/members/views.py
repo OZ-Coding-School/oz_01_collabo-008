@@ -178,7 +178,6 @@ class KakaoLoginView(APIView):
                 name=user_info.get('properties').get('nickname')
             )
             member.set_unusable_password()
-            member.kakao_token = access_token
             member.save()
 
         token = MyTokenObtainPairSerializer.get_token(member)
