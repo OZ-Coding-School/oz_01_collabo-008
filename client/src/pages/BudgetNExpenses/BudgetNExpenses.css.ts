@@ -11,7 +11,8 @@ export const container = style({
   display: "flex",
   flexDirection: "column",
   backgroundColor: "rgba(255,255,255,0.8)",
-  width: "100%",
+
+  maxWidth: "100%",
   border: "1px solid rgba(0,0,0,0.1)",
   borderRadius: "16px",
   boxSizing: "border-box",

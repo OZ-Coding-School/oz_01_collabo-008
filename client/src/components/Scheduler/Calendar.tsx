@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import instance from "../../api/axios";
 import expenseRequest from "../../api/expenseRequest";
-import { wrap } from "./Calendar.css";
 import "./calendarStyle.css";
 
 interface ExpensesData {
@@ -78,7 +77,7 @@ const CalendarList = () => {
   if (expensesDataError) return <div>Error: {expensesDataError.message}</div>;
 
   return (
-    <div className={wrap}>
+    <div>
       <Calendar
         onChange={(newDate: Date) => onChange(newDate)}
         onActiveStartDateChange={(data: {

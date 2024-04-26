@@ -111,12 +111,11 @@ const BudgetNExpenses = () => {
   };
   //#endregion
 
-
-
   return (
     <Box className={box}>
       <SideBar />
-      <Container className={container} maxWidth='xl'>
+      {/* <Container className={container} maxWidth='xl'> */}
+      <Container className={container} maxWidth={false}>
         <Box className={wrapper}>
           <Box className={totalBudgetBox}>
             <Text className={headText} as='div'>
