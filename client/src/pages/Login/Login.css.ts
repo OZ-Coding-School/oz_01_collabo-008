@@ -1,7 +1,7 @@
 import { style } from "@vanilla-extract/css";
 
 export const container = style({
-  backgroundImage: 'url("public/images/background.png")',
+  backgroundImage: 'url("/images/background.png")',
   backgroundSize: "cover",
   width: "100%",
   height: "100vh",
@@ -105,4 +105,34 @@ export const errorText = style({
   fontSize: "14px",
   color: "red",
   marginBottom: "8px",
+});
+
+export const socialWrap = style({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+});
+
+export const social = style({
+  width: "400px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: "30px",
+});
+export const socialLine = style({
+  width: "150px",
+  height: "1px",
+  backgroundColor: "#D5D5D5",
+});
+
+export const kakaobtn = style({
+  width: "200px",
+  marginTop: "20px",
+});
+
+export const kakaoImg = style({
+  width: "100%",
+  objectFit: "cover",
 });

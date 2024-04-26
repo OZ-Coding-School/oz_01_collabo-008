@@ -13,7 +13,7 @@ import MonthlyReport from "./pages/MonthlyReport/MonthlyReport";
 import Main from "./pages/MainPage/Main";
 import Mypage from "./pages/Mypage/Mypage";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cookies } from "react-cookie";
 import instance from "./api/axios";
 import requests from "./api/requests";
@@ -23,6 +23,7 @@ import {
   MONTHLY_REPORT,
   MY_PAGE,
 } from "./constants/components-contants";
+import LoginHandler from "./pages/LoginHandler/LoginHandler";
 import Signup from "./pages/SignUp/Signup";
 
 const Layout = () => {
@@ -92,6 +93,7 @@ const commonRoutes = [
   <>
     <Route path='/login' element={<Login />} />
     <Route path='/signup' element={<Signup />} />
+    <Route path='/oauth2/redirect' element={<LoginHandler />} />
   </>,
 ];
 
@@ -120,6 +122,7 @@ function App() {
       updated_at: null,
     },
   )
+  const queryClient = useQueryClient();
   const cookies = new Cookies();
   const access = cookies.get("accessToken");
   const {
@@ -131,7 +134,7 @@ function App() {
     queryFn: async () => {
       try {
         const response = await instance.get<GetMemberResponseType>(requests.userInfo);
-        console.log("전역 유저 정보", response.data.member);
+        // console.log("전역 유저 정보", response.data.member);
         return response.data.member;
       } catch (error) {
         console.error("전역 유저정보 에러", error);
@@ -150,7 +153,7 @@ function App() {
 
 
   if (isMeLoading) return <div>Loading...</div>;
-  if (meError && !["/login", "/signup"].includes(window.location.pathname))
+  if (meError && !["/login", "/signup", "/oauth2/redirect"].includes(window.location.pathname))
     return <div>Error: {meError.message}</div>;
 
 

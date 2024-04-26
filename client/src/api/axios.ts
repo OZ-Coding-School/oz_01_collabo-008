@@ -27,7 +27,7 @@ const tokenRefresh = async () => {
         refresh: refreshToken,
       }
     );
-    console.log("확잉용", response);
+    // console.log("확잉용", response);
     cookies.set("accessToken", response.data.access);
   } catch (error) {
     console.error("토큰 갱신 실패", error);
@@ -54,12 +54,12 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     if (response.status === 404) {
-      console.log("404 일세");
+      // console.log("404 일세");
     }
     return response;
   },
   async (error) => {
-    console.log(error);
+    // console.log(error);
 
     if (error.response?.status === 401) {
       await tokenRefresh();

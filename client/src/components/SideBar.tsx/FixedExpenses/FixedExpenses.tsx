@@ -8,7 +8,7 @@ import {
   fixedWrap,
   list,
   listItem,
-  listItems
+  listItems,
 } from "../SideBar.css";
 
 interface FixedExpense {
@@ -31,7 +31,7 @@ const FixedExpenses = () => {
         const response = await instance.get(fixedRequest.fixedReg);
         const data = response.data;
 
-        console.log("고정지출", data);
+        // console.log("고정지출", data);
         return data;
       } catch (error) {
         throw new Error("고정지출 에러");
@@ -45,6 +45,7 @@ const FixedExpenses = () => {
     return <div>등록된 고정지출이 없습니다.</div>;
 
   const categoryMap: { [key: number]: string } = {
+    0: "카테고리 선택",
     1: "식비",
     2: "주거/통신",
     3: "생활용품",
@@ -63,10 +64,10 @@ const FixedExpenses = () => {
       <ul className={list}>
         {fixedExpense.fixed_expenses_per_list.map((item, index) => (
           <li className={listItems} key={index}>
-            <Text as="p" className={listItem}>
+            <Text as='p' className={listItem}>
               {categoryMap[item.category] || "기타"}
             </Text>
-            <Text as="p">{item.total_price.toLocaleString()}원</Text>
+            <Text as='p'>{item.total_price.toLocaleString()}원</Text>
           </li>
         ))}
       </ul>

@@ -1,7 +1,7 @@
 import { style } from "@vanilla-extract/css";
 
 export const container = style({
-  backgroundImage: 'url("public/images/background.png")',
+  backgroundImage: 'url("/images/background.png")',
   backgroundSize: "cover",
   width: "100%",
   height: "100vh",

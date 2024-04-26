@@ -19,7 +19,6 @@ import {
 
 import axios, { AxiosError } from "axios";
 import { useFormik } from "formik";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
@@ -45,7 +44,7 @@ const Signup = () => {
     setShowConfirmPassword((prevState) => !prevState);
   };
 
-  const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
+  // const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -88,7 +87,7 @@ const Signup = () => {
         );
 
         // 사용자 등록 성공 처리
-        console.log("사용자 등록 성공:", response.data);
+        // console.log("사용자 등록 성공:", response.data);
         navigate("/login");
         toast.success("회원가입 성공");
       } catch (error) {

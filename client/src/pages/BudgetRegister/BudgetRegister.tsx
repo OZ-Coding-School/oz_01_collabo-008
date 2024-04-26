@@ -21,7 +21,7 @@ interface Row {
   location: string;
   price: number;
   content: string;
-  date: string;
+  date: Date;
 }
 
 const BudgetRegister = () => {
@@ -32,7 +32,7 @@ const BudgetRegister = () => {
       location: "",
       price: 0,
       content: "",
-      date: "",
+      date: new Date(),
     },
   ]);
   const [startDate, setStartDate] = useState(new Date());
@@ -47,14 +47,19 @@ const BudgetRegister = () => {
       location: "",
       price: 0,
       content: "",
-      date: startDate.toLocaleDateString("ko-KR").replace(/\. /g, "-").replace(".", ""), // 현재 선택된 날짜를 초기값으로 설정합니다.
+      date: new Date() //startDate.toLocaleDateString("ko-KR").replace(/\. /g, "-").replace(".", ""), // 현재 선택된 날짜를 초기값으로 설정합니다.
     };
     setRows([...rows, newRow]); // 기존 행에 새 행 추가
   };
   // BudgetRegTable 컴포넌트에서 호출할 함수
   const handleTableRowChange = (index, field, value) => {
     const updatedRows = [...rows];
-    updatedRows[index][field] = value;
+    if (field === 'date') {
+      // 날짜 필드가 변경된 경우, Date 객체로 변환하여 저장
+      updatedRows[index][field] = new Date(value);
+    } else {
+      updatedRows[index][field] = value;
+    }
     setRows(updatedRows);
   };
 
@@ -68,22 +73,23 @@ const BudgetRegister = () => {
 
   const handleClickRegi = async () => {
     const expensesToSend = rows.map((row) => ({
-      category: selectedCategory, // 카테고리
-      payment: selectedPayment, // 카드/현금
-      location: row.location, // 사용처
-      price: row.price, // 사용금액
-      content: row.content, // 사용내역
-      date: startDate
+      category: selectedCategory,
+      payment: selectedPayment,
+      location: row.location,
+      price: row.price,
+      content: row.content,
+      date: row.date
         .toLocaleDateString("ko-KR")
         .replace(/\. /g, "-")
-        .replace(".", ""), // 사용날짜
+        .replace(".", ""),
     }));
     try {
-      const response = await instance.post(
+      await instance.post(
         expenseRequest.expense,
         expensesToSend
       );
-      console.log("지출 등록 성공", response);
+      // console.log("지출 등록 성공", response);
+      // console.log("전송 데이터:", rows);
       toast.success("지출이 등록되었습니다.");
       navigation("/");
     } catch (error) {
@@ -93,6 +99,7 @@ const BudgetRegister = () => {
       } else {
         console.log("예산등록 에러", error);
         toast.error("예산을 등록하는 중에 오류가 발생했습니다.")
+
       }
     }
   };

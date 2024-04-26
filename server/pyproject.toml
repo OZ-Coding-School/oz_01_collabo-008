@@ -20,6 +20,7 @@ boto3 = "^1.34.85"
 ncloud-sdk = "^1.1.9"
 pillow = "^10.3.0"
 gunicorn = "^22.0.0"
+requests = "^2.31.0"
 
 
 [build-system]

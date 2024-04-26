@@ -3,6 +3,7 @@ import { Text } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import budgetRegRequest from "../../api/budgetRegRequest";
 import monthlyRequest from "../../api/monthlyRequest";
@@ -73,8 +74,35 @@ const MonthlyReport = () => {
 
   const [top5PlacesData, setTop5PlacesData] = useState<Top5Places[]>([]);
 
-  const [totalBudget, setTotalBudget] = useState<number>(0);
+  const [totalBudget, setTotalBudget] = useState<number | null>(null);
   const [savedBudget, setSavedBudget] = useState<number>(0);
+
+  const {
+    data: budgetData,
+    isLoading: isBudgetDataLoading,
+    error: budgetDataError,
+  } = useQuery<number>({
+    queryKey: ["budgetData", { year, month }],
+    queryFn: async () => {
+      const response = await instance.get(
+        budgetRegRequest.budgetList + `?year=${year}&month=${month}`
+      );
+
+      const totalBudget: number = response.data.total_budget;
+      setTotalBudget(totalBudget);
+
+      if (totalBudget === null) {
+        console.log("totalBudget가 null일 때 인가? : ", totalBudget);
+        toast.error("등록된 예산이 없습니다. 예산을 먼저 설정해주세요!", {
+          toastId: "budgetNullToast",
+        });
+      }
+
+      setIsLoading(false);
+
+      return totalBudget;
+    },
+  });
 
   const {
     data: expensesData,
@@ -83,68 +111,42 @@ const MonthlyReport = () => {
   } = useQuery({
     queryKey: ["expensesData"],
     queryFn: async () => {
-      try {
-        const response = await instance.get(
-          monthlyRequest.monthly + `?year=${year}&month=${month}`
-        );
-        //console.log("Expenses Data:", response.data);
-        return response.data;
-      } catch (error) {
-        throw new Error("Data fetching Error");
-      }
-    },
-  });
-
-  const {
-    data: budgetData,
-    isLoading: isBudgetDataLoading,
-    error: budgetDataError,
-  } = useQuery({
-    queryKey: ["budgetData", { year, month }],
-    queryFn: async () => {
-      try {
-        const response = await instance.get(
-          budgetRegRequest.budgetList + `?year=${year}&month=${month}`
-        );
-        return response.data;
-      } catch (error) {
-        throw new Error(`Budget data fetching error: ${error.message}`);
-      }
+      const response = await instance.get(
+        monthlyRequest.monthly + `?year=${year}&month=${month}`
+      );
+      return response.data;
     },
   });
 
   useEffect(() => {
+    if (expensesDataError) {
+      // console.error(`Data fetching Error: ${expensesDataError.message}`);
+    }
+
     setIsLoading(true);
 
     if (!expensesData) {
-      console.error("Expenses Data does not exist");
-      return;
-    }
-    if (!budgetData) {
-      console.error("Budget Data does not exist");
+      // console.error("지출 내역이 존재하지 않습니다.");
+
+      setIsLoading(false);
       return;
     }
 
     setData(expensesData);
-
-    if (budgetData && budgetData.budget_list.length > 0) {
-      const budgetItem = budgetData.budget_list[0];
-      setTotalBudget(budgetItem.value);
-    } else {
-      console.log("Budget Data does not exist. please set your budget first!");
-      setTotalBudget(0);
-    }
 
     let totalExpense = 0;
     for (const category of expensesData.total_expenses_by_category) {
       totalExpense += category.total_price;
     }
 
-    const savedBudget = totalBudget - totalExpense;
-    setSavedBudget(savedBudget);
+    if (totalBudget !== null) {
+      //세이브 된 액수 계산
+      const savedBudget = totalBudget - totalExpense;
+      setSavedBudget(savedBudget);
+    }
 
     setIsLoading(false);
-  }, [expensesData, budgetData, totalBudget]);
+  }, [expensesDataError, expensesData, totalBudget, budgetData]);
 
   if (isExpensesDataLoading) return <div>Expense Data is Loading...</div>;
   if (expensesDataError) return <div>Error: {expensesDataError.message}</div>;
@@ -163,75 +165,120 @@ const MonthlyReport = () => {
           <Divider sx={{ borderColor: "#FBEAEB", borderWidth: "1px" }} />
         </Box>
         <Box className={resultTextBox} sx={{ display: "flex" }}>
-          <Box>
-            <Box>
-              이번 달 총 예산{" "}
-              <Box
-                sx={{
-                  color: "#F03167",
-                  fontSize: "2.1rem",
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  marginLeft: "0.5rem",
-                  marginRight: "0.5rem",
-                }}
-              >
-                {Number(totalBudget)
-                  .toLocaleString()
-                  .split("")
-                  .map((char, index) => (
-                    <motion.span
-                      key={index}
-                      style={{
-                        display: "inline-block",
-                        originY: 0.5,
-                      }}
-                      animate={{ y: [0, -10, 0], opacity: [0, 1, 1] }}
-                      transition={{ duration: 0.5, delay: index * 0.05 }}
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
+          {totalBudget === null ? (
+            <div style={{ fontSize: "1rem", fontWeight: "400" }}>
+              <div>등록된 예산이 없습니다.</div>
+              <div>예산을 먼저 등록해주세요.</div>
+            </div>
+          ) : (
+            <>
+              <Box>
+                <Box>
+                  이번 달 총 예산{" "}
+                  <Box
+                    sx={{
+                      color: "#F03167",
+                      fontSize: "2.2rem",
+                      fontWeight: "700",
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      marginLeft: "0.5rem",
+                      marginRight: "0.5rem",
+                    }}
+                  >
+                    {Number(totalBudget)
+                      .toLocaleString()
+                      .split("")
+                      .map((char, index) => (
+                        <motion.span
+                          key={index}
+                          style={{
+                            display: "inline-block",
+                            originY: 0.5,
+                          }}
+                          animate={{ y: [0, -10, 0], opacity: [0, 1, 1] }}
+                          transition={{ duration: 0.5, delay: index * 0.05 }}
+                        >
+                          {char}
+                        </motion.span>
+                      ))}
+                  </Box>
+                  원 중
+                </Box>
               </Box>
-              원 중
-            </Box>
-          </Box>
-          <Box>
-            <Box>
-              {savedBudget > 0 ? "+" : " "}{" "}
-              <Box
-                sx={{
-                  color: "#F03167",
-                  fontSize: "2.1rem",
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  marginLeft: "0.5rem",
-                  marginRight: "0.5rem",
-                }}
-              >
-                {Math.abs(savedBudget)
-                  .toLocaleString()
-                  .split("")
-                  .map((char, index) => (
-                    <motion.span
-                      key={index}
-                      style={{
-                        display: "inline-block",
-                        originY: 0.5,
-                      }}
-                      animate={{ y: [0, -10, 0], opacity: [0, 1, 1] }}
-                      transition={{ duration: 0.5, delay: index * 0.05 }}
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
+              <Box>
+                <Box>
+                  {savedBudget > 0 ? "+" : ""}{" "}
+                  <Box
+                    sx={{
+                      color: "#F03167",
+                      fontSize: "2.2rem",
+                      fontWeight: "700",
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      marginLeft: "0.5rem",
+                      marginRight: "0.5rem",
+                    }}
+                  >
+                    {Math.abs(savedBudget)
+                      .toLocaleString()
+                      .split("")
+                      .map((char, index) => {
+                        if (savedBudget !== 0) {
+                          return (
+                            <motion.span
+                              key={index}
+                              style={{
+                                display: "inline-block",
+                                originY: 0.5,
+                              }}
+                              animate={{ y: [0, -10, 0], opacity: [0, 1, 1] }}
+                              transition={{
+                                duration: 0.5,
+                                delay: index * 0.05,
+                              }}
+                            >
+                              {char}
+                            </motion.span>
+                          );
+                        } else {
+                          return Math.abs(totalBudget)
+                            .toLocaleString()
+                            .split("")
+                            .map((char, index) => {
+                              return (
+                                <motion.span
+                                  key={index}
+                                  style={{
+                                    display: "inline-block",
+                                    originY: 0.5,
+                                  }}
+                                  animate={{
+                                    y: [0, -10, 0],
+                                    opacity: [0, 1, 1],
+                                  }}
+                                  transition={{
+                                    duration: 0.5,
+                                    delay: index * 0.05,
+                                  }}
+                                >
+                                  {char}
+                                </motion.span>
+                              );
+                            });
+                        }
+                      })}
+                  </Box>
+                  원
+                  {savedBudget !== 0 &&
+                    (savedBudget > 0
+                      ? "이 세이브 되었습니다."
+                      : "을 더 사용했습니다.")}
+                  {savedBudget === 0 ? "을 모두 사용했습니다." : ""}
+                </Box>
               </Box>
-              원
-              {savedBudget > 0
-                ? "이 세이브 되었습니다."
-                : "을 더 사용했습니다."}
-            </Box>
-          </Box>
+            </>
+          )}
         </Box>
         <Box className={doughnutCharts}>
           <Box className={largestExpCategoryBox}>

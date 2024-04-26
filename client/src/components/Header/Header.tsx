@@ -11,6 +11,7 @@ import {
   header,
   listItem,
   logo,
+  logoImg,
   nav,
   profileImg,
   selectedListItem,
@@ -45,7 +46,7 @@ const Header = () => {
   return (
     <header className={header}>
       <div className={logo} onClick={() => handleClick("/")}>
-        RR
+        <img src="/images/logo.png" alt="logo" className={logoImg} />
       </div>
       <ul className={nav}>
         {navItems.map((item, index) => (

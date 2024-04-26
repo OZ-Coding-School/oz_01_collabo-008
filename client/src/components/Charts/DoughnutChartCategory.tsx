@@ -10,10 +10,10 @@ interface FetchedData {
     content: string;
     total_price: number;
   }[];
-  total_expenses_by_location: {
-    location: string | null;
-    total_price: number;
-  }[];
+  // total_expenses_by_location: {
+  //   location: string | null;
+  //   total_price: number;
+  // }[];
 }
 
 interface Top5Categories {
@@ -29,7 +29,7 @@ const DoughnutChartCategory = ({
   fetchedData: FetchedData;
   top5CategoriesData: (data: Top5Categories[]) => void;
 }) => {
-  console.log(fetchedData);
+  // console.log(fetchedData);
   useEffect(() => {
     const top5Categories = getTop5Categories(fetchedData);
     top5CategoriesData(top5Categories);

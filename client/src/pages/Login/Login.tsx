@@ -8,6 +8,8 @@ import {
   footer,
   gosignup,
   info,
+  kakaobtn,
+  kakaoImg,
   loginbt,
   loginform,
   loginformInput,
@@ -15,6 +17,9 @@ import {
   loginheader,
   passwordInputWrap,
   pwToggleBtn,
+  social,
+  socialLine,
+  socialWrap,
 } from "./Login.css.ts";
 
 import axios from "axios";
@@ -34,11 +39,16 @@ interface LoginForm {
 
 const Login = () => {
   // const { VITE_SECRET_KEY } = import.meta.env;
-  const { VITE_BASE_REQUEST_URL } = import.meta.env;
+  const { VITE_BASE_REQUEST_URL, VITE_REST_API_KEY, VITE_REDIRECT_URI
+
+  } = import.meta.env;
   const [cookies, setCookies] = useCookies(["refreshToken", "accessToken"]);
   const [errorText, setErrorText] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${VITE_REST_API_KEY}&redirect_uri=${VITE_REDIRECT_URI}&prompt=login`
+
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -72,7 +82,7 @@ const Login = () => {
         );
 
         // 로그인 성공 처리
-        console.log("로그인 성공:", response.data);
+        // console.log("로그인 성공:", response.data);
         setCookies("refreshToken", response.data.refresh);
         setCookies("accessToken", response.data.access);
         navigate("/");
@@ -80,7 +90,7 @@ const Login = () => {
         toast.success("로그인 성공");
       } catch (error) {
         // 오류 처리
-        console.error("로그인 오류:", error);
+        // console.error("로그인 오류:", error);
         setErrorText("아이디 또는 비밀번호가 잘못되었습니다.");
       }
     },
@@ -161,6 +171,19 @@ const Login = () => {
             </span>
           </p>
         </div>
+
+        <div className={socialWrap}>
+          <div className={social}>
+            <span className={socialLine}></span>
+            <span>소셜 로그인</span>
+            <span className={socialLine}></span>
+          </div>
+          <a href={KAKAO_AUTH_URL} className={kakaobtn}>
+            <img src="/images/kakao_login_large_narrow.png" className={kakaoImg} />
+          </a>
+        </div>
+
+
       </div>
     </div>
   );

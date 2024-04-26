@@ -52,7 +52,7 @@ const BudgetNExpenses = () => {
       ...prevExpenses,
       { price: "", category: "1" }, // 새 지출 항목의 초기값 설정
     ]);
-    console.log("고정지출 행추가", isAddRowClicked);
+    // console.log("고정지출 행추가", isAddRowClicked);
   };
 
   const handleExpenseChange = (index: number, field: string, value: string) => {
@@ -67,7 +67,7 @@ const BudgetNExpenses = () => {
   const handleClickRegi = async () => {
     try {
       const response = await instance.post(fixedRequest.fixedReg, expenses);
-      console.log("고정 지출 등록 성공", response);
+      // console.log("고정 지출 등록 성공", response);
       toast.success("고정 지출이 등록되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
       queryClient.invalidateQueries({ queryKey: ["totalExpenseFixedExpense"] });
@@ -95,7 +95,7 @@ const BudgetNExpenses = () => {
       await instance.post(budgetRegRequest.budgetList, {
         value: budget,
       });
-      console.log("전체예산 등록성공");
+      // console.log("전체예산 등록성공");
       toast.success("예산이 등록되었습니다");
       queryClient.invalidateQueries({ queryKey: ["budgetList"] });
       queryClient.invalidateQueries({ queryKey: ["budget"] });
@@ -110,6 +110,8 @@ const BudgetNExpenses = () => {
     setBudget("");
   };
   //#endregion
+
+
 
   return (
     <Box className={box}>

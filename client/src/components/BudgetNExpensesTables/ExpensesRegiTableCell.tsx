@@ -45,6 +45,7 @@ interface Props {
   handleExpenseChange: (index: number, field: string, value: string) => void;
   expenses: ExpenseItem[];
   setExpenses: React.Dispatch<React.SetStateAction<ExpenseItem[]>>;
+  // handleDeleteRow: (index: number) => void;
 }
 
 interface ExpenseItem extends Props {
@@ -53,17 +54,17 @@ interface ExpenseItem extends Props {
 }
 
 const categoryMap: { [key: number]: string } = {
-  1: "카테고리 선택",
-  2: "식비",
-  3: "주거/통신",
-  4: "생활용품",
-  5: "의복/미용",
-  6: "건강/문화",
-  7: "교육/육아",
-  8: "교통/차량",
-  9: "경조사/회비",
-  10: "세금/이자",
-  11: "기타",
+  0: "카테고리 선택",
+  1: "식비",
+  2: "주거/통신",
+  3: "생활용품",
+  4: "의복/미용",
+  5: "건강/문화",
+  6: "교육/육아",
+  7: "교통/차량",
+  8: "경조사/회비",
+  9: "세금/이자",
+  10: "기타",
 };
 
 const ExpensesRegiTableCell = ({
@@ -115,7 +116,7 @@ const ExpensesRegiTableCell = ({
       try {
         const response = await instance.get(categoriesRequest.category);
         const data = response.data.categories;
-        console.log("카테고리 조회 성공", data);
+        // console.log("카테고리 조회 성공", data);
         return data;
       } catch (error) {
         throw new Error("카테고리 조회 에러");
@@ -123,11 +124,20 @@ const ExpensesRegiTableCell = ({
     },
   });
 
-  const options = data?.map((item: ItemType) => ({
-    value: item.id,
-    label: item.content,
-  }));
-
+  // const options = data?.map((item: ItemType) => ({
+  //   value: item.id,
+  //   label: item.content,
+  // }));
+  const options = [
+    {
+      value: null,
+      label: "카테고리 선택",
+    },
+    ...(data?.map((item: ItemType) => ({
+      value: item.id,
+      label: item.content,
+    })) || []),
+  ];
   //고정지출
   const {
     data: fixedExpenseData,
@@ -140,7 +150,7 @@ const ExpensesRegiTableCell = ({
         const response = await instance.get(fixedRequest.fixedReg);
         const data = response.data;
 
-        console.log("고정지출", data);
+        // console.log("고정지출", data);
         return data;
       } catch (error) {
         throw new Error("고정지출 에러");
@@ -202,6 +212,14 @@ const ExpensesRegiTableCell = ({
       console.error("고정지출 삭제 에러", error);
       toast.error("고정지출 삭제에 실패했습니다.");
     }
+  };
+
+  //행추가 삭제
+  const handleDeleteRow = (indexToRemove) => {
+    setExpenses((prevExpenses) => {
+      // indexToRemove를 제외한 새로운 배열 생성
+      return prevExpenses.filter((_, index) => index !== indexToRemove);
+    });
   };
 
   return (
@@ -296,15 +314,19 @@ const ExpensesRegiTableCell = ({
                     type='number'
                     onChange={(e) => handlePriceChange(index, e.target.value)}
                     min={0}
-                    placeholder='지출금액'
-                    type='number'
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      handleExpenseChange(index, "price", value);
-                    }}
+                  // onChange={(e) => {
+                  //   const value = e.target.value;
+                  //   handleExpenseChange(index, "price", value);
+                  // }}
                   />
                 </StyledTableCell>
-                <StyledTableCell align='left'></StyledTableCell>
+                <StyledTableCell align='left'>
+                  <button
+                    className={modifyBtn}
+                    onClick={() => handleDeleteRow(index)} // 해당 행의 인덱스 전달
+                  >
+                    행 삭제
+                  </button></StyledTableCell>
                 <StyledTableCell align='left'></StyledTableCell>
               </StyledTableRow>
             ))}

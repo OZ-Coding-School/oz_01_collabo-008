@@ -13,13 +13,17 @@ export const header = style({
 });
 
 export const logo = style({
-  color: "#F03167",
-  fontSize: "30px",
+  width: "50px",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   fontWeight: "bold",
   cursor: "pointer",
+});
+
+export const logoImg = style({
+  width: "100%",
+  objectFit: "cover",
 });
 
 export const nav = style({

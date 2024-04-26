@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import { Cookies } from "react-cookie";
@@ -37,7 +38,7 @@ const Mypage = () => {
   const [name, setName] = useState("")
   const { userData, setUserData } = useUserContext()
   const { VITE_BASE_REQUEST_URL } = import.meta.env;
-
+  const queryClient = useQueryClient();
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -60,7 +61,7 @@ const Mypage = () => {
         } else {
           toast.error("사진 업로드 실패");
         }
-        console.log("사진 업로드", response.data);
+        // console.log("사진 업로드", response.data);
       } catch (error) {
         console.error("사진 업로드 에러", error);
         toast.error("사진 업로드 중 오류가 발생했습니다.");
@@ -85,8 +86,10 @@ const Mypage = () => {
   const handleClickDelete = async () => {
     try {
       await instance.delete(requests.userInfo);
+      const allCookies = cookies.getAll(); // 모든 쿠키 가져오기
+      Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
       toast.success("회원 탈퇴 되었습니다.");
-      navigate("/login");
+      window.location.href = "/login"
     } catch (error) {
       console.error("회원탈퇴 실패", error);
     }
@@ -116,6 +119,7 @@ const Mypage = () => {
           toast.success("회원정보 수정 되었습니다.");
           setIsEditing(!isEditing);
           // setIsEditing(false); // 수정 완료 후 isEditing 상태를 false로 변경
+          queryClient.invalidateQueries({ queryKey: ["me"] });
         } catch (error) {
           console.error("회원정보 수정 실패", error);
         }
