@@ -187,6 +187,7 @@ const ExpensesRegiTableCell = ({
       setModifyId(null);
       toast.success("고정지출이 수정되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
+      queryClient.invalidateQueries({ queryKey: ["totalExpenseFixedExpense"] });
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.error("값을 입력해주세요");
@@ -208,6 +209,7 @@ const ExpensesRegiTableCell = ({
       toast.success("고정지출이 삭제되었습니다.");
 
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
+      queryClient.invalidateQueries({ queryKey: ["totalExpenseFixedExpense"] });
     } catch (error) {
       console.error("고정지출 삭제 에러", error);
       toast.error("고정지출 삭제에 실패했습니다.");
@@ -314,10 +316,10 @@ const ExpensesRegiTableCell = ({
                     type='number'
                     onChange={(e) => handlePriceChange(index, e.target.value)}
                     min={0}
-                  // onChange={(e) => {
-                  //   const value = e.target.value;
-                  //   handleExpenseChange(index, "price", value);
-                  // }}
+                    // onChange={(e) => {
+                    //   const value = e.target.value;
+                    //   handleExpenseChange(index, "price", value);
+                    // }}
                   />
                 </StyledTableCell>
                 <StyledTableCell align='left'>
@@ -326,7 +328,8 @@ const ExpensesRegiTableCell = ({
                     onClick={() => handleDeleteRow(index)} // 해당 행의 인덱스 전달
                   >
                     행 삭제
-                  </button></StyledTableCell>
+                  </button>
+                </StyledTableCell>
                 <StyledTableCell align='left'></StyledTableCell>
               </StyledTableRow>
             ))}

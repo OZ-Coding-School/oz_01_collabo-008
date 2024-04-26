@@ -71,7 +71,7 @@ const SideBar = () => {
         const response = await instance.get(fixedRequest.fixedReg);
         const expenseSum = response.data;
 
-        console.log("지출 response data : ", expenseSum);
+        //console.log("지출 response data : ", expenseSum);
 
         return expenseSum;
       } catch (error) {
