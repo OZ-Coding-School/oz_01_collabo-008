@@ -195,6 +195,7 @@ const ExpenditureList = () => {
 
       setModifyId(null);
       queryClient.invalidateQueries({ queryKey: ["expensesList"] });
+      queryClient.invalidateQueries({ queryKey: ["totalExpenseFixedExpense"] });
     } catch (error) {
       console.error("예산수정에러", error);
     }
@@ -205,6 +206,7 @@ const ExpenditureList = () => {
       await instance.delete(expenseRequest.expenseModify + `/${expenseId}`);
       toast.success("지출이 삭제되었습니다");
       queryClient.invalidateQueries({ queryKey: ["expensesList"] });
+      queryClient.invalidateQueries({ queryKey: ["totalExpenseFixedExpense"] });
     } catch (error) {
       console.error("지출 삭제 에러", error);
     }
