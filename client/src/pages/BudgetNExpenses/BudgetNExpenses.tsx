@@ -70,6 +70,8 @@ const BudgetNExpenses = () => {
       // console.log("고정 지출 등록 성공", response);
       toast.success("고정 지출이 등록되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fixedExpense"] });
+      queryClient.invalidateQueries({ queryKey: ["totalExpenseFixedExpense"] });
+
       setExpenses([]);
     } catch (error) {
       if (error.response && error.response.status === 400) {

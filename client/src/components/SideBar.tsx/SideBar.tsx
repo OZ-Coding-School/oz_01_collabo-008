@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import instance from "../../api/axios";
 import budgetRegRequest from "../../api/budgetRegRequest";
-import expenseRequest from "../../api/expenseRequest";
+import fixedRequest from "../../api/fixedRequest";
 import FixedExpenses from "./FixedExpenses/FixedExpenses";
 import {
   Budget,
@@ -23,6 +23,12 @@ interface ItemType {
   id: number;
   created_at: string;
   value: number;
+}
+
+interface TotalExpenseAddFixedExpense {
+  message: string;
+  status_code: number;
+  total_expense_fixed_expenses: number | null;
 }
 
 const SideBar = () => {
@@ -55,37 +61,40 @@ const SideBar = () => {
   });
 
   const {
-    data: totalExpenseData,
-    isLoading,
-    error,
+    data: totalExpenseFixedExpenseData,
+    isLoading: isTotalExpenseFixedExpenseLoading,
+    error: totalExpenseFixedExpenseError,
   } = useQuery({
-    queryKey: ["totalExpenses"],
+    queryKey: ["totalExpenseFixedExpense"],
     queryFn: async () => {
       try {
-        const response = await instance.get<{
-          message: string;
-          status_code: number;
-          total_expense: number | null;
-        }>(expenseRequest.expense + `?year=${year}&month=${month}`);
+        const response = await instance.get(fixedRequest.fixedReg);
+        const expenseSum = response.data;
 
-        // console.log("지출 목록", totalExpenseData);
-        return response.data;
+        console.log("지출 response data : ", expenseSum);
+
+        return expenseSum;
       } catch (error) {
-        throw new Error("지출 목록 조회 에러");
+        throw new Error("고정 지출 + 지출 목록 조회 에러");
       }
     },
   });
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error:{error.message}</div>;
 
   if (isBudgetLoading) return <div>Loading...</div>;
   if (budgetError) return <div>Error:{budgetError.message}</div>;
   if (!budgetList || budgetList.length === 0) return null;
 
-  const usedPercentage = totalExpenseData?.total_expense
-    ? (totalExpenseData?.total_expense / totalBudget) * 100
-    : 0;
+  if (isTotalExpenseFixedExpenseLoading) return <div>Loading...</div>;
+  if (totalExpenseFixedExpenseError)
+    return <div>Error:{totalExpenseFixedExpenseError.message}</div>;
+  if (!totalExpenseFixedExpenseData) return <div>No data available</div>;
+
+  const usedPercentage =
+    totalExpenseFixedExpenseData?.total_expense_fixed_expense
+      ? (totalExpenseFixedExpenseData?.total_expense_fixed_expense /
+          totalBudget) *
+        100
+      : 0;
 
   // console.log("너 얼마썻어", totalExpenseData);
   return (
@@ -115,7 +124,9 @@ const SideBar = () => {
             <Text as='p'>
               전체 예산 중{" "}
               <Text as='span' className={spendingText}>
-                {(totalExpenseData?.total_expense ?? 0).toLocaleString()}
+                {(
+                  totalExpenseFixedExpenseData?.total_expense_fixed_expense ?? 0
+                ).toLocaleString()}
               </Text>{" "}
               원을 사용했어요
             </Text>
@@ -123,6 +134,7 @@ const SideBar = () => {
           {/* <Box className={progress}>여러분 여기는 프로그래스바입니다</Box> */}
           <AnimatedLineProgressBar
             percent={Math.min(usedPercentage, 100)}
+            // percent={100}
             transition={{ easing: "linear" }}
             rounded={36}
             progressColor='linear-gradient(to right, #F03167, #F35F89, #FFA5BE)'
