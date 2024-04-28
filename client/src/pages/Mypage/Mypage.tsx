@@ -84,14 +84,19 @@ const Mypage = () => {
 
 
   const handleClickDelete = async () => {
-    try {
-      await instance.delete(requests.userInfo);
-      const allCookies = cookies.getAll(); // 모든 쿠키 가져오기
-      Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
-      toast.success("회원 탈퇴 되었습니다.");
-      window.location.href = "/login"
-    } catch (error) {
-      console.error("회원탈퇴 실패", error);
+    // 사용자에게 확인 창을 표시하여 회원 탈퇴 여부를 확인
+    const confirmDelete = window.confirm("정말로 회원 탈퇴하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        // 회원 탈퇴 로직
+        await instance.delete(requests.userInfo);
+        const allCookies = cookies.getAll(); // 모든 쿠키 가져오기
+        Object.keys(allCookies).forEach(cookieName => cookies.remove(cookieName)); // 모든 쿠키 이름을 순회하며 삭제
+        toast.success("회원 탈퇴 되었습니다.");
+        window.location.href = "/login"
+      } catch (error) {
+        console.error("회원탈퇴 실패", error);
+      }
     }
   };
   const refresh = cookies.get("refreshToken");
