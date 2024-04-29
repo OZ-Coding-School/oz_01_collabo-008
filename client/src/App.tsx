@@ -134,7 +134,7 @@ function App() {
     queryFn: async () => {
       try {
         const response = await instance.get<GetMemberResponseType>(requests.userInfo);
-        // console.log("전역 유저 정보", response.data.member);
+        // console.log("전역 유저 정보", response.data);
         return response.data.member;
       } catch (error) {
         console.error("전역 유저정보 에러", error);
