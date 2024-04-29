@@ -306,7 +306,15 @@ class UploadProfileImageView(APIView):
             )
             bucket_name = env("NCLOUD_BUCKET_NAME")
             file_name = f"{member_id}_{image_file.name}"
-            ncloud.upload_fileobj(image_file, bucket_name, file_name)
+            ncloud.upload_fileobj(
+                image_file,
+                bucket_name,
+                file_name,
+                ExtraArgs={
+                    'ACL': 'public-read'  # 파일 공개 설정
+                }
+
+            )
             image_url = f"{env('NCLOUD_ENDPOINT_URL')}/{bucket_name}/{file_name}"
             return image_url
         except Exception as e:
