@@ -57,7 +57,8 @@ const Mypage = () => {
 
         if (response.data.status_code === 200) {
           toast.success("사진이 성공적으로 업로드되었습니다.");
-          // TODO: 업로드된 사진 URL을 받아와서 상태 업데이트 등 추가 작업
+
+          queryClient.invalidateQueries({ queryKey: ["me"] });
         } else {
           toast.error("사진 업로드 실패");
         }
