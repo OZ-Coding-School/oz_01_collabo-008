@@ -36,6 +36,7 @@ export const user = style({
   width: "50px",
   height: "50px",
   borderRadius: "25px",
+  cursor: "pointer",
 });
 
 export const belliIcon = style({
